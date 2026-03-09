@@ -1,22 +1,25 @@
-AccessModifierOffset: -4
+AccessModifierOffset: -2
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlines: Right
 AlignOperands: false
-AlignTrailingComments: false
+AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
+AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: Yes
+AlwaysBreakTemplateDeclarations: MultiLine
 BinPackArguments: true
-BinPackParameters: true
+BinPackParameters: false
+BreakBeforeBraces: Custom
 BraceWrapping:
     AfterEnum: true
+    AfterCaseLabel: true
     AfterClass: true
     AfterControlStatement: true
     AfterFunction: true
@@ -26,40 +29,47 @@ BraceWrapping:
     AfterExternBlock: true
     BeforeCatch: true
     BeforeElse: true
-    IndentBraces: false
+    IndentBraces: true
     SplitEmptyFunction: false
     SplitEmptyRecord: false
     SplitEmptyNamespace: false
 BreakBeforeBinaryOperators: NonAssignment
-BreakBeforeBraces: Custom
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
 BreakStringLiterals: true
 ColumnLimit: 80
+CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
-ConstructorInitializerIndentWidth: 4
-Cpp11BracedListStyle: false
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+Cpp11BracedListStyle: true
 DerivePointerAlignment: false
 FixNamespaceComments: true
-ForEachMacros: ['ILIST_FOREACH', 'ILIST_FOREACH_ENTRY']
-IncludeBlocks: Regroup
+IncludeBlocks: Preserve
 IncludeCategories:
-    - Regex: '<.*>'
-      Priority: 1
-    - Regex: '.*'
-      Priority: 2
+  - Regex:           '^<[^.]*>'
+    Priority:        1
+  - Regex:           '^<.*\.h>'
+    Priority:        2
+  - Regex:           '^<boost/.*>'
+    Priority:        3
+  - Regex:           '^<.*>'
+    Priority:        4
+  - Regex:           '^"'
+    Priority:        5
+  - Regex:           '.*'
+    Priority:        6
 IndentCaseLabels: false
 IndentPPDirectives: AfterHash
-IndentWidth: 4
+IndentWidth: 2
 IndentWrappedFunctionNames: false
 KeepEmptyLinesAtTheStartOfBlocks: false
 Language: Cpp
 NamespaceIndentation: All
 PointerAlignment: Left
-ReferenceAlignment: Left
-ReflowComments: true
+ReflowComments: false
 SortIncludes: true
 SortUsingDeclarations: false
 SpaceAfterCStyleCast: false
@@ -76,5 +86,6 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-TabWidth: 4
+Standard:        Cpp11
+TabWidth: 2
 UseTab: Never
