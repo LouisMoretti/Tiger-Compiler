@@ -2,6 +2,14 @@
 **/.*~
 **/.idea/*
 
+**/Makefile
+**/Makefile.in
+*.in
+aclocal.m4
+configure
+autom4te.cache/*
+tcsh/python/swig.mk
+
 # Prerequisites
 *.d
 
