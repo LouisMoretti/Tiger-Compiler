@@ -9,6 +9,8 @@ aclocal.m4
 configure
 autom4te.cache/*
 tcsh/python/swig.mk
+config.h.in~
+configure~
 
 # Prerequisites
 *.d
