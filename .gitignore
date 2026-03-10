@@ -11,6 +11,29 @@ autom4te.cache/*
 tcsh/python/swig.mk
 config.h.in~
 configure~
+config.h
+config.status
+libtool
+stamp-h1
+tcsh/run
+**/.deps/
+authors.h
+lib/misc/.dirstamp
+src/*.dirstamp
+src/**/.dirstamp
+src/parse/location.hh
+src/parse/parsetiger.cc
+src/parse/parsetiger.hh
+src/parse/parsetiger.html
+src/parse/parsetiger.output
+src/parse/parsetiger.stamp
+src/parse/parsetiger.xml
+src/parse/prelude.cc
+src/parse/scantiger.cc
+src/parse/scantiger.hh
+src/tc
+src/version.cc
+src/version.stamp
 
 # Prerequisites
 *.d
