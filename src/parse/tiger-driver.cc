@@ -87,10 +87,26 @@ namespace parse
                  << &misc::error::exit;
       }
 
-    // FIXME: Some code was deleted here (Initialize Lexer and enable scan traces).
-    // FIXME: Some code was deleted here (Initialize the parser and enable parse traces).
+    // FIXED: Some code was deleted here (Initialize Lexer and enable scan traces).
 
-    // FIXME: Some code was deleted here (Run the parser).
+    // Fix Start
+    Lexer lexer(*in);
+    lexer.set_debug(scan_trace_p_);
+    // Fix End
+
+    // FIXED: Some code was deleted here (Initialize the parser and enable parse traces).
+
+    // Fix Start
+    parser parser(*this, lexer);
+    parser.set_debug_level(parse_trace_p_);
+    // Fix End
+
+
+    // FIXED: Some code was deleted here (Run the parser).
+
+    // Fix Start
+    parser.parse();
+    // Fix End
 
     ast_type res = ast_;
     ast_ = static_cast<ast::Exp*>(nullptr);
