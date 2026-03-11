@@ -101,7 +101,6 @@ namespace parse
     parser.set_debug_level(parse_trace_p_);
     // Fix End
 
-
     // FIXED: Some code was deleted here (Run the parser).
 
     // Fix Start
