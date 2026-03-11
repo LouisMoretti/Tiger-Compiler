@@ -1,26 +1,34 @@
-**/*.swp
-**/.*~
-**/.idea/*
+# **/*.swp
+*.swp
+# **/.*~
+*~
+# **/.idea/*
+**/.idea/
 
-**/Makefile
-**/Makefile.in
+# **/Makefile
+# **/Makefile.in
+Makefile
+Makefile.in
 *.in
 aclocal.m4
 configure
-autom4te.cache/*
+# autom4te.cache/*
+autom4te.cache/
 tcsh/python/swig.mk
-config.h.in~
-configure~
+# config.h.in~
+# configure~
 config.h
 config.status
 libtool
 stamp-h1
 tcsh/run
-**/.deps/
+# **/.deps/
+.deps/
 authors.h
-lib/misc/.dirstamp
-src/*.dirstamp
-src/**/.dirstamp
+# lib/misc/.dirstamp
+# src/*.dirstamp
+# src/**/.dirstamp
+.dirstamp
 src/parse/location.hh
 src/parse/parsetiger.cc
 src/parse/parsetiger.hh
@@ -34,38 +42,51 @@ src/parse/scantiger.hh
 src/tc
 src/version.cc
 src/version.stamp
-lib/misc/test-deref
-lib/misc/test-deref.trs
-lib/misc/test-error
-lib/misc/test-error.trs
-lib/misc/test-escape
-lib/misc/test-escape.trs
-lib/misc/test-graph
-lib/misc/test-graph.trs
-lib/misc/test-indent
-lib/misc/test-indent.trs
-lib/misc/test-scoped
-lib/misc/test-scoped.trs
-lib/misc/test-separator
-lib/misc/test-separator.trs
-lib/misc/test-symbol
-lib/misc/test-symbol.trs
-lib/misc/test-timer
-lib/misc/test-timer.trs
-lib/misc/test-unique
-lib/misc/test-unique.trs
-lib/misc/test-variant
-lib/misc/test-variant.trs
-lib/misc/test-xalloc
-lib/misc/test-xalloc.trs
-src/ast/test-ast
-src/ast/test-ast.trs
-src/object/test-parse
-src/object/test-parse.trs
-src/parse/test-parse
-src/parse/test-parse.trs
-src/parse/test-tweast
-src/parse/test-tweast.trs
+# lib/misc/test-deref
+# lib/misc/test-deref.trs
+# lib/misc/test-error
+# lib/misc/test-error.trs
+# lib/misc/test-escape
+# lib/misc/test-escape.trs
+# lib/misc/test-graph
+# lib/misc/test-graph.trs
+# lib/misc/test-indent
+# lib/misc/test-indent.trs
+# lib/misc/test-scoped
+# lib/misc/test-scoped.trs
+# lib/misc/test-separator
+# lib/misc/test-separator.trs
+# lib/misc/test-symbol
+# lib/misc/test-symbol.trs
+# lib/misc/test-timer
+# lib/misc/test-timer.trs
+# lib/misc/test-unique
+# lib/misc/test-unique.trs
+# lib/misc/test-variant
+# lib/misc/test-variant.trs
+# lib/misc/test-xalloc
+# lib/misc/test-xalloc.trs
+# src/ast/test-ast
+# src/ast/test-ast.trs
+# src/object/test-parse
+# src/object/test-parse.trs
+# src/parse/test-parse
+# src/parse/test-parse.trs
+# src/parse/test-tweast
+# src/parse/test-tweast.trs
+
+# Ignore test binaries
+src/parse/test-*
+src/ast/test-*
+src/object/test-*
+lib/misc/test-*
+
+!src/parse/test-*.*
+!src/ast/test-*.*
+!src/object/test-*.*
+!lib/misc/test-*.*
+
+*.trs
 
 configure.lineno
 
