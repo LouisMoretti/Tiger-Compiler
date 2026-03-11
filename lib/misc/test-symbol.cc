@@ -17,6 +17,9 @@ int main()
 
   // Checking symbol.
   // FIXME: Some code was deleted here (Testing set size).
+  // Start Fix
+  assertion(toto1.object_map_size() == 2);
+  // End Fix
   assertion(toto1.get() == "toto");
 
   assertion(toto1 == "toto");
