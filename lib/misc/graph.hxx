@@ -58,8 +58,7 @@ namespace misc
 
     for (auto [vi, vi_end] = boost::vertices(*this); vi != vi_end; ++vi)
       {
-        ostr << "  \"" << *vi << "\" "
-             << "[label=\"";
+        ostr << "  \"" << *vi << "\" " << "[label=\"";
         vertex_print(*vi, ostr);
         ostr << "\"]\n";
       }
