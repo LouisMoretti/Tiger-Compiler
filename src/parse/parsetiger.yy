@@ -189,9 +189,14 @@
 
 %type <ast::Field*>           tyfield
 %type <ast::fields_type*>     tyfields tyfields.1
-  // FIXME: Some code was deleted here (More %types).
+// FIXME: Some code was deleted here (More %types).
+// Start Fix
+%type <exps_type>             exps
+//TODO: Define type of lvalue
+%type <...>                   lvalue
+// End Fix
 
-  // FIXME: Some code was deleted here (Priorities/associativities).
+// FIXME: Some code was deleted here (Priorities/associativities).
 
 // Solving conflicts on:
 // let type foo = bar
@@ -201,7 +206,15 @@
 // We want the latter.
 %precedence CHUNKS
 %precedence TYPE
-  // FIXME: Some code was deleted here (Other declarations).
+// FIXME: Some code was deleted here (Other declarations).
+// Start Fix
+%precedence TIMES DIVIDE
+%precedence PLUS MINUS
+%precedence GE LE EQ NE LT GT
+%precedence AND
+%precedence OR
+
+// End Fix
 
 %start program
 
@@ -214,11 +227,51 @@ program:
   chunks
    { td.ast_ = $1; }
 ;
+// Start Fix
+exps:
+  exp {$$ = make_exps_type($1); }
+  | exp[left] ";" exps[right]{$$ = make_exps_type($left).merge($right); } 
 
 exp:
   INT
    { $$ = make_IntExp(@$, $1); }
   // FIXME: Some code was deleted here (More rules).
+  // Start Fix
+  | STRING { $$ = make_StringExp(@$, $1); } 
+  | "nil" { $$ = make_NilExp(@$); }
+  | typeid[type] "[" exp[size] "]" "of" exp[init] { $$ = make_ArrayExp(@$, $type, $size, $init); }
+  //| typeid "{" ( ID "=" exp { "," ID "=" exp }) "}" { $$ = make_ArrayExp(@$, $1, $2, $3); } // FIXME: Find how to do optional grammar and {}
+  | lvalue { $$ = make_; }// TODO: Add lvalue Grammar Rule
+  |
+  | "-" exp { $$ = ;}// TODO
+  | exp[left] "*" exp[right] { $$ = make_OpExp(@$, $left, "*", $right); }
+  | exp[left] "/" exp[right] { $$ = make_OpExp(@$, $left, "/", $right); }
+  | exp[left] "+" exp[right] { $$ = make_OpExp(@$, $left, "+", $right); }
+  | exp[left] "-" exp[right] { $$ = make_OpExp(@$, $left, "-", $right); }
+  | exp[left] ">=" exp[right] { $$ = make_OpExp(@$, $left, ">=", $right); }
+  | exp[left] "<=" exp[right] { $$ = make_OpExp(@$, $left, "<=", $right); }
+  | exp[left] "<>" exp[right] { $$ = make_OpExp(@$, $left, "<>", $right); }
+  | exp[left] "=" exp[right] { $$ = make_OpExp(@$, $left, "=", $right); }
+  | exp[left] "<" exp[right] { $$ = make_OpExp(@$, $left, "<", $right); }
+  | exp[left] ">" exp[right] { $$ = make_OpExp(@$, $left, ">", $right); }
+  | exp[left] "&" exp[right] { $$ = make_OpExp(@$, $left, "&", $right); } // TODO: Desugar (& -> if statement)
+  | exp[left] "|" exp[right] { $$ = make_OpExp(@$, $left, "|", $right); } // TODO: Desugar (| -> if statement)
+  //| "(" exps[exps] ")" { $$ = make_exps_type(*$exps); } // FIXME: Find how to expand exps
+  | lvalue[var] ":=" exp[value] { $$ = make_AssignExp(@$, $var, $value)}
+  | "if" exp[condition] "then" exp[body] "else" exp[else] {$$ = make_IfExp(@$, $condition, $body, $else); }
+  | "if" exp[condition] "then" exp[body] {$$ = make_IfExp(@$, $condition, $body); }
+  | "while" exp[condition] "do" exp[body] {$$ = make_WhileExp(@$, $condition, $body); }
+  | "for" ID[id] ":=" exp[init] "to" exp[stop] "do" exp[body] { $$ = make_ForExp(@$, make_VarDec(@$, $id, INT, $init), $stop, $body); } // TODO: Check for the variable declaration
+  | "break" { $$ = make_BreakExp($@); }
+  | "let" chunks[decs] "in" exps[body] "end" { $$ = make_LetExp(@$, $decs, $body); }
+  // End Fix
+
+// Start Fix
+lvalue:
+  ID[id] { $$ = make_CallExp(@$, $id, nullptr); }
+  | lvalue[var] "." ID[attr] { $$ = make_FieldVar(@$, ); }
+  | lvalue "[" exp "]" {}
+// End fix
 
 /*---------------.
 | Declarations.  |
