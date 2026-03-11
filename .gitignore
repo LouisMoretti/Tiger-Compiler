@@ -67,6 +67,8 @@ src/parse/test-parse.trs
 src/parse/test-tweast
 src/parse/test-tweast.trs
 
+configure.lineno
+
 # Prerequisites
 *.d
 
