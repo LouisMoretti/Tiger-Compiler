@@ -22,6 +22,8 @@
 #include <climits>
 #include <regex>
 #include <string>
+#include <limits.h>
+#include <sstream>
 
 #include <boost/lexical_cast.hpp>
 
@@ -38,6 +40,10 @@
 #include <parse/tiger-driver.hh>
 
   // FIXME: Some code was deleted here (Define YY_USER_ACTION to update locations).
+// Start Fix
+#define YY_USER_ACTION \
+    td.location+=size();
+// End Fix
 
 #define TOKEN(Type)                             \
   parser::make_ ## Type(td.location_)
@@ -70,11 +76,42 @@ int             [0-9]+
 %%
 /* The rules.  */
 {int}         {
-                int val = 0;
-  // FIXME: Some code was deleted here (Decode, and check the value).
+                // Start Fix
+                long val = 0;
+  // FIXED: Some code was deleted here (Decode, and check the value).
+                stringstream ss;
+                ss << str();
+                ss >> val;
+                if(val > INT_MAX){
+                    td.error_ << misc::error::error_type::scan;
+                    td.error_ << "Lexing Error was encountered" at line << td.location_ << "\n";
+                }
+                // End Fix
                 return TOKEN_VAL(INT, val);
               }
+
   /* FIXME: Some code was deleted here. */
+  // Start Fix
+  "array"     { return TOKEN(ARRAY); }
+  "if"        { return TOKEN(IF); }
+  "then"      { return TOKEN(THEN); }
+  "else"      { return TOKEN(ELSE); }
+  "while"     { return TOKEN(WHILE); }
+  "for"     { return TOKEN(FOR); }
+  "to"     { return TOKEN(TO); }
+  "do"     { return TOKEN(DO); }
+  "let"     { return TOKEN(LET); }
+  "in"     { return TOKEN(IN); }
+  "end"     { return TOKEN(END); }
+  "of"     { return TOKEN(OF); }
+  "break"     { return TOKEN(BREAK); }
+  "nil"     { return TOKEN(NIL); }
+  "function"     { return TOKEN(FUNCTION); }
+  "var" { return TOKEN(VAR); }
+  "type"     { return TOKEN(TYPE); }
+  "import"     { return TOKEN(IMPORT); }
+  "primitive"     { return TOKEN(PRIMTIVE); }
+  // End Fix
 %%
 
 
