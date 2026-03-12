@@ -196,7 +196,12 @@
 // FIXME: Some code was deleted here (More %types).
 // Start Fix
 %type <ast::exps_type*>       exps
+%type <ast::fieldinits_type*> record_attr
+%type <ast::exps_type*>       func_prms
 %type <ast::Var*>             lvalue
+
+%type <ast::FunctionChunk*>   funcdec
+%type <ast::VarChunk*>        vardec
 // End Fix
 
 // FIXME: Some code was deleted here (Priorities/associativities).
@@ -233,53 +238,101 @@ program:
 ;
 // Start Fix
 exps:
-  // TODO: Possible empty list ?
-  exp {$$ = make_exps_type($1); }
-  | exp[left] ";" exps[right]{$$ = make_exps_type($left).merge($right); }
+  %empty
+    { $$ = make_exps_type(); }
+  | exp
+    { $$ = make_exps_type($1); }
+  | exp[left] ";" exps[right]
+    { $$ = $right; $$->insert($$->begin(), $left); }
 ;
+
+record_attr:
+  ID[name] "=" exp[value] "," record_attr[attributes]
+    { $$ = $attributes; $$->emplace($$->begin(), @$, $name, $value); }
+  | ID[name] "=" exp[value]
+    { $$ = make_fieldinits_type(); $$->emplace($$->begin(), @$, $name, $value); }
+
+func_prms:
+  exp[value] "," func_prms[prms]
+    { $$ = $prms; $$->insert($$->begin(), $value); }
+  | exp[value]
+    { $$ = make_exps_type($value); }
 // End Fix
 
 exp:
   INT
-   { $$ = make_IntExp(@$, $1); }
+    { $$ = make_IntExp(@$, $1); }
   // FIXME: Some code was deleted here (More rules).
   // Start Fix
-  | STRING { $$ = make_StringExp(@$, $1); }
-  | "nil" { $$ = make_NilExp(@$); }
-  | typeid[type] "[" exp[size] "]" "of" exp[init] { $$ = make_ArrayExp(@$, $type, $size, $init); }
-  //| typeid "{" ( ID "=" exp { "," ID "=" exp }) "}" { $$ = make_ArrayExp(@$, $1, $2, $3); } // FIXME: Find how to do optional grammar and {}
-  | lvalue { $$ = make_; }// TODO: Add lvalue Grammar Rule
-  |
-  | "-" exp[right] %prec UMINUS { $$ = make_OpExp(@$, 0, ast::OpExp::Oper::sub, $right); }
-  | exp[left] "*" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::mul, $right); }
-  | exp[left] "/" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::div, $right); }
-  | exp[left] "+" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::add, $right); }
-  | exp[left] "-" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::sub, $right); }
-  | exp[left] ">=" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::ge, $right); }
-  | exp[left] "<=" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::le, $right); }
-  | exp[left] "<>" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::ne, $right); }
-  | exp[left] "=" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::eq, $right); }
-  | exp[left] "<" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::lt, $right); }
-  | exp[left] ">" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::gt, $right); }
-  //| exp[left] "&" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::, $right); } // TODO: Desugar (& -> if statement) make_IfExp ??
-  //| exp[left] "|" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::, $right); } // TODO: Desugar (| -> if statement) make_IfExp ??
-  //| "(" exps[exps] ")" { $$ = make_exps_type(*$exps); } // FIXME: Find how to expand exps     make_SeqExp ?
-  | lvalue[var] ":=" exp[value] { $$ = make_AssignExp(@$, $var, $value); }
-  | "if" exp[condition] "then" exp[body] "else" exp[else] {$$ = make_IfExp(@$, $condition, $body, $else); }
-  | "if" exp[condition] "then" exp[body] {$$ = make_IfExp(@$, $condition, $body); }
-  | "while" exp[condition] "do" exp[body] {$$ = make_WhileExp(@$, $condition, $body); }
-  | "for" ID[id] ":=" exp[init] "to" exp[stop] "do" exp[body] { $$ = make_ForExp(@$, make_VarDec(@$, $id, INT, $init), $stop, $body); } // TODO: Check for the variable declaration, 3rd param is optional type in class doc, INT > null ?
-  | "break" { $$ = make_BreakExp($@); }
-  | "let" chunks[decs] "in" exps[body] "end" { $$ = make_LetExp(@$, $decs, $body); } // Also use a SeqExp for body like in other ops with exps?
+  | STRING 
+    { $$ = make_StringExp(@$, $1); }
+  | "nil"
+    { $$ = make_NilExp(@$); }
+  | typeid[type] "[" exp[size] "]" "of" exp[init]
+    { $$ = make_ArrayExp(@$, $type, $size, $init); }
+  | typeid[name] "{" record_attr[attributes] "}"
+    { $$ = make_RecordExp(@$, $name, $attributes); }
+  | typeid[name] "{" "}"
+    { $$ = make_RecordExp(@$, $name, make_filedinits_type()); }
+  | lvalue
+    { $$ = $1; }
+  | ID[name] "(" func_prms[prms] ")"
+    { $$ = make_CallExp(@$, $name, $prms);}
+  | ID[name] "(" ")"
+    { $$ = make_CallExp(@$, $name, make_exps_type());}
+  | "-" exp[right] %prec UMINUS
+    { $$ = make_OpExp(@$, make_IntExp(@$, 0), ast::OpExp::Oper::sub, $right); }
+  | exp[left] "*" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::mul, $right); }
+  | exp[left] "/" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::div, $right); }
+  | exp[left] "+" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::add, $right); }
+  | exp[left] "-" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::sub, $right); }
+  | exp[left] ">=" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::ge, $right); }
+  | exp[left] "<=" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::le, $right); }
+  | exp[left] "<>" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::ne, $right); }
+  | exp[left] "=" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::eq, $right); }
+  | exp[left] "<" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::lt, $right); }
+  | exp[left] ">" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::gt, $right); }
+  | exp[left] "&" exp[right]
+    { $$ = make_IfExp(@$, $left, $right, make_StringExp(@$, "1 = 2")); }
+  | exp[left] "|" exp[right]
+    { $$ = make_IfExp(@$, $left, make_StringExp(@$, "1 = 1"), $right); }
+  | "(" exps[expressions] ")"
+    { $$ = make_SeqExp(@$, $expressions); }
+  | lvalue[var] ":=" exp[value]
+    { $$ = make_AssignExp(@$, $var, $value); }
+  | "if" exp[condition] "then" exp[body] "else" exp[else]
+    { $$ = make_IfExp(@$, $condition, $body, $else); }
+  | "if" exp[condition] "then" exp[body]
+    { $$ = make_IfExp(@$, $condition, $body); }
+  | "while" exp[condition] "do" exp[body]
+    { $$ = make_WhileExp(@$, $condition, $body); }
+  | "for" ID[id] ":=" exp[init] "to" exp[stop] "do" exp[body]
+    { $$ = make_ForExp(@$, make_VarDec(@$, $id, nullptr, $init), $stop, $body); }
+  | "break"
+    { $$ = make_BreakExp(@$); }
+  | "let" chunks[decs] "in" exps[body] "end"
+    { $$ = make_LetExp(@$, $decs, $body); }
 ;
 // End Fix
 
-// TODO: Check
 // Start Fix
 lvalue:
-  ID[id] { $$ = make_SimpleVar(@$, $id); }
-  | lvalue[var] "." ID[attr] { $$ = make_FieldVar(@$, $var, $attr); }
-  | lvalue[var] "[" exp "]" { $$ = make_SubscriptVar(@$, $var, $3); }
+  ID[name]
+    { $$ = make_SimpleVar(@$, $name); }
+  | lvalue[var] "." ID[attr]
+    { $$ = make_FieldVar(@$, $var, $attr); }
+  | lvalue[var] "[" exp[index] "]"
+    { $$ = make_SubscriptVar(@$, $var, $index); }
 ;
 // End fix
 
@@ -300,8 +353,34 @@ chunks:
      which is why we end the recursion with a %empty. */
   %empty                  { $$ = make_ChunkList(@$); }
 | tychunk   chunks        { $$ = $2; $$->push_front($1); }
-  // FIXME: Some code was deleted here (More rules).
+  // FIXED: Some code was deleted here (More rules).
+  // Start Fix
+| funcdec chunks
+  { $$ = $2; $$->push_front($1); }
+| vardec chunks
+  { $$ = $2; $$->push_front($1); }
 ;
+// End Fix
+
+// Start Fix
+funcdec:
+  "function" ID[name] "(" tyfields[fields] ")" ":" typeid[type] "=" exp[body]
+    { $$ = make_FunctionChunk(make_FunctionDec(@$, $name, $fields, $type, $body)); }
+  | "function" ID[name] "(" tyfields[fields] ")" "=" exp[body]
+    { $$ = make_FunctionChunk(make_FunctionDec(@$, $name, $fields, nullptr, $body)); }
+  | "primitive" ID[name] "(" tyfields[fields] ")" ":" typeid[type]
+    { $$ = make_FunctionChunk(make_FunctionDec(@$, $name, $fields, $type, nullptr)); }
+  | "primitive" ID[name] "(" tyfields[fields] ")"
+    { $$ = make_FunctionChunk(make_FunctionDec(@$, $name, $fields, nullptr, nullptr)); }
+;
+
+vardec:
+  "var" ID[name] ":" typeid[type] ":=" exp[value]
+    { $$ = make_VarChunk(@$); $$->push_front(make_VarDec(@$, $name, $type, $value)); }
+  | "var" ID[name] ":=" exp[value]
+    { $$ = make_VarChunk(@$); $$->push_front(make_VarDec(@$, $name, nullptr, $value); }
+;
+// End Fix
 
 /*--------------------.
 | Type Declarations.  |
