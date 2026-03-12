@@ -16,7 +16,11 @@
 
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
-  // FIXME: Some code was deleted here (Other directives).
+// FIXME: Some code was deleted here (Other directives).
+// Start Fix
+%expect 1
+%expect-rr 0
+// End Fix
 
 %define parse.error verbose
 %defines
@@ -191,9 +195,8 @@
 %type <ast::fields_type*>     tyfields tyfields.1
 // FIXME: Some code was deleted here (More %types).
 // Start Fix
-%type <exps_type>             exps
-//TODO: Define type of lvalue
-%type <...>                   lvalue
+%type <ast::exps_type*>       exps
+%type <ast::Var*>             lvalue
 // End Fix
 
 // FIXME: Some code was deleted here (Priorities/associativities).
@@ -208,6 +211,7 @@
 %precedence TYPE
 // FIXME: Some code was deleted here (Other declarations).
 // Start Fix
+%precedence UMINUS
 %precedence TIMES DIVIDE
 %precedence PLUS MINUS
 %precedence GE LE EQ NE LT GT
@@ -229,48 +233,54 @@ program:
 ;
 // Start Fix
 exps:
+  // TODO: Possible empty list ?
   exp {$$ = make_exps_type($1); }
-  | exp[left] ";" exps[right]{$$ = make_exps_type($left).merge($right); } 
+  | exp[left] ";" exps[right]{$$ = make_exps_type($left).merge($right); }
+;
+// End Fix
 
 exp:
   INT
    { $$ = make_IntExp(@$, $1); }
   // FIXME: Some code was deleted here (More rules).
   // Start Fix
-  | STRING { $$ = make_StringExp(@$, $1); } 
+  | STRING { $$ = make_StringExp(@$, $1); }
   | "nil" { $$ = make_NilExp(@$); }
   | typeid[type] "[" exp[size] "]" "of" exp[init] { $$ = make_ArrayExp(@$, $type, $size, $init); }
   //| typeid "{" ( ID "=" exp { "," ID "=" exp }) "}" { $$ = make_ArrayExp(@$, $1, $2, $3); } // FIXME: Find how to do optional grammar and {}
   | lvalue { $$ = make_; }// TODO: Add lvalue Grammar Rule
   |
-  | "-" exp { $$ = ;}// TODO
-  | exp[left] "*" exp[right] { $$ = make_OpExp(@$, $left, "*", $right); }
-  | exp[left] "/" exp[right] { $$ = make_OpExp(@$, $left, "/", $right); }
-  | exp[left] "+" exp[right] { $$ = make_OpExp(@$, $left, "+", $right); }
-  | exp[left] "-" exp[right] { $$ = make_OpExp(@$, $left, "-", $right); }
-  | exp[left] ">=" exp[right] { $$ = make_OpExp(@$, $left, ">=", $right); }
-  | exp[left] "<=" exp[right] { $$ = make_OpExp(@$, $left, "<=", $right); }
-  | exp[left] "<>" exp[right] { $$ = make_OpExp(@$, $left, "<>", $right); }
-  | exp[left] "=" exp[right] { $$ = make_OpExp(@$, $left, "=", $right); }
-  | exp[left] "<" exp[right] { $$ = make_OpExp(@$, $left, "<", $right); }
-  | exp[left] ">" exp[right] { $$ = make_OpExp(@$, $left, ">", $right); }
-  | exp[left] "&" exp[right] { $$ = make_OpExp(@$, $left, "&", $right); } // TODO: Desugar (& -> if statement)
-  | exp[left] "|" exp[right] { $$ = make_OpExp(@$, $left, "|", $right); } // TODO: Desugar (| -> if statement)
-  //| "(" exps[exps] ")" { $$ = make_exps_type(*$exps); } // FIXME: Find how to expand exps
-  | lvalue[var] ":=" exp[value] { $$ = make_AssignExp(@$, $var, $value)}
+  | "-" exp[right] %prec UMINUS { $$ = make_OpExp(@$, 0, ast::OpExp::Oper::sub, $right); }
+  | exp[left] "*" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::mul, $right); }
+  | exp[left] "/" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::div, $right); }
+  | exp[left] "+" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::add, $right); }
+  | exp[left] "-" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::sub, $right); }
+  | exp[left] ">=" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::ge, $right); }
+  | exp[left] "<=" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::le, $right); }
+  | exp[left] "<>" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::ne, $right); }
+  | exp[left] "=" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::eq, $right); }
+  | exp[left] "<" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::lt, $right); }
+  | exp[left] ">" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::gt, $right); }
+  //| exp[left] "&" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::, $right); } // TODO: Desugar (& -> if statement) make_IfExp ??
+  //| exp[left] "|" exp[right] { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::, $right); } // TODO: Desugar (| -> if statement) make_IfExp ??
+  //| "(" exps[exps] ")" { $$ = make_exps_type(*$exps); } // FIXME: Find how to expand exps     make_SeqExp ?
+  | lvalue[var] ":=" exp[value] { $$ = make_AssignExp(@$, $var, $value); }
   | "if" exp[condition] "then" exp[body] "else" exp[else] {$$ = make_IfExp(@$, $condition, $body, $else); }
   | "if" exp[condition] "then" exp[body] {$$ = make_IfExp(@$, $condition, $body); }
   | "while" exp[condition] "do" exp[body] {$$ = make_WhileExp(@$, $condition, $body); }
-  | "for" ID[id] ":=" exp[init] "to" exp[stop] "do" exp[body] { $$ = make_ForExp(@$, make_VarDec(@$, $id, INT, $init), $stop, $body); } // TODO: Check for the variable declaration
+  | "for" ID[id] ":=" exp[init] "to" exp[stop] "do" exp[body] { $$ = make_ForExp(@$, make_VarDec(@$, $id, INT, $init), $stop, $body); } // TODO: Check for the variable declaration, 3rd param is optional type in class doc, INT > null ?
   | "break" { $$ = make_BreakExp($@); }
-  | "let" chunks[decs] "in" exps[body] "end" { $$ = make_LetExp(@$, $decs, $body); }
-  // End Fix
+  | "let" chunks[decs] "in" exps[body] "end" { $$ = make_LetExp(@$, $decs, $body); } // Also use a SeqExp for body like in other ops with exps?
+;
+// End Fix
 
+// TODO: Check
 // Start Fix
 lvalue:
-  ID[id] { $$ = make_CallExp(@$, $id, nullptr); }
-  | lvalue[var] "." ID[attr] { $$ = make_FieldVar(@$, ); }
-  | lvalue "[" exp "]" {}
+  ID[id] { $$ = make_SimpleVar(@$, $id); }
+  | lvalue[var] "." ID[attr] { $$ = make_FieldVar(@$, $var, $attr); }
+  | lvalue[var] "[" exp "]" { $$ = make_SubscriptVar(@$, $var, $3); }
+;
 // End fix
 
 /*---------------.
