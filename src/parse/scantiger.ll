@@ -40,10 +40,9 @@
 #include <parse/tiger-driver.hh>
 
   // FIXME: Some code was deleted here (Define YY_USER_ACTION to update locations).
-// Start Fix
-#define YY_USER_ACTION \
-    td.location+=size();
-// End Fix
+
+#define YY_USER_ACTION    \
+        td.location_.columns(size());
 
 #define TOKEN(Type)                             \
   parser::make_ ## Type(td.location_)
@@ -67,52 +66,89 @@
 
 /* Abbreviations.  */
 int             [0-9]+
+
   /* FIXME: Some code was deleted here. */
+  // Start Fix
+whitechar       [ |\t]
+endofline       (\n\r|\r\n|\r|\n)
+id              [a-zA-Z][0-9a-zA-Z_]*
+  // End Fix
 
 %class{
   // FIXME: Some code was deleted here (Local variables).
+  std::string grown_string;
+}
+
+<SC_STRING>{
+/* rules in sub-lexer */
+
 }
 
 %%
 /* The rules.  */
 {int}         {
-                // Start Fix
-                long val = 0;
+                  int val = 0;
   // FIXED: Some code was deleted here (Decode, and check the value).
-                stringstream ss;
-                ss << str();
-                ss >> val;
-                if(val > INT_MAX){
-                    td.error_ << misc::error::error_type::scan;
-                    td.error_ << "Lexing Error was encountered" at line << td.location_ << "\n";
-                }
-                // End Fix
+                  std::stringstream ss;
+                  ss << str();
+                  ss >> val;
+                  if(val > INT_MAX){
+                      td.error_ << misc::error::error_type::scan;
+                      td.error_ << "Lexing Error was encountered at line" << td.location_ << "\n";
+                  }
+                  // End Fix
                 return TOKEN_VAL(INT, val);
               }
-
   /* FIXME: Some code was deleted here. */
   // Start Fix
-  "array"     { return TOKEN(ARRAY); }
-  "if"        { return TOKEN(IF); }
-  "then"      { return TOKEN(THEN); }
-  "else"      { return TOKEN(ELSE); }
-  "while"     { return TOKEN(WHILE); }
-  "for"     { return TOKEN(FOR); }
-  "to"     { return TOKEN(TO); }
-  "do"     { return TOKEN(DO); }
-  "let"     { return TOKEN(LET); }
-  "in"     { return TOKEN(IN); }
-  "end"     { return TOKEN(END); }
-  "of"     { return TOKEN(OF); }
-  "break"     { return TOKEN(BREAK); }
-  "nil"     { return TOKEN(NIL); }
-  "function"     { return TOKEN(FUNCTION); }
-  "var" { return TOKEN(VAR); }
-  "type"     { return TOKEN(TYPE); }
-  "import"     { return TOKEN(IMPORT); }
-  "primitive"     { return TOKEN(PRIMTIVE); }
+"array"           return TOKEN(ARRAY);
+"if"              return TOKEN(IF);
+"then"            return TOKEN(THEN);
+"else"            return TOKEN(ELSE);
+"while"           return TOKEN(WHILE);
+"for"             return TOKEN(FOR);
+"to"              return TOKEN(TO);
+"do"              return TOKEN(DO);
+"let"             return TOKEN(LET);
+"in"              return TOKEN(IN);
+"end"             return TOKEN(END);
+"of"              return TOKEN(OF);
+"break"           return TOKEN(BREAK);
+"nil"             return TOKEN(NIL);
+"function"        return TOKEN(FUNCTION);
+"var"             return TOKEN(VAR);
+"type"            return TOKEN(TYPE);
+"import"          return TOKEN(IMPORT);
+"primitive"       return TOKEN(PRIMITIVE);
+","               return TOKEN(COMMA);
+":"               return TOKEN(COLON);
+";"               return TOKEN(SEMI);
+"("               return TOKEN(LPAREN);
+")"               return TOKEN(RPAREN);
+"["               return TOKEN(LBRACK);
+"]"               return TOKEN(RBRACK);
+"{"               return TOKEN(LBRACE);
+"}"               return TOKEN(RBRACE);
+"."               return TOKEN(DOT);
+"+"               return TOKEN(PLUS);
+"-"               return TOKEN(MINUS);
+"*"               return TOKEN(TIMES);
+"/"               return TOKEN(DIVIDE);
+"="               return TOKEN(EQ);
+"<>"              return TOKEN(NE);
+"<"               return TOKEN(LT);
+"<="              return TOKEN(LE);
+">"               return TOKEN(GT);
+">="              return TOKEN(GE);
+"&"               return TOKEN(AND);
+"|"               return TOKEN(OR);
+":="              return TOKEN(ASSIGN);
+{whitechar} {
+
+            }
+{endofline} {
+                td.location_.lines(1);
+            }
+"\"" {grown_string.clear(); start(SC_STRING);}
   // End Fix
 %%
-
-
-
