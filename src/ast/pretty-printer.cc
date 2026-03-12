@@ -35,7 +35,8 @@ namespace ast
 
   void PrettyPrinter::operator()(const FieldVar& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    ostr_ << e.name_get << " = " << e.var_get();
   }
 
   /* Foo[10]. */
@@ -50,6 +51,74 @@ namespace ast
     ostr_ << "_cast(" << e.exp_get() << ", " << e.ty_get() << ')';
   }
 
-  // FIXME: Some code was deleted here.
+  // FIXED: Some code was deleted here.
+
+  void operator()(const ArrayExp& e) {}
+
+  void operator()(const ArrayTy& e) {}
+
+  void operator()(const AssignExp& e) {}
+
+  void operator()(const Ast& e) {}
+
+  void operator()(const BreakExp& e) {}
+
+  void operator()(const CallExp& e) {}
+
+  void operator()(const ChunkList& e) {}
+
+  void operator()(const ClassTy& e) {}
+
+  void operator()(const Dec& e) {}
+
+  void operator()(const Exp& e) {}
+
+  void operator()(const Field& e) {}
+
+  void operator()(const FieldInit& e) {}
+
+  void operator()(const ForExp& e) {}
+
+  void operator()(const FunctionDec& e) {}
+
+  void operator()(const IfExp& e) {}
+
+  void operator()(const IntExp& e) {}
+
+  void operator()(const LetExp& e) {}
+
+  void operator()(const MethodCallExp& e) {}
+
+  void operator()(const MethodDec& e) {}
+
+  void operator()(const NameTy& e) {}
+
+  void operator()(const NilExp& e) {}
+
+  void operator()(const ObjectExp& e) {}
+
+  void operator()(const OpExp& e) {}
+
+  void operator()(const RecordExp& e) {}
+
+  void operator()(const RecordTy& e) {}
+
+  void operator()(const SeqExp& e) {}
+
+  void operator()(const StringExp& e) {}
+
+  void operator()(const Ty& e) {}
+
+  void operator()(const TypeDec& e) {}
+
+  void operator()(const Var& e) {}
+
+  void operator()(const VarDec& e) {}
+
+  void operator()(const WhileExp& e)
+  {
+    ostr_ << "while " << e.test_get() << "\n";
+    this(e.body_get());
+  }
 
 } // namespace ast
