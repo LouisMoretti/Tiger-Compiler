@@ -33,7 +33,6 @@ namespace ast
     void operator()(const ArrayExp& e) override;
     void operator()(const ArrayTy& e) override;
     void operator()(const AssignExp& e) override;
-    //void operator()(const Ast& e) override; maybe useless
     void operator()(const BreakExp& e) override;
     void operator()(const CallExp& e) override;
     void operator()(const ChunkList& e) override;

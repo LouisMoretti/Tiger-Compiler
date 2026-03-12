@@ -36,7 +36,7 @@ namespace ast
   void PrettyPrinter::operator()(const FieldVar& e)
   {
     // FIXED: Some code was deleted here.
-    ostr_ << e.name_get << " = " << e.var_get();
+    ostr_ << e.name_get() << " = " << e.var_get();
   }
 
   /* Foo[10]. */
@@ -53,72 +53,221 @@ namespace ast
 
   // FIXED: Some code was deleted here.
 
-  void operator()(const ArrayExp& e) {}
+  void operator()(const ArrayExp& e)
+  {
+    ostr_ << e.type_name_get() << "[";
+    e.size_get().accept(*this);
 
-  void operator()(const ArrayTy& e) {}
+    ostr_ << "] of";
+    e.init_get().accept(*this);
+  }
 
-  void operator()(const AssignExp& e) {}
+  void operator()(const ArrayTy& e)
+  {
+    ostr_ << "array of ";
+    e.base_type_get().accept(*this);
+  }
 
-  void operator()(const Ast& e) {}
+  void operator()(const AssignExp& e)
+  {
+    e.var_get().accept(*this);
+    ostr_ << " := ";
 
-  void operator()(const BreakExp& e) {}
+    e.exp_get().accept(*this);
+  }
 
-  void operator()(const CallExp& e) {}
+  void operator()(const BreakExp& e)
+  {
+    // FIXME : idk what to put here
+  }
 
-  void operator()(const ChunkList& e) {}
+  void operator()(const CallExp& e)
+  {
+    ostr_ << e.name_get();
+    auto act = e.args_get();
 
-  void operator()(const ClassTy& e) {}
+    if (act != nullptr)
+      {
+        act.accept(*this);
+        act++;
+      }
 
-  void operator()(const Dec& e) {}
+    while (act != nullptr)
+      {
+        ostr_ << ", ";
+        act.accept(*this);
+        act++;
+      }
+  }
 
-  void operator()(const Exp& e) {}
+  void operator()(const ChunkList& e)
+  {
+    // FIXME : idk what to put here
+  }
 
-  void operator()(const Field& e) {}
+  void operator()(const ClassTy& e)
+  {
+    e.super_get().accept(*this);
+    e.chunks_get().accept(*this);
+  }
 
-  void operator()(const FieldInit& e) {}
+  void operator()(const Dec& e) { ostr_ << e.name_get(); }
 
-  void operator()(const ForExp& e) {}
+  void operator()(const Exp& e)
+  {
+    // FIXME : idk what to put here
+  }
 
-  void operator()(const FunctionDec& e) {}
+  void operator()(const Field& e)
+  {
+    ostr_ << e.name_get();
+    e.type_name_get().accept(*this);
+  }
 
-  void operator()(const IfExp& e) {}
+  void operator()(const FieldInit& e)
+  {
+    ostr_ << e.name_get();
+    e.init_get().accept(*this);
+  }
 
-  void operator()(const IntExp& e) {}
+  void operator()(const ForExp& e)
+  {
+    ostr_ << "for " e.vardec_get().accept(*this);
+    ostr_ << " to ";
 
-  void operator()(const LetExp& e) {}
+    e.hi_get().accept(*this);
+    ostr_ << " do ";
 
-  void operator()(const MethodCallExp& e) {}
+    e.body_get().accept(*this);
+  }
 
-  void operator()(const MethodDec& e) {}
+  void operator()(const FunctionDec& e)
+  {
+    ostr_ << "function " << "( "; // need an id i think
+    e.formals_get().accept(*this);
+    ostr_ << ") ";
 
-  void operator()(const NameTy& e) {}
+    if (e.result_get() != nullptr)
+      {
+        ostr_ << ": ";
+        e.result_get().accept(*this);
+      }
 
-  void operator()(const NilExp& e) {}
+    ostr_ << "= ";
+    e.body_get().accept(*this);
+  }
 
-  void operator()(const ObjectExp& e) {}
+  void operator()(const IfExp& e)
+  {
+    ostr_ << "if ";
 
-  void operator()(const OpExp& e) {}
+    e.test_get().accept(*this);
 
-  void operator()(const RecordExp& e) {}
+    ostr_ << " then ";
 
-  void operator()(const RecordTy& e) {}
+    e.thenclause_get().accept(*this);
 
-  void operator()(const SeqExp& e) {}
+    if (e.elseclause_get() != nullptr)
+      {
+        ostr_ << " else ";
+        e.elseclause_get().accept(*this);
+      }
+  }
 
-  void operator()(const StringExp& e) {}
+  void operator()(const IntExp& e) { ostr_ << e.value_get(); }
 
-  void operator()(const Ty& e) {}
+  void operator()(const LetExp& e)
+  {
+    ostr_ << "let ";
 
-  void operator()(const TypeDec& e) {}
+    for (auto act : e.chunks_get())
+      {
+        act.accept(*this;)
+      }
 
-  void operator()(const Var& e) {}
+    ostr_ << " in ";
 
-  void operator()(const VarDec& e) {}
+    e.body_get().accept(*this);
+
+    ostr_ << "end";
+  }
+
+  void operator()(const MethodCallExp& e)
+  {
+    e.object_get().accept(*this); // FIXME : idk what to put here
+  }
+
+  void operator()(const MethodDec& e)
+  {
+    // FIXME : idk what to put here
+  }
+
+  void operator()(const NameTy& e) { ostr_ << e.name_get(); }
+
+  void operator()(const NilExp& e) { ostr_ << "nil"; }
+
+  void operator()(const ObjectExp& e) { ostr_ << e.type_name_get(); }
+
+  void operator()(const OpExp& e)
+  {
+    e.left_get().accept(*this);
+    ostr_ << e.oper_get();
+    e.right_get().accept(*this);
+  }
+
+  void operator()(const RecordExp& e)
+  {
+    ostr_ << e.type_name_get(); // FIXME : idk what to put here
+  }
+
+  void operator()(const RecordTy& e)
+  {
+    for (auto act : e.fields_get())
+      {
+        act.accept(*this);
+      }
+  }
+
+  void operator()(const SeqExp& e)
+  {
+    for (auto act : e.exp_get())
+      {
+        act.accept(*this);
+      }
+  }
+
+  void operator()(const StringExp& e) { ostr_ << e.value_get(); }
+
+  void operator()(const Ty& e)
+  {
+    // FIXME : idk what to put here
+  }
+
+  void operator()(const TypeDec& e) { e.ty_get().accept(*this); }
+
+  void operator()(const Var& e)
+  {
+    // FIXME : idk what to put here
+  }
+
+  void operator()(const VarDec& e)
+  {
+    ostr_ << "var ";
+    // need an id i think
+
+    if (e.type_name_get() != nullptr)
+      {
+        ostr_ << ": " << e.type_name_get();
+      }
+
+    ostr_ << ":= ";
+    e.init_get().accept(*this);
+  }
 
   void operator()(const WhileExp& e)
   {
     ostr_ << "while " << e.test_get() << "\n";
-    this(e.body_get());
+    e.body_get().accept(*this);
   }
 
 } // namespace ast
