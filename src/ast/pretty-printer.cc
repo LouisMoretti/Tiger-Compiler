@@ -9,6 +9,7 @@
 #include <misc/escape.hh>
 #include <misc/indent.hh>
 #include <misc/separator.hh>
+#include "ast/seq-exp.hh"
 
 namespace ast
 {
@@ -76,24 +77,26 @@ namespace ast
     e.exp_get().accept(*this);
   }
 
-  void PrettyPrinter::operator()(const BreakExp& e) { ostr_ << "break;"; }
+  void PrettyPrinter::operator()(const BreakExp& e)
+  {
+    ostr_ << "break;";
+    (void)e;
+  }
 
   void PrettyPrinter::operator()(const CallExp& e)
   {
     ostr_ << e.name_get();
     auto act = e.args_get();
 
-    if (act != nullptr)
-      {
-        act.accept(*this);
-        act++;
-      }
+    if (act.empty())
+      return;
 
-    while (act != nullptr)
+    act.at(0)->accept(*this);
+
+    for (size_t i = 1; i < act.size(); i++)
       {
         ostr_ << ", ";
-        act.accept(*this);
-        act++;
+        act.at(i)->accept(*this);
       }
   }
 
@@ -101,7 +104,7 @@ namespace ast
   {
     for (auto act : e.chunks_get())
       {
-        act.accept(*this);
+        act->accept(*this);
       }
   }
 
@@ -125,7 +128,8 @@ namespace ast
 
   void PrettyPrinter::operator()(const ForExp& e)
   {
-    ostr_ << "for " e.vardec_get().accept(*this);
+    ostr_ << "for ";
+    e.vardec_get().accept(*this);
     ostr_ << " to ";
 
     e.hi_get().accept(*this);
@@ -143,11 +147,11 @@ namespace ast
     if (e.result_get() != nullptr)
       {
         ostr_ << ": ";
-        e.result_get().accept(*this);
+        e.result_get()->accept(*this);
       }
 
     ostr_ << "= ";
-    e.body_get().accept(*this);
+    e.body_get()->accept(*this);
   }
 
   void PrettyPrinter::operator()(const IfExp& e)
@@ -160,7 +164,8 @@ namespace ast
 
     e.thenclause_get().accept(*this);
 
-    if (e.elseclause_get() != nullptr)
+    const SeqExp* seq = dynamic_cast<const SeqExp*>(&(e.elseclause_get()));
+    if (seq == nullptr || !seq->exps_get().empty())
       {
         ostr_ << " else ";
         e.elseclause_get().accept(*this);
@@ -175,7 +180,7 @@ namespace ast
 
     for (auto act : e.chunks_get())
       {
-        act.accept(*this;)
+        act->accept(*this);
       }
 
     ostr_ << " in ";
@@ -188,7 +193,20 @@ namespace ast
   void PrettyPrinter::operator()(const MethodCallExp& e)
   {
     ostr_ << e.name_get() << " (";
-    e.args_get().accept(*this);
+
+    auto act = e.args_get();
+
+    if (!act.empty())
+      {
+        act.at(0)->accept(*this);
+
+        for (size_t i = 1; i < act.size(); i++)
+          {
+            ostr_ << ", ";
+            act.at(i)->accept(*this);
+          }
+      }
+
     ostr_ << ")";
     e.object_get().accept(*this);
   }
@@ -198,13 +216,17 @@ namespace ast
     ostr_ << e.name_get() << " (";
     e.formals_get().accept(*this);
     ostr_ << ") : ";
-    e.result_get().accept(*this);
-    e.body_get().accept(*this);
+    e.result_get()->accept(*this);
+    e.body_get()->accept(*this);
   }
 
   void PrettyPrinter::operator()(const NameTy& e) { ostr_ << e.name_get(); }
 
-  void PrettyPrinter::operator()(const NilExp& e) { ostr_ << "nil"; }
+  void PrettyPrinter::operator()(const NilExp& e)
+  {
+    ostr_ << "nil";
+    (void)e;
+  }
 
   void PrettyPrinter::operator()(const ObjectExp& e)
   {
@@ -214,14 +236,50 @@ namespace ast
   void PrettyPrinter::operator()(const OpExp& e)
   {
     e.left_get().accept(*this);
-    ostr_ << e.oper_get();
+
+    switch (e.oper_get())
+      {
+      case OpExp::Oper::add:
+        ostr_ << "+";
+        break;
+      case OpExp::Oper::sub:
+        ostr_ << "-";
+        break;
+      case OpExp::Oper::mul:
+        ostr_ << "*";
+        break;
+      case OpExp::Oper::div:
+        ostr_ << "/";
+        break;
+      case OpExp::Oper::eq:
+        ostr_ << "=";
+        break;
+      case OpExp::Oper::ne:
+        ostr_ << "<>";
+        break;
+      case OpExp::Oper::lt:
+        ostr_ << "<";
+        break;
+      case OpExp::Oper::le:
+        ostr_ << "<=";
+        break;
+      case OpExp::Oper::gt:
+        ostr_ << ">";
+        break;
+      case OpExp::Oper::ge:
+        ostr_ << ">=";
+        break;
+      }
     e.right_get().accept(*this);
   }
 
   void PrettyPrinter::operator()(const RecordExp& e)
   {
     ostr_ << e.type_name_get() << " = {";
-    e.fields_get().accept(*this);
+    for (auto act : e.fields_get())
+      {
+        act->accept(*this);
+      }
     ostr_ << "}";
   }
 
@@ -229,15 +287,15 @@ namespace ast
   {
     for (auto act : e.fields_get())
       {
-        act.accept(*this);
+        act->accept(*this);
       }
   }
 
   void PrettyPrinter::operator()(const SeqExp& e)
   {
-    for (auto act : e.exp_get())
+    for (auto act : e.exps_get())
       {
-        act.accept(*this);
+        act->accept(*this);
       }
   }
 
@@ -255,7 +313,7 @@ namespace ast
       }
 
     ostr_ << ":= ";
-    e.init_get().accept(*this);
+    e.init_get()->accept(*this);
   }
 
   void PrettyPrinter::operator()(const WhileExp& e)
