@@ -16,7 +16,7 @@
 
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
-// FIXME: Some code was deleted here (Other directives).
+// FIXED: Some code was deleted here (Other directives).
 // Start Fix
 %expect 0
 %expect-rr 0
@@ -193,7 +193,7 @@
 
 %type <ast::Field*>           tyfield
 %type <ast::fields_type*>     tyfields tyfields.1
-// FIXME: Some code was deleted here (More %types).
+// FIXED: Some code was deleted here (More %types).
 // Start Fix
 %type <ast::exps_type*>       exps
 %type <ast::fieldinits_type*> record_attr
@@ -204,7 +204,7 @@
 %type <ast::VarChunk*>        vardec
 // End Fix
 
-// FIXME: Some code was deleted here (Priorities/associativities).
+// FIXED: Some code was deleted here (Priorities/associativities).
 
 // Solving conflicts on:
 // let type foo = bar
@@ -214,10 +214,9 @@
 // We want the latter.
 %precedence CHUNKS
 %precedence TYPE
-// FIXME: Some code was deleted here (Other declarations).
+// FIXED: Some code was deleted here (Other declarations).
 // Start Fix
 
-// TODO: Check order.
 
 %precedence THEN
 %precedence ELSE DO OF
@@ -226,7 +225,6 @@
 %nonassoc GE LE EQ NE LT GT
 %left PLUS MINUS
 %left TIMES DIVIDE
-/* %right UMINUS */
 %precedence UMINUS
 %precedence ASSIGN
 // End Fix
@@ -268,7 +266,7 @@ func_prms:
 exp:
   INT
     { $$ = make_IntExp(@$, $1); }
-  // FIXME: Some code was deleted here (More rules).
+  // FIXED: Some code was deleted here (More rules).
   // Start Fix
   | STRING 
     { $$ = make_StringExp(@$, $1); }
