@@ -18,7 +18,7 @@
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
 // FIXME: Some code was deleted here (Other directives).
 // Start Fix
-%expect 1
+%expect 0
 %expect-rr 0
 // End Fix
 
@@ -198,7 +198,7 @@
 %type <ast::exps_type*>       exps
 %type <ast::fieldinits_type*> record_attr
 %type <ast::exps_type*>       func_prms
-%type <ast::Var*>             lvalue
+%type <ast::Var*>             lvalue lvalue.big
 
 %type <ast::FunctionChunk*>   funcdec
 %type <ast::VarChunk*>        vardec
@@ -254,9 +254,9 @@ exps:
 
 record_attr:
   ID[name] "=" exp[value] "," record_attr[attributes]
-    { $$ = $attributes; $$->emplace($$->begin(), @$, $name, $value); }
+    { $$ = $attributes; $$->insert($$->begin(), make_FieldInit(@$, $name, $value)); }
   | ID[name] "=" exp[value]
-    { $$ = make_fieldinits_type(); $$->emplace($$->begin(), @$, $name, $value); }
+    { $$ = make_fieldinits_type(); $$->insert($$->begin(), make_FieldInit(@$, $name, $value)); }
 
 func_prms:
   exp[value] "," func_prms[prms]
@@ -275,7 +275,7 @@ exp:
   | "nil"
     { $$ = make_NilExp(@$); }
   | ID[type] "[" exp[size] "]" "of" exp[init]
-    { $$ = make_ArrayExp(@$, $type, $size, $init); }
+    { $$ = make_ArrayExp(@$, make_NameTy(@$, $type), $size, $init); }
   | ID[name] "{" record_attr[attributes] "}"
     { $$ = make_RecordExp(@$, make_NameTy(@$, $name), $attributes); }
   | ID[name] "{" "}"
@@ -335,9 +335,17 @@ exp:
 lvalue:
   ID[name]
     { $$ = make_SimpleVar(@$, $name); }
-  | lvalue[var] "." ID[attr]
+  | lvalue.big
+;
+
+lvalue.big:
+  ID[var] "." ID[attr]
+    { $$ = make_FieldVar(@$, make_SimpleVar(@$, $var), $attr); }
+  | ID[var] "[" exp[index] "]"
+    { $$ = make_SubscriptVar(@$, make_SimpleVar(@$, $var), $index); }
+  | lvalue.big[var] "." ID[attr]
     { $$ = make_FieldVar(@$, $var, $attr); }
-  | lvalue[var] "[" exp[index] "]"
+  | lvalue.big[var] "[" exp[index] "]"
     { $$ = make_SubscriptVar(@$, $var, $index); }
 ;
 // End fix
@@ -371,13 +379,30 @@ chunks:
 // Start Fix
 funcdec:
   "function" ID[name] "(" tyfields[fields] ")" ":" typeid[type] "=" exp[body]
-    { $$ = make_FunctionChunk(@$); $$->push_front(make_FunctionDec(@$, $name, $fields, $type, $body)); }
+    {
+      $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$); 
+      for (auto field: *$fields) {
+        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+      }
+      $$->push_front(*make_FunctionDec(@$, $name, varchunk, $type, $body)); }
   | "function" ID[name] "(" tyfields[fields] ")" "=" exp[body]
-    { $$ = make_FunctionChunk(@$); $$->push_front(make_FunctionDec(@$, $name, $fields, nullptr, $body)); }
+    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+      for (auto field: *$fields) {
+        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+      }
+      $$->push_front(*make_FunctionDec(@$, $name, varchunk, nullptr, $body)); }
   | "primitive" ID[name] "(" tyfields[fields] ")" ":" typeid[type]
-    { $$ = make_FunctionChunk(@$); $$->push_front(make_FunctionDec(@$, $name, $fields, $type, nullptr)); }
+    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+      for (auto field: *$fields) {
+        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+      }
+      $$->push_front(*make_FunctionDec(@$, $name, varchunk, $type, nullptr)); }
   | "primitive" ID[name] "(" tyfields[fields] ")"
-    { $$ = make_FunctionChunk(@$); $$->push_front(make_FunctionDec(@$, $name, $fields, nullptr, nullptr)); }
+    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+      for (auto field: *$fields) {
+        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+      }
+      $$->push_front(*make_FunctionDec(@$, $name, varchunk, nullptr, nullptr)); }
 ;
 
 vardec:
