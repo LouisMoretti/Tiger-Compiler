@@ -37,8 +37,6 @@ namespace ast
     void operator()(const CallExp& e) override;
     void operator()(const ChunkList& e) override;
     void operator()(const ClassTy& e) override;
-    void operator()(const Dec& e) override;
-    void operator()(const Exp& e) override;
     void operator()(const Field& e) override;
     void operator()(const FieldInit& e) override;
     void operator()(const ForExp& e) override;
@@ -56,11 +54,10 @@ namespace ast
     void operator()(const RecordTy& e) override;
     void operator()(const SeqExp& e) override;
     void operator()(const StringExp& e) override;
-    void operator()(const Ty& e) override;
     void operator()(const TypeDec& e) override;
-    void operator()(const Var& e) override;
     void operator()(const VarDec& e) override;
     void operator()(const WhileExp& e) override;
+    // maybe 3 is missing, idk which one
     /// \}
 
   private:
