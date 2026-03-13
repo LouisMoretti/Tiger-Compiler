@@ -39,10 +39,12 @@
 #include <parse/parsetiger.hh>
 #include <parse/tiger-driver.hh>
 
-  // FIXME: Some code was deleted here (Define YY_USER_ACTION to update locations).
+  // FIXED: Some code was deleted here (Define YY_USER_ACTION to update locations).
+  // Start Fix
 
 #define YY_USER_ACTION    \
         td.location_.columns(size());
+// End Fix
 
 #define TOKEN(Type)                             \
   parser::make_ ## Type(td.location_)
@@ -67,7 +69,7 @@
 /* Abbreviations.  */
 int             [0-9]+
 
-  /* FIXME: Some code was deleted here. */
+  /* FIXED: Some code was deleted here. */
 // Start Fix
 whitechar       [ |\t]
 endofline       (\n\r|\r\n|\r|\n)
@@ -122,7 +124,7 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
                   // End Fix
                 return TOKEN_VAL(INT, val);
               }
-  /* FIXME: Some code was deleted here. */
+  /* FIXED: Some code was deleted here. */
   // Start Fix
 "array"           return TOKEN(ARRAY);
 "if"              return TOKEN(IF);
