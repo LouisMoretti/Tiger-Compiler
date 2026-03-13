@@ -12,8 +12,8 @@ jobs:
   clang-format-and-trash-files:
 
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/louismoretti/42sh/42sh-ci:latest
+    # container:
+    #   image: ghcr.io/louismoretti/42sh/42sh-ci:latest
 
     steps:
     - uses: actions/checkout@v4
@@ -34,10 +34,10 @@ jobs:
     #     done
     #     exit $EXIT_CODE
 
-    # - name: Install clang-format
-    #   run: |
-    #     sudo apt-get update
-    #     sudo apt-get install -y clang-format
+    - name: Install clang-format
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format
 
     - name: Run clang-format
       run: git ls-files -- '*.cc' '*.hh' '*.hxx' ':!:tcsh/*' | xargs clang-format --dry-run --Werror -style=file

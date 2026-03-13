@@ -4,6 +4,7 @@
 *~
 # **/.idea/*
 **/.idea/
+.vscode/
 
 # **/Makefile
 # **/Makefile.in
