@@ -216,12 +216,24 @@
 %precedence TYPE
 // FIXME: Some code was deleted here (Other declarations).
 // Start Fix
+
+/*
 %precedence UMINUS
 %precedence TIMES DIVIDE
 %precedence PLUS MINUS
 %precedence GE LE EQ NE LT GT
 %precedence AND
 %precedence OR
+*/
+
+// TODO: Check order.
+%left OR
+%left AND
+%nonassoc GE LE EQ NE LT GT
+%left PLUS MINUS
+%left TIMES DIVIDE
+/* %right UMINUS */
+%precedence UMINUS
 
 // End Fix
 
@@ -273,7 +285,7 @@ exp:
   | typeid[name] "{" record_attr[attributes] "}"
     { $$ = make_RecordExp(@$, $name, $attributes); }
   | typeid[name] "{" "}"
-    { $$ = make_RecordExp(@$, $name, make_filedinits_type()); }
+    { $$ = make_RecordExp(@$, $name, make_fieldinits_type()); }
   | lvalue
     { $$ = $1; }
   | ID[name] "(" func_prms[prms] ")"
@@ -378,7 +390,7 @@ vardec:
   "var" ID[name] ":" typeid[type] ":=" exp[value]
     { $$ = make_VarChunk(@$); $$->push_front(make_VarDec(@$, $name, $type, $value)); }
   | "var" ID[name] ":=" exp[value]
-    { $$ = make_VarChunk(@$); $$->push_front(make_VarDec(@$, $name, nullptr, $value); }
+    { $$ = make_VarChunk(@$); $$->push_front(make_VarDec(@$, $name, nullptr, $value)); }
 ;
 // End Fix
 
