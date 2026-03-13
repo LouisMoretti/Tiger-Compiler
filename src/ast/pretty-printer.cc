@@ -76,10 +76,7 @@ namespace ast
     e.exp_get().accept(*this);
   }
 
-  void operator()(const BreakExp& e)
-  {
-    // FIXME : idk what to put here
-  }
+  void operator()(const BreakExp& e) { ostr_ << "break;"; }
 
   void operator()(const CallExp& e)
   {
@@ -102,7 +99,10 @@ namespace ast
 
   void operator()(const ChunkList& e)
   {
-    // FIXME : idk what to put here
+    for (auto act : e.chunks_get())
+      {
+        act.accept(*this);
+      }
   }
 
   void operator()(const ClassTy& e)
@@ -113,10 +113,7 @@ namespace ast
 
   void operator()(const Dec& e) { ostr_ << e.name_get(); }
 
-  void operator()(const Exp& e)
-  {
-    // FIXME : idk what to put here
-  }
+  void operator()(const Exp& e) { e.accept(*this); }
 
   void operator()(const Field& e)
   {
@@ -143,7 +140,7 @@ namespace ast
 
   void operator()(const FunctionDec& e)
   {
-    ostr_ << "function " << "( "; // need an id i think
+    ostr_ << "function " << e.name_get() << "( ";
     e.formals_get().accept(*this);
     ostr_ << ") ";
 
@@ -194,12 +191,19 @@ namespace ast
 
   void operator()(const MethodCallExp& e)
   {
-    e.object_get().accept(*this); // FIXME : idk what to put here
+    ostr_ << e.name_get() << " (";
+    e.args_get().accept(*this);
+    ostr_ << ")";
+    e.object_get().accept(*this);
   }
 
   void operator()(const MethodDec& e)
   {
-    // FIXME : idk what to put here
+    ostr_ << e.name_get() << " (";
+    e.formals_get().accept(*this);
+    ostr_ << ") : ";
+    e.result_get().accept(*this);
+    e.body_get().accept(*this);
   }
 
   void operator()(const NameTy& e) { ostr_ << e.name_get(); }
@@ -217,7 +221,9 @@ namespace ast
 
   void operator()(const RecordExp& e)
   {
-    ostr_ << e.type_name_get(); // FIXME : idk what to put here
+    ostr_ << e.type_name_get() << " = {";
+    e.fields_get().accept(*this);
+    ostr_ << "}";
   }
 
   void operator()(const RecordTy& e)
@@ -252,8 +258,7 @@ namespace ast
 
   void operator()(const VarDec& e)
   {
-    ostr_ << "var ";
-    // need an id i think
+    ostr_ << "var " << e.name_get() << " ";
 
     if (e.type_name_get() != nullptr)
       {
