@@ -18,7 +18,7 @@
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
 // FIXME: Some code was deleted here (Other directives).
 // Start Fix
-%expect 0
+%expect 1
 %expect-rr 0
 // End Fix
 
@@ -217,18 +217,8 @@
 // FIXME: Some code was deleted here (Other declarations).
 // Start Fix
 
-/*
-%precedence UMINUS
-%precedence TIMES DIVIDE
-%precedence PLUS MINUS
-%precedence GE LE EQ NE LT GT
-%precedence AND
-%precedence OR
-*/
-
 // TODO: Check order.
 
-%precedence ASSIGN
 %precedence THEN
 %precedence ELSE DO OF
 %left OR
@@ -238,7 +228,7 @@
 %left TIMES DIVIDE
 /* %right UMINUS */
 %precedence UMINUS
-
+%precedence ASSIGN
 // End Fix
 
 %start program
@@ -284,12 +274,12 @@ exp:
     { $$ = make_StringExp(@$, $1); }
   | "nil"
     { $$ = make_NilExp(@$); }
-  | typeid[type] "[" exp[size] "]" "of" exp[init]
+  | ID[type] "[" exp[size] "]" "of" exp[init]
     { $$ = make_ArrayExp(@$, $type, $size, $init); }
-  | typeid[name] "{" record_attr[attributes] "}"
-    { $$ = make_RecordExp(@$, $name, $attributes); }
-  | typeid[name] "{" "}"
-    { $$ = make_RecordExp(@$, $name, make_fieldinits_type()); }
+  | ID[name] "{" record_attr[attributes] "}"
+    { $$ = make_RecordExp(@$, make_NameTy(@$, $name), $attributes); }
+  | ID[name] "{" "}"
+    { $$ = make_RecordExp(@$, make_NameTy(@$, $name), make_fieldinits_type()); }
   | lvalue
     { $$ = $1; }
   | ID[name] "(" func_prms[prms] ")"
@@ -337,7 +327,7 @@ exp:
   | "break"
     { $$ = make_BreakExp(@$); }
   | "let" chunks[decs] "in" exps[body] "end"
-    { $$ = make_LetExp(@$, $decs, $body); }
+    { $$ = make_LetExp(@$, $decs, make_SeqExp(@$, $body)); }
 ;
 // End Fix
 
@@ -381,20 +371,20 @@ chunks:
 // Start Fix
 funcdec:
   "function" ID[name] "(" tyfields[fields] ")" ":" typeid[type] "=" exp[body]
-    { $$ = make_FunctionChunk(make_FunctionDec(@$, $name, $fields, $type, $body)); }
+    { $$ = make_FunctionChunk(@$); $$->push_front(make_FunctionDec(@$, $name, $fields, $type, $body)); }
   | "function" ID[name] "(" tyfields[fields] ")" "=" exp[body]
-    { $$ = make_FunctionChunk(make_FunctionDec(@$, $name, $fields, nullptr, $body)); }
+    { $$ = make_FunctionChunk(@$); $$->push_front(make_FunctionDec(@$, $name, $fields, nullptr, $body)); }
   | "primitive" ID[name] "(" tyfields[fields] ")" ":" typeid[type]
-    { $$ = make_FunctionChunk(make_FunctionDec(@$, $name, $fields, $type, nullptr)); }
+    { $$ = make_FunctionChunk(@$); $$->push_front(make_FunctionDec(@$, $name, $fields, $type, nullptr)); }
   | "primitive" ID[name] "(" tyfields[fields] ")"
-    { $$ = make_FunctionChunk(make_FunctionDec(@$, $name, $fields, nullptr, nullptr)); }
+    { $$ = make_FunctionChunk(@$); $$->push_front(make_FunctionDec(@$, $name, $fields, nullptr, nullptr)); }
 ;
 
 vardec:
   "var" ID[name] ":" typeid[type] ":=" exp[value]
-    { $$ = make_VarChunk(@$); $$->push_front(make_VarDec(@$, $name, $type, $value)); }
+    { $$ = make_VarChunk(@$); $$->push_front(*make_VarDec(@$, $name, $type, $value)); }
   | "var" ID[name] ":=" exp[value]
-    { $$ = make_VarChunk(@$); $$->push_front(make_VarDec(@$, $name, nullptr, $value)); }
+    { $$ = make_VarChunk(@$); $$->push_front(*make_VarDec(@$, $name, nullptr, $value)); }
 ;
 // End Fix
 
