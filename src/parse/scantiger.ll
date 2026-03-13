@@ -71,7 +71,7 @@ int             [0-9]+
   // Start Fix
 whitechar       [ |\t]
 endofline       (\n\r|\r\n|\r|\n)
-id              [a-zA-Z][0-9a-zA-Z_]*
+id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
   // End Fix
 
 %class{
@@ -79,12 +79,35 @@ id              [a-zA-Z][0-9a-zA-Z_]*
   std::string grown_string;
 }
 
-<SC_STRING>{
-/* rules in sub-lexer */
 
-}
 
 %%
+<SC_STRING> {
+  /* rules in sub-lexer */
+\"                {
+                        start(INITIAL);
+                        return TOKEN_VAL(STRING, grown_string);
+                  }
+\\x[0-9a-fA-F]{2} {
+                        grown_string += strtol(text() + 2, 0, 16);
+                  }
+\\[0-7]{3}        {
+                        long val = strtol(text() + 1, 0, 8);
+                        if(val > 255)
+                        {
+                                td.error_ << misc::error::error_type::scan;
+                                td.error_ << "Lexing Error was encountered at line" << td.location_ << "\n";
+                        }
+                        else
+                            grown_string += val;
+                   }
+\\[abfnrtv]       grown_string+=text();
+\\                grown_string+=text();
+"\\\""            grown_string+=text();
+\n                td.location_.lines(1);
+.                 grown_string+=text();
+}
+
 /* The rules.  */
 {int}         {
                   int val = 0;
@@ -144,11 +167,17 @@ id              [a-zA-Z][0-9a-zA-Z_]*
 "|"               return TOKEN(OR);
 ":="              return TOKEN(ASSIGN);
 {whitechar} {
-
+                continue;
             }
 {endofline} {
-                td.location_.lines(1);
+                  td.location_.lines(1);
+                  td.location_.columns(-size());
             }
-"\"" {grown_string.clear(); start(SC_STRING);}
+{id}              return TOKEN_VAL(ID,text());
+"\""        {
+                  grown_string.clear();
+                  start(SC_STRING);
+            }
+<<EOF>>       return TOKEN(EOF);
   // End Fix
 %%
