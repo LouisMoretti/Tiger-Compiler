@@ -227,6 +227,8 @@
 */
 
 // TODO: Check order.
+
+%precedence ASSIGN
 %precedence THEN
 %precedence ELSE DO OF
 %left OR
