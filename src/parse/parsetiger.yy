@@ -18,7 +18,7 @@
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
 // FIXME: Some code was deleted here (Other directives).
 // Start Fix
-%expect 1
+%expect 0
 %expect-rr 0
 // End Fix
 
