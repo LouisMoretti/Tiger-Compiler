@@ -68,14 +68,14 @@
 int             [0-9]+
 
   /* FIXME: Some code was deleted here. */
-  // Start Fix
+// Start Fix
 whitechar       [ |\t]
 endofline       (\n\r|\r\n|\r|\n)
 id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
-  // End Fix
+// End Fix
 
 %class{
-  // FIXME: Some code was deleted here (Local variables).
+  // FIXED: Some code was deleted here (Local variables).
   std::string grown_string;
 }
 
@@ -110,7 +110,7 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
 
 /* The rules.  */
 {int}         {
-                  int val = 0;
+                  long val = 0;
   // FIXED: Some code was deleted here (Decode, and check the value).
                   std::stringstream ss;
                   ss << str();
@@ -173,7 +173,7 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
                   td.location_.lines(1);
                   td.location_.columns(-size());
             }
-{id}              return TOKEN_VAL(ID,text());
+{id}              return TOKEN_VAL(ID, text());
 "\""        {
                   grown_string.clear();
                   start(SC_STRING);
