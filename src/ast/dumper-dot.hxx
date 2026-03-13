@@ -35,8 +35,8 @@ namespace ast
   inline void DumperDot::display_link(unsigned long old_parent_id) const
   {
     if (parent_field)
-      ostr_ << old_parent_id << ":" << *parent_field << ":s"
-            << " -> " << parent_id << ":nodename:n" << misc::iendl;
+      ostr_ << old_parent_id << ":" << *parent_field << ":s" << " -> "
+            << parent_id << ":nodename:n" << misc::iendl;
   }
 
   inline void DumperDot::footer_and_link(unsigned long old_parent_id) const

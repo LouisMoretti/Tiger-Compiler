@@ -16,7 +16,11 @@
 
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
-  // FIXME: Some code was deleted here (Other directives).
+// FIXME: Some code was deleted here (Other directives).
+// Start Fix
+%expect 0
+%expect-rr 0
+// End Fix
 
 %define parse.error verbose
 %defines
@@ -189,9 +193,18 @@
 
 %type <ast::Field*>           tyfield
 %type <ast::fields_type*>     tyfields tyfields.1
-  // FIXME: Some code was deleted here (More %types).
+// FIXME: Some code was deleted here (More %types).
+// Start Fix
+%type <ast::exps_type*>       exps
+%type <ast::fieldinits_type*> record_attr
+%type <ast::exps_type*>       func_prms
+%type <ast::Var*>             lvalue lvalue.big
 
-  // FIXME: Some code was deleted here (Priorities/associativities).
+%type <ast::FunctionChunk*>   funcdec
+%type <ast::VarChunk*>        vardec
+// End Fix
+
+// FIXME: Some code was deleted here (Priorities/associativities).
 
 // Solving conflicts on:
 // let type foo = bar
@@ -201,7 +214,22 @@
 // We want the latter.
 %precedence CHUNKS
 %precedence TYPE
-  // FIXME: Some code was deleted here (Other declarations).
+// FIXME: Some code was deleted here (Other declarations).
+// Start Fix
+
+// TODO: Check order.
+
+%precedence THEN
+%precedence ELSE DO OF
+%left OR
+%left AND
+%nonassoc GE LE EQ NE LT GT
+%left PLUS MINUS
+%left TIMES DIVIDE
+/* %right UMINUS */
+%precedence UMINUS
+%precedence ASSIGN
+// End Fix
 
 %start program
 
@@ -214,11 +242,113 @@ program:
   chunks
    { td.ast_ = $1; }
 ;
+// Start Fix
+exps:
+  %empty
+    { $$ = make_exps_type(); }
+  | exp
+    { $$ = make_exps_type($1); }
+  | exp[left] ";" exps[right]
+    { $$ = $right; $$->insert($$->begin(), $left); }
+;
+
+record_attr:
+  ID[name] "=" exp[value] "," record_attr[attributes]
+    { $$ = $attributes; $$->insert($$->begin(), make_FieldInit(@$, $name, $value)); }
+  | ID[name] "=" exp[value]
+    { $$ = make_fieldinits_type(); $$->insert($$->begin(), make_FieldInit(@$, $name, $value)); }
+
+func_prms:
+  exp[value] "," func_prms[prms]
+    { $$ = $prms; $$->insert($$->begin(), $value); }
+  | exp[value]
+    { $$ = make_exps_type($value); }
+// End Fix
 
 exp:
   INT
-   { $$ = make_IntExp(@$, $1); }
+    { $$ = make_IntExp(@$, $1); }
   // FIXME: Some code was deleted here (More rules).
+  // Start Fix
+  | STRING 
+    { $$ = make_StringExp(@$, $1); }
+  | "nil"
+    { $$ = make_NilExp(@$); }
+  | ID[type] "[" exp[size] "]" "of" exp[init]
+    { $$ = make_ArrayExp(@$, make_NameTy(@$, $type), $size, $init); }
+  | ID[name] "{" record_attr[attributes] "}"
+    { $$ = make_RecordExp(@$, make_NameTy(@$, $name), $attributes); }
+  | ID[name] "{" "}"
+    { $$ = make_RecordExp(@$, make_NameTy(@$, $name), make_fieldinits_type()); }
+  | lvalue
+    { $$ = $1; }
+  | ID[name] "(" func_prms[prms] ")"
+    { $$ = make_CallExp(@$, $name, $prms);}
+  | ID[name] "(" ")"
+    { $$ = make_CallExp(@$, $name, make_exps_type());}
+  | "-" exp[right] %prec UMINUS
+    { $$ = make_OpExp(@$, make_IntExp(@$, 0), ast::OpExp::Oper::sub, $right); }
+  | exp[left] "*" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::mul, $right); }
+  | exp[left] "/" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::div, $right); }
+  | exp[left] "+" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::add, $right); }
+  | exp[left] "-" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::sub, $right); }
+  | exp[left] ">=" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::ge, $right); }
+  | exp[left] "<=" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::le, $right); }
+  | exp[left] "<>" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::ne, $right); }
+  | exp[left] "=" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::eq, $right); }
+  | exp[left] "<" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::lt, $right); }
+  | exp[left] ">" exp[right]
+    { $$ = make_OpExp(@$, $left, ast::OpExp::Oper::gt, $right); }
+  | exp[left] "&" exp[right]
+    { $$ = make_IfExp(@$, $left, $right, make_StringExp(@$, "1 = 2")); }
+  | exp[left] "|" exp[right]
+    { $$ = make_IfExp(@$, $left, make_StringExp(@$, "1 = 1"), $right); }
+  | "(" exps[expressions] ")"
+    { $$ = make_SeqExp(@$, $expressions); }
+  | lvalue[var] ":=" exp[value]
+    { $$ = make_AssignExp(@$, $var, $value); }
+  | "if" exp[condition] "then" exp[body] "else" exp[else]
+    { $$ = make_IfExp(@$, $condition, $body, $else); }
+  | "if" exp[condition] "then" exp[body]
+    { $$ = make_IfExp(@$, $condition, $body); }
+  | "while" exp[condition] "do" exp[body]
+    { $$ = make_WhileExp(@$, $condition, $body); }
+  | "for" ID[id] ":=" exp[init] "to" exp[stop] "do" exp[body]
+    { $$ = make_ForExp(@$, make_VarDec(@$, $id, nullptr, $init), $stop, $body); }
+  | "break"
+    { $$ = make_BreakExp(@$); }
+  | "let" chunks[decs] "in" exps[body] "end"
+    { $$ = make_LetExp(@$, $decs, make_SeqExp(@$, $body)); }
+;
+// End Fix
+
+// Start Fix
+lvalue:
+  ID[name]
+    { $$ = make_SimpleVar(@$, $name); }
+  | lvalue.big
+;
+
+lvalue.big:
+  ID[var] "." ID[attr]
+    { $$ = make_FieldVar(@$, make_SimpleVar(@$, $var), $attr); }
+  | ID[var] "[" exp[index] "]"
+    { $$ = make_SubscriptVar(@$, make_SimpleVar(@$, $var), $index); }
+  | lvalue.big[var] "." ID[attr]
+    { $$ = make_FieldVar(@$, $var, $attr); }
+  | lvalue.big[var] "[" exp[index] "]"
+    { $$ = make_SubscriptVar(@$, $var, $index); }
+;
+// End fix
 
 /*---------------.
 | Declarations.  |
@@ -237,8 +367,51 @@ chunks:
      which is why we end the recursion with a %empty. */
   %empty                  { $$ = make_ChunkList(@$); }
 | tychunk   chunks        { $$ = $2; $$->push_front($1); }
-  // FIXME: Some code was deleted here (More rules).
+  // FIXED: Some code was deleted here (More rules).
+  // Start Fix
+| funcdec chunks
+  { $$ = $2; $$->push_front($1); }
+| vardec chunks
+  { $$ = $2; $$->push_front($1); }
 ;
+// End Fix
+
+// Start Fix
+funcdec:
+  "function" ID[name] "(" tyfields[fields] ")" ":" typeid[type] "=" exp[body]
+    {
+      $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$); 
+      for (auto field: *$fields) {
+        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+      }
+      $$->push_front(*make_FunctionDec(@$, $name, varchunk, $type, $body)); }
+  | "function" ID[name] "(" tyfields[fields] ")" "=" exp[body]
+    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+      for (auto field: *$fields) {
+        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+      }
+      $$->push_front(*make_FunctionDec(@$, $name, varchunk, nullptr, $body)); }
+  | "primitive" ID[name] "(" tyfields[fields] ")" ":" typeid[type]
+    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+      for (auto field: *$fields) {
+        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+      }
+      $$->push_front(*make_FunctionDec(@$, $name, varchunk, $type, nullptr)); }
+  | "primitive" ID[name] "(" tyfields[fields] ")"
+    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+      for (auto field: *$fields) {
+        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+      }
+      $$->push_front(*make_FunctionDec(@$, $name, varchunk, nullptr, nullptr)); }
+;
+
+vardec:
+  "var" ID[name] ":" typeid[type] ":=" exp[value]
+    { $$ = make_VarChunk(@$); $$->push_front(*make_VarDec(@$, $name, $type, $value)); }
+  | "var" ID[name] ":=" exp[value]
+    { $$ = make_VarChunk(@$); $$->push_front(*make_VarDec(@$, $name, nullptr, $value)); }
+;
+// End Fix
 
 /*--------------------.
 | Type Declarations.  |
