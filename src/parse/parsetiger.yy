@@ -227,6 +227,8 @@
 */
 
 // TODO: Check order.
+%precedence THEN
+%precedence ELSE DO OF
 %left OR
 %left AND
 %nonassoc GE LE EQ NE LT GT
