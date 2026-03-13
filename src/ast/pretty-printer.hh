@@ -57,7 +57,7 @@ namespace ast
     void operator()(const TypeDec& e) override;
     void operator()(const VarDec& e) override;
     void operator()(const WhileExp& e) override;
-    // maybe 3 is missing, idk which one
+    // TODO: maybe 3 is missing, idk which one
     /// \}
 
   private:
