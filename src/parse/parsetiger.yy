@@ -263,6 +263,7 @@ func_prms:
     { $$ = make_exps_type($value); }
 // End Fix
 
+%token EXP "_exp";
 exp:
   INT
     { $$ = make_IntExp(@$, $1); }
@@ -326,14 +327,19 @@ exp:
     { $$ = make_BreakExp(@$); }
   | "let" chunks[decs] "in" exps[body] "end"
     { $$ = make_LetExp(@$, $decs, make_SeqExp(@$, $body)); }
+  | EXP "(" INT[id] ")"
+    { $$ = metavar<ast::Exp>(td, $id); }
 ;
 // End Fix
 
 // Start Fix
+%token LVALUE "_lvalue";
 lvalue:
   ID[name]
     { $$ = make_SimpleVar(@$, $name); }
   | lvalue.big
+  | LVALUE "(" INT[id] ")"
+    { $$ = metavar<ast::Var>(td, $id); }
 ;
 
 lvalue.big:
@@ -371,6 +377,8 @@ chunks:
   { $$ = $2; $$->push_front($1); }
 | vardec chunks
   { $$ = $2; $$->push_front($1); }
+| CHUNKS[meta] "(" INT[id] ")" chunks[list]
+  { $$ = $list; $$->push_front(metavar<ast::ChunkInterface>(td, $id)); }
 ;
 // End Fix
 
