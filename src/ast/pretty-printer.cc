@@ -313,7 +313,8 @@ namespace ast
       }
 
     ostr_ << ":= ";
-    e.init_get()->accept(*this);
+    if (e.init_get())
+      e.init_get()->accept(*this);
   }
 
   void PrettyPrinter::operator()(const WhileExp& e)
