@@ -74,6 +74,7 @@ int             [0-9]+
 whitechar       [ |\t]
 endofline       (\n\r|\r\n|\r|\n)
 id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
+comment         \/\*.*\*\/
 // End Fix
 
 %class{
@@ -180,6 +181,12 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
                   grown_string.clear();
                   start(SC_STRING);
             }
-<<EOF>>       return TOKEN(EOF);
+{comment}         continue;
+"chunks_"         return TOKEN(CHUNKS);
+"_exp"            return TOKEN(EXP);
+"_lvalue"         return TOKEN(LVALUE);
+"_namety"         return TOKEN(NAMETY);
+"_cast"           return TOKEN(CAST);
+<<EOF>>           return TOKEN(EOF);
   // End Fix
 %%

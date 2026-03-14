@@ -378,7 +378,7 @@ chunks:
 | vardec chunks
   { $$ = $2; $$->push_front($1); }
 | CHUNKS[meta] "(" INT[id] ")" chunks[list]
-  { $$ = $list; $$->push_front(metavar<ast::ChunkInterface>(td, $id)); }
+  { $$ = $list; $$->splice_front(*metavar<ast::ChunkList>(td, $id)); }
 ;
 // End Fix
 
