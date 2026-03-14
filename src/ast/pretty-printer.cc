@@ -102,8 +102,15 @@ namespace ast
 
   void PrettyPrinter::operator()(const ChunkList& e)
   {
+    bool b = true;
+
     for (auto act : e.chunks_get())
       {
+        if (b)
+          b = false;
+        else
+          misc::iendl(ostr_);
+
         act->accept(*this);
       }
   }
@@ -133,14 +140,17 @@ namespace ast
     ostr_ << " to ";
 
     e.hi_get().accept(*this);
-    ostr_ << " do ";
+    ostr_ << " do";
+    misc::incindent(ostr_);
+    misc::iendl(ostr_);
 
     e.body_get().accept(*this);
+    misc::decindent(ostr_);
   }
 
   void PrettyPrinter::operator()(const FunctionDec& e)
   {
-    ostr_ << "function " << e.name_get() << "( ";
+    ostr_ << "function " << e.name_get() << "(";
     e.formals_get().accept(*this);
     ostr_ << ") ";
 
@@ -150,8 +160,12 @@ namespace ast
         e.result_get()->accept(*this);
       }
 
-    ostr_ << "= ";
+    ostr_ << "=";
+    misc::incindent(ostr_);
+    misc::iendl(ostr_);
+
     e.body_get()->accept(*this);
+    misc::decindent(ostr_);
   }
 
   void PrettyPrinter::operator()(const IfExp& e)
@@ -160,14 +174,21 @@ namespace ast
 
     e.test_get().accept(*this);
 
-    ostr_ << " then ";
+    ostr_ << " then";
+    misc::incindent(ostr_);
+    misc::iendl(ostr_);
 
     e.thenclause_get().accept(*this);
 
     const SeqExp* seq = dynamic_cast<const SeqExp*>(&(e.elseclause_get()));
     if (seq == nullptr || !seq->exps_get().empty())
       {
-        ostr_ << " else ";
+        misc::decindent(ostr_);
+        misc::iendl(ostr_);
+        ostr_ << " else";
+        misc::incindent(ostr_);
+        misc::iendl(ostr_);
+
         e.elseclause_get().accept(*this);
       }
   }
@@ -176,17 +197,25 @@ namespace ast
 
   void PrettyPrinter::operator()(const LetExp& e)
   {
-    ostr_ << "let ";
+    ostr_ << "let";
+    misc::incindent(ostr_);
 
     for (auto act : e.chunks_get())
       {
+        misc::iendl(ostr_);
         act->accept(*this);
       }
 
-    ostr_ << " in ";
+    misc::decindent(ostr_);
+    misc::iendl(ostr_);
+    ostr_ << "in";
+    misc::incindent(ostr_);
+    misc::iendl(ostr_);
 
     e.body_get().accept(*this);
 
+    misc::decindent(ostr_);
+    misc::iendl(ostr_);
     ostr_ << "end";
   }
 
@@ -217,7 +246,11 @@ namespace ast
     e.formals_get().accept(*this);
     ostr_ << ") : ";
     e.result_get()->accept(*this);
+
+    misc::incindent(ostr_);
+    misc::iendl(ostr_);
     e.body_get()->accept(*this);
+    misc::decindent(ostr_);
   }
 
   void PrettyPrinter::operator()(const NameTy& e) { ostr_ << e.name_get(); }
@@ -276,25 +309,40 @@ namespace ast
   void PrettyPrinter::operator()(const RecordExp& e)
   {
     ostr_ << e.type_name_get() << " = {";
+
+    if (!e.fields_get().empty())
+      e.fields_get().at(0)->accept(*this);
+
     for (auto act : e.fields_get())
       {
+        ostr_ << ", ";
         act->accept(*this);
       }
+
     ostr_ << "}";
   }
 
   void PrettyPrinter::operator()(const RecordTy& e)
   {
+    if (!e.fields_get().empty())
+      e.fields_get().at(0)->accept(*this);
+
     for (auto act : e.fields_get())
       {
+        ostr_ << ", ";
         act->accept(*this);
       }
   }
 
   void PrettyPrinter::operator()(const SeqExp& e)
   {
+    if (!e.exps_get().empty())
+      e.exps_get().at(0)->accept(*this);
+
     for (auto act : e.exps_get())
       {
+        ostr_ << ";";
+        misc::iendl(ostr_);
         act->accept(*this);
       }
   }
@@ -309,18 +357,26 @@ namespace ast
 
     if (e.type_name_get() != nullptr)
       {
-        ostr_ << ": " << e.type_name_get();
+        ostr_ << ": ";
+        e.type_name_get()->accept(*this);
       }
 
     ostr_ << ":= ";
+
     if (e.init_get())
       e.init_get()->accept(*this);
+    else
+      ostr_ << "nullptr;";
   }
 
   void PrettyPrinter::operator()(const WhileExp& e)
   {
-    ostr_ << "while " << e.test_get() << "\n";
+    ostr_ << "while " << e.test_get();
+
+    misc::incindent(ostr_);
+    misc::iendl(ostr_);
     e.body_get().accept(*this);
+    misc::decindent(ostr_);
   }
 
 } // namespace ast
