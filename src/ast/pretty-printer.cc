@@ -102,14 +102,14 @@ namespace ast
 
   void PrettyPrinter::operator()(const ChunkList& e)
   {
-    int i = 0;
+    bool b = true;
 
     for (auto act : e.chunks_get())
       {
-        if (i != 0)
-          misc::iendl(ostr_);
+        if (b)
+          b = false;
         else
-          i = 42;
+          misc::iendl(ostr_);
 
         act->accept(*this);
       }
