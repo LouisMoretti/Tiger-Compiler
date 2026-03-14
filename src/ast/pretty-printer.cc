@@ -106,14 +106,11 @@ namespace ast
 
     for (auto act : e.chunks_get())
       {
-        if (i == 0)
-          {
-            i = 1;
-          }
+        if (i != 0)
+          misc::iendl(ostr_);
         else
-          {
-            misc::iendl(ostr_);
-          }
+          i = 42;
+
         act->accept(*this);
       }
   }
