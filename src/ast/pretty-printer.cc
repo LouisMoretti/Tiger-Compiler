@@ -202,7 +202,6 @@ namespace ast
   {
     ostr_ << "let";
     misc::incindent(ostr_);
-    misc::iendl(ostr_);
 
     for (auto act : e.chunks_get())
       {
@@ -345,7 +344,8 @@ namespace ast
 
     for (auto act : e.exps_get())
       {
-        ostr_ << ", ";
+        ostr_ << ";";
+        misc::iendl(ostr_);
         act->accept(*this);
       }
   }
@@ -360,7 +360,8 @@ namespace ast
 
     if (e.type_name_get() != nullptr)
       {
-        ostr_ << ": " << e.type_name_get();
+        ostr_ << ": ";
+        e.type_name_get()->accept(*this);
       }
 
     ostr_ << ":= ";
