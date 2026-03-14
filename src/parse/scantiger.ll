@@ -71,15 +71,15 @@ int             [0-9]+
 
   /* FIXED: Some code was deleted here. */
 // Start Fix
-whitechar       [ |\t]
+whitechar       [ \t]
 endofline       (\n\r|\r\n|\r|\n)
 id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
-comment         \/\*.*\*\/
 // End Fix
 
 %class{
   // FIXED: Some code was deleted here (Local variables).
   std::string grown_string;
+  int depth = 0;
 }
 
 
@@ -104,11 +104,27 @@ comment         \/\*.*\*\/
                         else
                             grown_string += val;
                    }
+
 \\[abfnrtv]       grown_string+=text();
 \\                grown_string+=text();
 "\\\""            grown_string+=text();
 \n                td.location_.lines(1);
 .                 grown_string+=text();
+}
+
+<SC_COMMENT> {
+"/*"    {
+            depth+=1;
+        }
+"*/" {
+                depth-=1;
+                if(depth==0)
+                  start(INITIAL);}
+<<EOF>>         {
+                     td.error_ << misc::error::error_type::scan;
+                     td.error_ << "Lexing Error was encountered at line" << td.location_ << " unclosed comment\n";
+                     td.error_.exit();
+                }
 }
 
 /* The rules.  */
@@ -120,7 +136,7 @@ comment         \/\*.*\*\/
                   ss >> val;
                   if(val > INT_MAX){
                       td.error_ << misc::error::error_type::scan;
-                      td.error_ << "Lexing Error was encountered at line" << td.location_ << "\n";
+                      td.error_ << "Lexing Error was encountered at line" << td.location_ << "INT_MAX value\n";
                   }
                   // End Fix
                 return TOKEN_VAL(INT, val);
@@ -181,12 +197,17 @@ comment         \/\*.*\*\/
                   grown_string.clear();
                   start(SC_STRING);
             }
-{comment}         continue;
+"/*"    {
+                  depth = 1;
+                  start(SC_COMMENT);
+         }
 "chunks_"         return TOKEN(CHUNKS);
 "_exp"            return TOKEN(EXP);
 "_lvalue"         return TOKEN(LVALUE);
 "_namety"         return TOKEN(NAMETY);
 "_cast"           return TOKEN(CAST);
-<<EOF>>           return TOKEN(EOF);
+<<EOF>>           {
+                  return TOKEN(EOF);
+                  }
   // End Fix
 %%
