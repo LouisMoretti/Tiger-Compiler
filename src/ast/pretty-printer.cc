@@ -148,8 +148,10 @@ namespace ast
 
   void PrettyPrinter::operator()(const ForExp& e)
   {
-    ostr_ << "for ";
-    e.vardec_get().accept(*this);
+    ostr_ << "for " << e.vardec_get().name_get() << " := ";
+
+    e.vardec_get().init_get()->accept(*this);
+
     ostr_ << " to ";
 
     e.hi_get().accept(*this);
