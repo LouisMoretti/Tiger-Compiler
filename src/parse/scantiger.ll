@@ -119,11 +119,15 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
 "*/" {
                 depth-=1;
                 if(depth==0)
-                  start(INITIAL);}
+                  start(INITIAL);
+      }
 <<EOF>>         {
                      td.error_ << misc::error::error_type::scan;
                      td.error_ << "Lexing Error was encountered at line" << td.location_ << " unclosed comment\n";
                      td.error_.exit();
+                }
+.               {
+                  continue;
                 }
 }
 
@@ -192,7 +196,6 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
                   td.location_.lines(1);
                   td.location_.columns(-size());
             }
-{id}              return TOKEN_VAL(ID, text());
 "\""        {
                   grown_string.clear();
                   start(SC_STRING);
@@ -206,6 +209,7 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
 "_lvalue"         return TOKEN(LVALUE);
 "_namety"         return TOKEN(NAMETY);
 "_cast"           return TOKEN(CAST);
+{id}              return TOKEN_VAL(ID, text());
 <<EOF>>           {
                   return TOKEN(EOF);
                   }
