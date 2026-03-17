@@ -474,4 +474,5 @@ parse::parser::error(const location_type& l, const std::string& m)
   // FIXED: Some code was deleted here.
   td.error_ << misc::error::error_type::parse;
   td.error_ << "Parsing Error was encountered at line " << l << ": " << m << std::endl;
+  td.error_.exit();
 }

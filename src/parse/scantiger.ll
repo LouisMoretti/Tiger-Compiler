@@ -100,6 +100,7 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
                         {
                                 td.error_ << misc::error::error_type::scan;
                                 td.error_ << "Lexing Error was encountered at line" << td.location_ << "\n";
+                                td.error_.exit();
                         }
                         else
                             grown_string += val;
@@ -110,6 +111,11 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
 "\\\""            grown_string+=text();
 \n                td.location_.lines(1);
 .                 grown_string+=text();
+<<EOF>>         {
+                     td.error_ << misc::error::error_type::scan;
+                     td.error_ << "Lexing Error was encountered at line" << td.location_ << " unclosed string\n";
+                     td.error_.exit();
+                }
 }
 
 <SC_COMMENT> {
@@ -140,7 +146,8 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
                   ss >> val;
                   if(val > INT_MAX){
                       td.error_ << misc::error::error_type::scan;
-                      td.error_ << "Lexing Error was encountered at line" << td.location_ << "INT_MAX value\n";
+                      td.error_ << "Lexing Error was encountered at line" << td.location_ << " INT_MAX value\n";
+                      td.error_.exit();
                   }
                   // End Fix
                 return TOKEN_VAL(INT, val);
