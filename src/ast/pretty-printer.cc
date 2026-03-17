@@ -197,13 +197,17 @@ namespace ast
         e.result_get()->accept(*this);
       }
 
-    ostr_ << " =";
-    misc::incindent(ostr_);
-    misc::iendl(ostr_);
-
     if (e.body_get() != nullptr)
       {
+        ostr_ << " =";
+        misc::incindent(ostr_);
+        misc::iendl(ostr_);
         e.body_get()->accept(*this);
+      }
+    else
+      {
+        misc::incindent(ostr_);
+        misc::iendl(ostr_);
       }
 
     misc::decindent(ostr_);
