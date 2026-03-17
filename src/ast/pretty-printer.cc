@@ -202,12 +202,9 @@ namespace ast
   {
     ostr_ << "let";
     misc::incindent(ostr_);
+    misc::iendl(ostr_);
 
-    for (auto act : e.chunks_get())
-      {
-        misc::iendl(ostr_);
-        act->accept(*this);
-      }
+    e.chunks_get().accept(*this);
 
     misc::decindent(ostr_);
     misc::iendl(ostr_);
@@ -370,7 +367,7 @@ namespace ast
 
   void PrettyPrinter::operator()(const TypeDec& e)
   {
-    ostr_ << "type ";
+    ostr_ << "type = ";
     e.ty_get().accept(*this);
   }
 
