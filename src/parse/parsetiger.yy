@@ -388,34 +388,38 @@ funcdec:
     {
       $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$); 
       for (auto field: *$fields) {
-        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+        varchunk->emplace_back(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->type_name_get().name_get()), nullptr));
       }
-      $$->push_front(*make_FunctionDec(@$, $name, varchunk, $type, $body)); }
+      $$->emplace_back(*make_FunctionDec(@$, $name, varchunk, $type, $body)); }
   | "function" ID[name] "(" tyfields[fields] ")" "=" exp[body]
     { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
-        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+        varchunk->emplace_back(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->type_name_get().name_get()), nullptr));
       }
-      $$->push_front(*make_FunctionDec(@$, $name, varchunk, nullptr, $body)); }
+      $$->emplace_back(*make_FunctionDec(@$, $name, varchunk, nullptr, $body)); }
   | "primitive" ID[name] "(" tyfields[fields] ")" ":" typeid[type]
     { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
-        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+        varchunk->emplace_back(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->type_name_get().name_get()), nullptr));
       }
-      $$->push_front(*make_FunctionDec(@$, $name, varchunk, $type, nullptr)); }
+      $$->emplace_back(*make_FunctionDec(@$, $name, varchunk, $type, nullptr)); }
   | "primitive" ID[name] "(" tyfields[fields] ")"
     { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
-        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+        varchunk->emplace_back(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->type_name_get().name_get()), nullptr));
       }
-      $$->push_front(*make_FunctionDec(@$, $name, varchunk, nullptr, nullptr)); }
+      $$->emplace_back(*make_FunctionDec(@$, $name, varchunk, nullptr, nullptr)); }
 ;
 
 vardec:
   "var" ID[name] ":" typeid[type] ":=" exp[value]
-    { $$ = make_VarChunk(@$); $$->push_front(*make_VarDec(@$, $name, $type, $value)); }
+    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, $type, $value)); }
   | "var" ID[name] ":=" exp[value]
-    { $$ = make_VarChunk(@$); $$->push_front(*make_VarDec(@$, $name, nullptr, $value)); }
+    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, nullptr, $value)); }
+  | "var" ID[name] ":" typeid[type]
+    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, $type, nullptr)); }
+  | "var" ID[name]
+    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, nullptr, nullptr)); }
 ;
 // End Fix
 
