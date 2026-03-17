@@ -13,7 +13,7 @@ for folder in folders:
 def test_file(name, filepath):
     executable = "../src/tc"
 
-    proc = sp.Popen([executable, "-XA", "--parse", filepath], stdout=sp.PIPE, stderr=sp.STDOUT, bufsize=0)
+    proc = sp.Popen([executable, "-A", filepath], stdout=sp.PIPE, stderr=sp.STDOUT, bufsize=0)
     try:
         out, err = proc.communicate(timeout=0.5)
         assert err is None
