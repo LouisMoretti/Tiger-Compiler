@@ -215,6 +215,7 @@ namespace ast
         misc::iendl(ostr_);
 
         e.elseclause_get().accept(*this);
+        misc::decindent(ostr_);
       }
   }
 
@@ -377,11 +378,9 @@ namespace ast
         return;
       }
 
-    if (e.exps_get().size() >= 2)
-      {
-        ostr_ << "(";
-        misc::iendl(ostr_);
-      }
+    ostr_ << "(";
+    misc::incindent(ostr_);
+    misc::iendl(ostr_);
 
     e.exps_get().at(0)->accept(*this);
 
@@ -392,10 +391,9 @@ namespace ast
         e.exps_get().at(i)->accept(*this);
       }
 
-    if (e.exps_get().size() >= 2)
-      {
-        ostr_ << ")";
-      }
+    misc::decindent(ostr_);
+    misc::iendl(ostr_);
+    ostr_ << ")";
   }
 
   void PrettyPrinter::operator()(const StringExp& e)
@@ -414,7 +412,7 @@ namespace ast
   {
     if (e.init_get())
       {
-        ostr_ << "var " << e.name_get() << " ";
+        ostr_ << "var " << e.name_get();
       }
     else
       {
@@ -423,7 +421,7 @@ namespace ast
 
     if (e.type_name_get() != nullptr)
       {
-        ostr_ << ": ";
+        ostr_ << " : ";
         e.type_name_get()->accept(*this);
       }
 
