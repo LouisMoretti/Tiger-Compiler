@@ -56,10 +56,10 @@ namespace ast
 
   void PrettyPrinter::operator()(const ArrayExp& e)
   {
-    ostr_ << e.type_name_get() << "[";
+    ostr_ << e.type_name_get() << " [";
     e.size_get().accept(*this);
 
-    ostr_ << "] of";
+    ostr_ << "] of ";
     e.init_get().accept(*this);
   }
 
@@ -310,13 +310,15 @@ namespace ast
   {
     ostr_ << e.type_name_get() << " = {";
 
-    if (!e.fields_get().empty())
-      e.fields_get().at(0)->accept(*this);
+    if (e.fields_get().empty())
+      return;
 
-    for (auto act : e.fields_get())
+    e.fields_get().at(0)->accept(*this);
+
+    for (size_t i = 1; i < e.fields_get().size(); i++)
       {
         ostr_ << ", ";
-        act->accept(*this);
+        e.fields_get().at(i)->accept(*this);
       }
 
     ostr_ << "}";
@@ -324,26 +326,30 @@ namespace ast
 
   void PrettyPrinter::operator()(const RecordTy& e)
   {
-    if (!e.fields_get().empty())
-      e.fields_get().at(0)->accept(*this);
+    if (e.fields_get().empty())
+      return;
 
-    for (auto act : e.fields_get())
+    e.fields_get().at(0)->accept(*this);
+
+    for (size_t i = 1; i < e.fields_get().size(); i++)
       {
         ostr_ << ", ";
-        act->accept(*this);
+        e.fields_get().at(i)->accept(*this);
       }
   }
 
   void PrettyPrinter::operator()(const SeqExp& e)
   {
-    if (!e.exps_get().empty())
-      e.exps_get().at(0)->accept(*this);
+    if (e.exps_get().empty())
+      return;
 
-    for (auto act : e.exps_get())
+    e.exps_get().at(0)->accept(*this);
+
+    for (size_t i = 1; i < e.exps_get().size(); i++)
       {
         ostr_ << ";";
         misc::iendl(ostr_);
-        act->accept(*this);
+        e.exps_get().at(i)->accept(*this);
       }
   }
 
@@ -361,7 +367,7 @@ namespace ast
         e.type_name_get()->accept(*this);
       }
 
-    ostr_ << ":= ";
+    ostr_ << " := ";
 
     if (e.init_get())
       e.init_get()->accept(*this);
