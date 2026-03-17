@@ -65,8 +65,9 @@ namespace ast
 
   void PrettyPrinter::operator()(const ArrayTy& e)
   {
-    ostr_ << "arrtype = array of ";
+    ostr_ << "array of ";
     e.base_type_get().accept(*this);
+    misc::iendl(ostr_);
   }
 
   void PrettyPrinter::operator()(const AssignExp& e)
@@ -89,7 +90,9 @@ namespace ast
     auto act = e.args_get();
 
     if (act.empty())
-      return;
+      {
+        return;
+      }
 
     ostr_ << "(";
     act.at(0)->accept(*this);
@@ -110,9 +113,13 @@ namespace ast
     for (auto act : e.chunks_get())
       {
         if (b)
-          b = false;
+          {
+            b = false;
+          }
         else
-          misc::iendl(ostr_);
+          {
+            misc::iendl(ostr_);
+          }
 
         act->accept(*this);
       }
@@ -122,6 +129,7 @@ namespace ast
   {
     e.super_get().accept(*this);
     e.chunks_get().accept(*this);
+    misc::iendl(ostr_);
   }
 
   void PrettyPrinter::operator()(const Field& e)
@@ -153,7 +161,17 @@ namespace ast
 
   void PrettyPrinter::operator()(const FunctionDec& e)
   {
-    ostr_ << "function " << e.name_get() << "(";
+    if (e.body_get() != nullptr)
+      {
+        ostr_ << "function ";
+      }
+    else
+      {
+        ostr_ << "primitive ";
+      }
+
+    ostr_ << e.name_get() << "(";
+
     e.formals_get().accept(*this);
     ostr_ << ") ";
 
@@ -163,7 +181,7 @@ namespace ast
         e.result_get()->accept(*this);
       }
 
-    ostr_ << "= ";
+    ostr_ << " =";
     misc::incindent(ostr_);
     misc::iendl(ostr_);
 
@@ -332,7 +350,9 @@ namespace ast
     ostr_ << " = { ";
 
     if (e.fields_get().empty())
-      return;
+      {
+        return;
+      }
 
     e.fields_get().at(0)->accept(*this);
 
@@ -343,12 +363,20 @@ namespace ast
       }
 
     ostr_ << " }";
+    misc::iendl(ostr_);
   }
 
   void PrettyPrinter::operator()(const SeqExp& e)
   {
     if (e.exps_get().empty())
-      return;
+      {
+        return;
+      }
+
+    if (e.exps_get().size() >= 2)
+      {
+        ostr_ << "(";
+      }
 
     e.exps_get().at(0)->accept(*this);
 
@@ -357,6 +385,11 @@ namespace ast
         ostr_ << ";";
         misc::iendl(ostr_);
         e.exps_get().at(i)->accept(*this);
+      }
+
+    if (e.exps_get().size() >= 2)
+      {
+        ostr_ << ")";
       }
   }
 
@@ -367,27 +400,33 @@ namespace ast
 
   void PrettyPrinter::operator()(const TypeDec& e)
   {
-    ostr_ << "type = ";
+    ostr_ << "type " << e.name_get() << " = ";
     e.ty_get().accept(*this);
+    misc::iendl(ostr_);
   }
 
   void PrettyPrinter::operator()(const VarDec& e)
   {
-    ostr_ << "var " << e.name_get() << " ";
+    if (e.init_get())
+      {
+        ostr_ << "var " << e.name_get() << " ";
+      }
+    else
+      {
+        ostr_ << e.name_get();
+      }
 
     if (e.type_name_get() != nullptr)
       {
         ostr_ << ": ";
         e.type_name_get()->accept(*this);
-        ostr_ << " ";
       }
 
-    ostr_ << ":= ";
-
     if (e.init_get())
-      e.init_get()->accept(*this);
-    else
-      ostr_ << "nullptr";
+      {
+        ostr_ << " := ";
+        e.init_get()->accept(*this);
+      }
   }
 
   void PrettyPrinter::operator()(const WhileExp& e)
