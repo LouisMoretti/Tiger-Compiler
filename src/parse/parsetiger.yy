@@ -417,9 +417,9 @@ vardec:
   | "var" ID[name] ":=" exp[value]
     { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, nullptr, $value)); }
   | "var" ID[name] ":" typeid[type]
-    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, $type, nullptr)); }
+    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, $type, make_StringExp(@$, "nullptr"))); }
   | "var" ID[name]
-    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, nullptr, nullptr)); }
+    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, nullptr, make_StringExp(@$, "nullptr"))); }
 ;
 // End Fix
 
