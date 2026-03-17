@@ -173,11 +173,11 @@ namespace ast
     ostr_ << e.name_get() << "(";
 
     e.formals_get().accept(*this);
-    ostr_ << ") ";
+    ostr_ << ")";
 
     if (e.result_get() != nullptr)
       {
-        ostr_ << ": ";
+        ostr_ << " : ";
         e.result_get()->accept(*this);
       }
 
@@ -185,7 +185,11 @@ namespace ast
     misc::incindent(ostr_);
     misc::iendl(ostr_);
 
-    e.body_get()->accept(*this);
+    if (e.body_get() != nullptr)
+      {
+        e.body_get()->accept(*this);
+      }
+
     misc::decindent(ostr_);
   }
 
@@ -376,6 +380,7 @@ namespace ast
     if (e.exps_get().size() >= 2)
       {
         ostr_ << "(";
+        misc::iendl(ostr_);
       }
 
     e.exps_get().at(0)->accept(*this);
