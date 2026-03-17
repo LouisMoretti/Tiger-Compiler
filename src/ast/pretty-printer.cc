@@ -37,7 +37,8 @@ namespace ast
   void PrettyPrinter::operator()(const FieldVar& e)
   {
     // FIXED: Some code was deleted here.
-    ostr_ << e.name_get() << " = " << e.var_get();
+    ostr_ << e.name_get() << ".";
+    e.var_get().accept(*this);
   }
 
   /* Foo[10]. */
@@ -91,6 +92,7 @@ namespace ast
 
     if (act.empty())
       {
+        ostr_ << "()";
         return;
       }
 
@@ -172,7 +174,19 @@ namespace ast
 
     ostr_ << e.name_get() << "(";
 
-    e.formals_get().accept(*this);
+    if (!e.formals_get().empty())
+      {
+        auto begin = e.formals_get().begin();
+        (*begin)->accept(*this);
+
+        ++begin;
+        for (; begin != e.formals_get().end(); ++begin)
+          {
+            ostr_ << ", ";
+            (*begin)->accept(*this);
+          }
+      }
+
     ostr_ << ")";
 
     if (e.result_get() != nullptr)
@@ -331,7 +345,7 @@ namespace ast
 
   void PrettyPrinter::operator()(const RecordExp& e)
   {
-    ostr_ << e.type_name_get() << " = { ";
+    ostr_ << e.type_name_get() << "{ ";
 
     if (e.fields_get().empty())
       {
@@ -352,7 +366,7 @@ namespace ast
 
   void PrettyPrinter::operator()(const RecordTy& e)
   {
-    ostr_ << " = { ";
+    ostr_ << "{ ";
 
     if (e.fields_get().empty())
       {
@@ -380,13 +394,18 @@ namespace ast
 
     ostr_ << "(";
     misc::incindent(ostr_);
-    misc::iendl(ostr_);
 
-    e.exps_get().at(0)->accept(*this);
+    size_t i = 0;
 
-    for (size_t i = 1; i < e.exps_get().size(); i++)
+    for (; i < e.exps_get().size() - 1; i++)
       {
+        misc::iendl(ostr_);
+        e.exps_get().at(i)->accept(*this);
         ostr_ << ";";
+      }
+
+    if (i < e.exps_get().size())
+      {
         misc::iendl(ostr_);
         e.exps_get().at(i)->accept(*this);
       }
