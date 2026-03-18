@@ -395,6 +395,7 @@ namespace ast
   {
     if (e.exps_get().empty())
       {
+        ostr_ << "()";
         return;
       }
 
