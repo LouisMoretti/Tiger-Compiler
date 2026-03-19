@@ -377,6 +377,8 @@ chunks:
   { $$ = $2; $$->push_front($1); }
 | vardec chunks
   { $$ = $2; $$->push_front($1); }
+| "import" STRING[import]
+  { $$ = td.parse_import($import, @$); }
 | CHUNKS[meta] "(" INT[id] ")" chunks[list]
   { $$ = $list; $$->splice_front(*metavar<ast::ChunkList>(td, $id)); }
 ;
