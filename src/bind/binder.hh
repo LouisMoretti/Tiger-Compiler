@@ -8,11 +8,17 @@
 #include <unordered_map>
 
 #include <ast/default-visitor.hh>
+#include <ast/fwd.hh>
 #include <ast/object-visitor.hh>
 
 #include <misc/error.hh>
 #include <misc/fwd.hh>
+#include <misc/select-const.hh>
+
 #include <misc/scoped-map.hh>
+
+#include "../../../../../../../../../afs/cri.epita.fr/user/a/ar/arnaud.bellicha/u/ing1/S6/tiger/Tiger-Compiler/lib/misc/scoped-map.hh"
+#include "../../../../../../../../../afs/cri.epita.fr/user/a/ar/arnaud.bellicha/u/ing1/S6/tiger/Tiger-Compiler/lib/misc/symbol.hh"
 
 namespace bind
 {
@@ -58,6 +64,23 @@ namespace bind
     /* The visiting methods. */
     // FIXME: Some code was deleted here.
 
+    // Start Fix
+
+    /* Populates the Binder */
+    void operator()(const VarDec& e) override;
+    void operator()(const FunctionDec& e) override;
+    void operator()(const TypeDec& e) override;
+
+    /* Check the existance in the Binder */
+    void operator()(const SimpleVar& e) override;
+    void operator()(const CallExp& e) override;
+
+    /* Change the scope, new Binder */
+    void operator()(const SeqExp& e) override;
+    void operator()(const LetExp& e) override;
+
+    // End Fix
+
     // ---------------- //
     // Visiting /Dec/.  //
     // ---------------- //
@@ -85,6 +108,9 @@ namespace bind
     misc::error error_;
 
     // FIXME: Some code was deleted here (More members).
+    // Start Fix
+    misc::scoped_map<misc::symbol, std::string> map_;
+    // End Fix
   };
 
 } // namespace bind
