@@ -47,12 +47,12 @@ namespace misc
   {
     if (scoped_map_.empty())
       {
-        scoped_map_.emplace_back();
+        scoped_map_.emplace_back(std::unordered_map<Key, Data>());
       }
     else
       {
         auto& last_to_copy = *scoped_map_.end();
-        scoped_map_.emplace_back();
+        scoped_map_.emplace_back(std::unordered_map<Key, Data>());
         auto& last = (*scoped_map_.end());
         for (auto& pair : last_to_copy)
           {
@@ -76,7 +76,24 @@ namespace misc
 
   template <typename Key, typename Data>
   std::ostream& scoped_map<Key, Data>::dump(std::ostream& ostr) const
-  {}
+  {
+    int i = 1;
+
+    for (auto level : scoped_map_)
+      {
+        ostr << "level : " << i << "\n";
+
+        for (auto act : level)
+          {
+            ostr << "key : " << act.key << "\t\t| value : " << act.value
+                 << "\n";
+          }
+
+        i++;
+      }
+
+    return ostr;
+  }
 
   // End Fix
 
