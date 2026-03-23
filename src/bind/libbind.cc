@@ -11,6 +11,6 @@
 
 void launch_bind()
 {
-  Binder binder;
-  binder(ast::tasks::the_program);
+  bind::Binder binder;
+  binder(*ast::tasks::the_program);
 }
