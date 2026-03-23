@@ -4,3 +4,5 @@
  */
 
 // FIXME: Some code was deleted here.
+
+void launch_bind();

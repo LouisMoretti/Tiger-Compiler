@@ -5,14 +5,17 @@
 
 #pragma once
 
+#include <stack>
 #include <unordered_map>
 
 #include <ast/default-visitor.hh>
+#include <ast/fwd.hh>
 #include <ast/object-visitor.hh>
 
 #include <misc/error.hh>
 #include <misc/fwd.hh>
 #include <misc/scoped-map.hh>
+#include "misc/symbol.hh"
 
 namespace bind
 {
@@ -58,6 +61,32 @@ namespace bind
     /* The visiting methods. */
     // FIXME: Some code was deleted here.
 
+    // Start Fix
+
+    Binder() = default;
+
+    /* Initializer */
+    void Binder::operator()(ast::Ast& e);
+
+    /* Populates the Binder */
+    void operator()(ast::VarDec& e) override;
+    void operator()(ast::FunctionDec& e) override;
+    void operator()(ast::TypeDec& e) override;
+    void operator()(ForExp& e) override;
+    void operator()(WhileExp& e) override;
+
+    /* Check the existance in the Binder */
+    void operator()(ast::SimpleVar& e) override;
+    void operator()(ast::CallExp& e) override;
+    void operator()(ast::BreakExp& e) override;
+    void operator()(ast::NameTy& e) override;
+
+    /* Change the scope, new Binder */
+    void operator()(ast::SeqExp& e) override;
+    void operator()(ast::LetExp& e) override;
+
+    // End Fix
+
     // ---------------- //
     // Visiting /Dec/.  //
     // ---------------- //
@@ -85,6 +114,11 @@ namespace bind
     misc::error error_;
 
     // FIXME: Some code was deleted here (More members).
+    // Start Fix
+    misc::scoped_map<misc::symbol, ast::Ast> map_;
+    std::stack<ast::Ast> loops_;
+    bool in_loop_ = false;
+    // End Fix
   };
 
 } // namespace bind
