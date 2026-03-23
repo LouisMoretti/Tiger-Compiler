@@ -5,4 +5,4 @@
 
 // FIXME: Some code was deleted here.
 
-void bind() {}
+void launch_bind();

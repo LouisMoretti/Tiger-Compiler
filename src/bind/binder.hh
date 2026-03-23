@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <stack>
 #include <unordered_map>
 
 #include <ast/default-visitor.hh>
@@ -13,12 +14,8 @@
 
 #include <misc/error.hh>
 #include <misc/fwd.hh>
-#include <misc/select-const.hh>
-
 #include <misc/scoped-map.hh>
-
-#include "../../../../../../../../../afs/cri.epita.fr/user/a/ar/arnaud.bellicha/u/ing1/S6/tiger/Tiger-Compiler/lib/misc/scoped-map.hh"
-#include "../../../../../../../../../afs/cri.epita.fr/user/a/ar/arnaud.bellicha/u/ing1/S6/tiger/Tiger-Compiler/lib/misc/symbol.hh"
+#include "misc/symbol.hh"
 
 namespace bind
 {
@@ -39,7 +36,7 @@ namespace bind
    ** Here, at EPITA, we will use three name spaces: we will allow
    ** variables and functions with the same name.
    **
-   ** Moreover, object constructs make use of two additional name
+   ** Moreover, object  ructs make use of two additional name
    ** spaces: one for class attributes and one for methods (actually
    ** these two name spaces only live within the scope of a class).
    **
@@ -66,18 +63,27 @@ namespace bind
 
     // Start Fix
 
+    Binder() = default;
+
+    /* Initializer */
+    void Binder::operator()(ast::Ast& e);
+
     /* Populates the Binder */
-    void operator()(const VarDec& e) override;
-    void operator()(const FunctionDec& e) override;
-    void operator()(const TypeDec& e) override;
+    void operator()(ast::VarDec& e) override;
+    void operator()(ast::FunctionDec& e) override;
+    void operator()(ast::TypeDec& e) override;
+    void operator()(ForExp& e) override;
+    void operator()(WhileExp& e) override;
 
     /* Check the existance in the Binder */
-    void operator()(const SimpleVar& e) override;
-    void operator()(const CallExp& e) override;
+    void operator()(ast::SimpleVar& e) override;
+    void operator()(ast::CallExp& e) override;
+    void operator()(ast::BreakExp& e) override;
+    void operator()(ast::NameTy& e) override;
 
     /* Change the scope, new Binder */
-    void operator()(const SeqExp& e) override;
-    void operator()(const LetExp& e) override;
+    void operator()(ast::SeqExp& e) override;
+    void operator()(ast::LetExp& e) override;
 
     // End Fix
 
@@ -109,7 +115,9 @@ namespace bind
 
     // FIXME: Some code was deleted here (More members).
     // Start Fix
-    misc::scoped_map<misc::symbol, std::string> map_;
+    misc::scoped_map<misc::symbol, ast::Ast> map_;
+    std::stack<ast::Ast> loops_;
+    bool in_loop_ = false;
     // End Fix
   };
 
