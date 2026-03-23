@@ -50,6 +50,7 @@ namespace bind
 
   void Binder::operator()(ForExp& e)
   {
+    e.def_set(&e);
     in_loop_ = true;
     loops_.push(e);
     map_.begin_scope();
@@ -60,6 +61,7 @@ namespace bind
 
   void Binder::operator()(WhileExp& e)
   {
+    e.def_set(&e);
     in_loop_ = true;
     loops_.push(e);
     map_.begin_scope();
@@ -74,7 +76,7 @@ namespace bind
     try
       {
         auto ast_obtained = map_.get(e.name_get());
-        e.def_set(ast_obtained);
+        e.def_set(&ast_obtained);
       }
     catch (std::range_error error)
       {
@@ -106,7 +108,7 @@ namespace bind
           {
             auto ast_obtained = loops_.top();
             loops_.pop();
-            e.def_set(ast_obtained);
+            e.def_set(&ast_obtained);
           }
         // Error Case break without loop
       }
@@ -118,7 +120,7 @@ namespace bind
     try
       {
         auto ast_obtained = map_.get(e.name_get());
-        e.def_set(ast_obtained);
+        e.def_set(&ast_obtained);
       }
     catch (std::range_error error)
       {
