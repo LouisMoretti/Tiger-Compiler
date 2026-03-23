@@ -44,7 +44,10 @@ namespace ast
     /// Return list of arguments passed to the function.
     exps_type& args_get();
     // FIXME: Some code was deleted here.
-    // FIXME: Some code was deleted here.
+    // Start Fix
+    [[nodiscard]] FunctionDec* def_get() const;
+    void def_set(FunctionDec* def);
+    // End Fix
     /** \} */
 
   protected:
