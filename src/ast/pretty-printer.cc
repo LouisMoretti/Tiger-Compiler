@@ -22,6 +22,7 @@ namespace ast
       if (escapes_display(ostr)
           // FIXME: Some code was deleted here.
       )
+
         ostr << "/* escaping */ ";
 
       return ostr;
@@ -63,6 +64,9 @@ namespace ast
   {
     ostr_ << e.var_get() << '[' << misc::incindent << e.index_get()
           << misc::decindent << ']';
+
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.def_get() << " */";
   }
 
   void PrettyPrinter::operator()(const CastExp& e)
@@ -91,6 +95,7 @@ namespace ast
   void PrettyPrinter::operator()(const AssignExp& e)
   {
     e.var_get().accept(*this);
+
     ostr_ << " := ";
 
     e.exp_get().accept(*this);
@@ -99,12 +104,18 @@ namespace ast
   void PrettyPrinter::operator()(const BreakExp& e)
   {
     ostr_ << "break";
-    (void)e;
+
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.def_get() << " */";
   }
 
   void PrettyPrinter::operator()(const CallExp& e)
   {
     ostr_ << e.name_get();
+
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.def_get() << " */";
+
     auto act = e.args_get();
 
     if (act.empty())
@@ -153,7 +164,12 @@ namespace ast
 
   void PrettyPrinter::operator()(const Field& e)
   {
-    ostr_ << e.name_get() << " : ";
+    ostr_ << e.name_get();
+
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.def_get() << " */";
+
+    ostr_ << " : ";
     e.type_name_get().accept(*this);
   }
 
@@ -165,9 +181,8 @@ namespace ast
 
   void PrettyPrinter::operator()(const ForExp& e)
   {
-    ostr_ << "for " << e.vardec_get().name_get() << " := ";
-
-    e.vardec_get().init_get()->accept(*this);
+    ostr_ << "for ";
+    e.vardec_get()->accept();
 
     ostr_ << " to ";
 
@@ -191,7 +206,12 @@ namespace ast
         ostr_ << "primitive ";
       }
 
-    ostr_ << e.name_get() << "(";
+    ostr_ << e.name_get();
+
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.name_get().def_get() << " */";
+
+    ostr_ << "(";
 
     if (!e.formals_get().empty())
       {
@@ -281,7 +301,12 @@ namespace ast
 
   void PrettyPrinter::operator()(const MethodCallExp& e)
   {
-    ostr_ << e.name_get() << " (";
+    ostr_ << e.name_get();
+
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.def_get() << " */";
+
+    ostr_ << " (";
 
     auto act = e.args_get();
 
@@ -318,7 +343,9 @@ namespace ast
   void PrettyPrinter::operator()(const NilExp& e)
   {
     ostr_ << "nil";
-    (void)e;
+
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.def_get() << " */";
   }
 
   void PrettyPrinter::operator()(const ObjectExp& e)
@@ -468,6 +495,9 @@ namespace ast
         e.type_name_get()->accept(*this);
       }
 
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.def_get() << " */";
+
     if (e.init_get())
       {
         ostr_ << " := ";
@@ -477,7 +507,11 @@ namespace ast
 
   void PrettyPrinter::operator()(const WhileExp& e)
   {
-    ostr_ << "while " << e.test_get() << " do";
+    ostr_ << "while ";
+
+    e.test_get()->accept();
+
+    ostr_ << " do";
 
     misc::incindent(ostr_);
     misc::iendl(ostr_);
