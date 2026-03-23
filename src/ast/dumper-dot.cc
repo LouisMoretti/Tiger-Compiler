@@ -38,8 +38,16 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "ArrayExp");
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    // Start Fix
+    node_html_ports({"type_name", "size", "init"});
+    // End Fix
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump).
+    // Start Fix
+    dump("type_name", e.type_name_get());
+    dump("size", e.size_get());
+    dump("init", e.init_get());
+    // End Fix
     parent_id = old_parent_id;
   }
 
@@ -56,8 +64,15 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "AssignExp");
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    // Start Fix
+    node_html_ports({"var", "exp"});
+    // End Fix
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump).
+    // Start Fix
+    dump("var", e.var_get());
+    dump("exp", e.exp_get());
+    // End Fix
     parent_id = old_parent_id;
   }
 
@@ -74,12 +89,21 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "CallExp");
     // FIXME: Some code was deleted here (node_html_field).
+    // Start Fix
+    node_html_field("name", e.name_get());
     node_html_ports();
+    // End Fix
     // FIXME: Some code was deleted here (node_html_port_list for each list).
+    // Start Fix
+    node_html_port_list("args", e.args_get());
+    // End Fix
     node_html_one_port("def");
     footer_and_link(old_parent_id);
     dump_def(e);
     // FIXME: Some code was deleted here (dump_list).
+    // Start Fix
+    dump_list("args", e.args_get());
+    // End Fix
     parent_id = old_parent_id;
   }
 
@@ -127,9 +151,18 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "FieldVar");
     // FIXME: Some code was deleted here (node_html_field).
+    // Start Fix
+    node_html_field("name", e.name_get());
+    // End Fix
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    // Start Fix
+    node_html_ports({"var"});
+    // End Fix
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump).
+    // Start Fix
+    dump("var", e.var_get());
+    // End Fix
     parent_id = old_parent_id;
   }
 
@@ -160,8 +193,16 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "IfExp");
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    // Start Fix
+    node_html_ports({"test", "thenclause", "elseclause"});
+    // End Fix
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump).
+    // Start Fix
+    dump("test", e.test_get());
+    dump("thenclause", e.thenclause_get());
+    dump("elseclause", e.elseclause_get());
+    // End Fix
     parent_id = old_parent_id;
   }
 
@@ -177,8 +218,15 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "LetExp");
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    // Start Fix
+    node_html_ports({"chunks", "body"});
+    // End Fix
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump).
+    // Start Fix
+    dump("chunks", e.chunks_get());
+    dump("body", e.body_get());
+    // End Fix
     parent_id = old_parent_id;
   }
 
@@ -186,12 +234,25 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "MethodCallExp");
     // FIXME: Some code was deleted here (node_html_field).
+    // Start Fix
+    node_html_field("name", e.name_get());
+    // End Fix
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    // Start Fix
+    node_html_ports({"object"});
+    // End Fix
     // FIXME: Some code was deleted here (node_html_port_list for each list).
+    // Start Fix
+    node_html_port_list("args", e.args_get());
+    // End Fix
     node_html_one_port("def");
     footer_and_link(old_parent_id);
     dump_def(e);
     // FIXME: Some code was deleted here (dump and dump_list).
+    // Start Fix
+    dump("object", e.object_get());
+    dump_list("args", e.args_get());
+    // End Fix
     parent_id = old_parent_id;
   }
 
@@ -248,9 +309,19 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "RecordExp");
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    // Start Fix
+    node_html_ports({"type_name"});
+    // End Fix
     // FIXME: Some code was deleted here (node_html_port_list for each list).
+    // Start Fix
+    node_html_port_list("fields", e.fields_get());
+    // End Fix
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump and dump_list).
+    // Start Fix
+    dump("type_name", e.type_name_get());
+    dump_list("fields", e.fields_get());
+    // End Fix
     parent_id = old_parent_id;
   }
 
@@ -259,8 +330,14 @@ namespace ast
     unsigned long old_parent_id = node_html_header(e, "RecordTy");
     node_html_ports();
     // FIXME: Some code was deleted here (node_html_port_list for each list).
+    // Start Fix
+    node_html_port_list("fields", e.fields_get(), true);
+    // End Fix
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump_list).
+    // Start Fix
+    dump_list("fields", e.fields_get());
+    // End Fix
     parent_id = old_parent_id;
   }
 
@@ -269,8 +346,14 @@ namespace ast
     unsigned long old_parent_id = node_html_header(e, "SeqExp");
     node_html_ports();
     // FIXME: Some code was deleted here (node_html_port_list for each list).
+    // Start Fix
+    node_html_port_list("exps", e.exps_get());
+    // End Fix
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump_list).
+    // Start Fix
+    dump_list("exps", e.exps_get());
+    // End Fix
     parent_id = old_parent_id;
   }
 
@@ -288,6 +371,9 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "StringExp");
     // FIXME: Some code was deleted here (node_html_field, use misc::escape).
+    // Start Fix
+    node_html_field("value", misc::escape(e.value_get()));
+    // End Fix
     footer_and_link(old_parent_id);
     parent_id = old_parent_id;
   }
