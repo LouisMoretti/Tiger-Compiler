@@ -36,7 +36,7 @@ namespace bind
    ** Here, at EPITA, we will use three name spaces: we will allow
    ** variables and functions with the same name.
    **
-   ** Moreover, object  ructs make use of two additional name
+   ** Moreover, object  consructs make use of two additional name
    ** spaces: one for class attributes and one for methods (actually
    ** these two name spaces only live within the scope of a class).
    **

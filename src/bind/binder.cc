@@ -10,8 +10,7 @@
 
 #include <misc/contract.hh>
 
-#include "../../../../../../../../../afs/cri.epita.fr/user/a/ar/arnaud.bellicha/u/ing1/S6/tiger/Tiger-Compiler/lib/misc/error.hh"
-#include "../ast/name-ty.hh"
+#include "misc/error.hh"
 
 namespace bind
 {
