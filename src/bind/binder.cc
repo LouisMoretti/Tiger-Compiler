@@ -10,6 +10,7 @@
 
 #include <misc/contract.hh>
 
+#include "../../../../../../../../../afs/cri.epita.fr/user/a/ar/arnaud.bellicha/u/ing1/S6/tiger/Tiger-Compiler/src/ast/exp.hh"
 #include "misc/error.hh"
 
 namespace bind
@@ -68,9 +69,10 @@ namespace bind
   {
     e.def_set(&e);
     in_loop_ = true;
-    loops_.push(e);
+    ast::Exp* loop_for = e;
+    loops_.push(loop_for);
     scope_begin();
-    e.body_get.visit(*this);
+    e.body_get().visit(*this);
     scope_end();
     loops_.pop();
     in_loop_ = false;
@@ -80,7 +82,8 @@ namespace bind
   {
     e.def_set(&e);
     in_loop_ = true;
-    loops_.push(e);
+    ast::Exp* loop_while = e;
+    loops_.push(loop_while);
     e.body_get.visit(*this);
     loops_.pop();
     in_loop_ = false;
@@ -144,7 +147,7 @@ namespace bind
         error_ << "undeclared type: " << e.name_get();
         error_.exit();
       }
-    e.def_set(&ast_obtained);
+    e.def_set(ast_obtained);
   }
 
   /* Change the scope, new Binder */
