@@ -118,9 +118,9 @@ namespace bind
 
     // FIXME: Some code was deleted here (More members).
     // Start Fix
-    misc::scoped_map<misc::symbol, ast::Ast*> map_vardec_;
-    misc::scoped_map<misc::symbol, ast::Ast*> map_fundec_;
-    misc::scoped_map<misc::symbol, ast::Ast*> map_typedec_;
+    misc::scoped_map<misc::symbol, ast::VarDec*> map_vardec_;
+    misc::scoped_map<misc::symbol, ast::FunctionDec*> map_fundec_;
+    misc::scoped_map<misc::symbol, ast::TypeDec*> map_typedec_;
     std::stack<ast::Exp*> loops_;
     bool in_loop_ = false;
     // End Fix
