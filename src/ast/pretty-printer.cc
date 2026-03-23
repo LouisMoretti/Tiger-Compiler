@@ -64,9 +64,6 @@ namespace ast
   {
     ostr_ << e.var_get() << '[' << misc::incindent << e.index_get()
           << misc::decindent << ']';
-
-    if (bindings_display(ostr_))
-      ostr_ << " /* " << e.def_get() << " */";
   }
 
   void PrettyPrinter::operator()(const CastExp& e)
@@ -166,9 +163,6 @@ namespace ast
   {
     ostr_ << e.name_get();
 
-    if (bindings_display(ostr_))
-      ostr_ << " /* " << e.def_get() << " */";
-
     ostr_ << " : ";
     e.type_name_get().accept(*this);
   }
@@ -207,9 +201,6 @@ namespace ast
       }
 
     ostr_ << e.name_get();
-
-    if (bindings_display(ostr_))
-      ostr_ << " /* " << e.def_get() << " */";
 
     ostr_ << "(";
 
@@ -340,13 +331,7 @@ namespace ast
 
   void PrettyPrinter::operator()(const NameTy& e) { ostr_ << e.name_get(); }
 
-  void PrettyPrinter::operator()(const NilExp& e)
-  {
-    ostr_ << "nil";
-
-    if (bindings_display(ostr_))
-      ostr_ << " /* " << e.def_get() << " */";
-  }
+  void PrettyPrinter::operator()(const NilExp& e) { ostr_ << "nil"; }
 
   void PrettyPrinter::operator()(const ObjectExp& e)
   {
@@ -494,9 +479,6 @@ namespace ast
         ostr_ << " : ";
         e.type_name_get()->accept(*this);
       }
-
-    if (bindings_display(ostr_))
-      ostr_ << " /* " << e.def_get() << " */";
 
     if (e.init_get())
       {
