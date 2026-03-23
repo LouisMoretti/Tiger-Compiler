@@ -16,7 +16,7 @@ namespace ast
   inline const exps_type& CallExp::args_get() const { return *args_; }
   inline exps_type& CallExp::args_get() { return *args_; }
 
-  // FIXME: Some code was deleted here.
+  // FIXED: Some code was deleted here.
   // Start Fix
   inline FunctionDec* CallExp::def_get() const { return def_; }
   inline void CallExp::def_set(FunctionDec* def) { def_ = def; }
