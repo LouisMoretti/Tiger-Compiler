@@ -27,9 +27,9 @@ namespace misc
                                + ": put call with empty scoped map");
       }
 
-    if (*scoped_map_.end().contains(key))
+    if ((*scoped_map_.end()).contains(key))
       {
-        *scoped_map_.end()[key] = value;
+        (*scoped_map_.end())[key] = value;
       }
     else
       {
@@ -46,22 +46,19 @@ namespace misc
                                + ": key not found");
       }
 
-    auto& end = scoped_map_.end();
-    Data res;
-    bool found = false;
+    int i = scoped_map_.size() - 1;
 
-    while (!found && end != scoped_map_.begin())
+    while (i >= 0)
       {
-        if (end.contains(key))
+        if (scoped_map_[i].contains(key))
           {
-            res = end[key];
-            found = true;
+            return scoped_map_[i].at(key);
           }
 
-        end--;
+        i--;
       }
 
-    return res;
+    return nullptr;
   }
 
   template <typename Key, typename Data>
@@ -91,7 +88,7 @@ namespace misc
                                + ": invalid end scope");
       }
 
-    scoped_map_.erase(scoped_map_.end());
+    scoped_map_.pop_back();
   }
 
   template <typename Key, typename Data>

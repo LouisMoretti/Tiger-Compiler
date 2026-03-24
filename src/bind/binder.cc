@@ -10,7 +10,7 @@
 
 #include <misc/contract.hh>
 
-#include "../../../../../../../../../afs/cri.epita.fr/user/a/ar/arnaud.bellicha/u/ing1/S6/tiger/Tiger-Compiler/src/ast/exp.hh"
+#include "ast/exp.hh"
 #include "misc/error.hh"
 
 namespace bind
@@ -31,14 +31,14 @@ namespace bind
   {
     map_vardec_.scope_begin();
     map_typedec_.scope_begin();
-    map_typedec_.scope_begin();
+    map_fundec_.scope_begin();
   }
 
   void Binder::scope_end()
   {
     map_vardec_.scope_end();
     map_typedec_.scope_end();
-    map_typedec_.scope_end();
+    map_fundec_.scope_end();
   }
 
   /* Initializer */
@@ -153,7 +153,7 @@ namespace bind
   /* Change the scope, new Binder */
   void Binder::operator()(ast::SeqExp& e)
   {
-    for (size_t i; i < e.exps_get().size(); i++)
+    for (size_t i = 0; i < e.exps_get().size(); i++)
       {
         scope_begin();
         e.exps_get().at(i)->accept(*this);
