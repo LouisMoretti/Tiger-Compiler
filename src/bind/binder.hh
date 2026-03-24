@@ -66,14 +66,14 @@ namespace bind
     Binder() = default;
 
     /* Initializer */
-    void Binder::operator()(ast::Ast& e);
+    void operator()(ast::Ast& e) override;
 
     /* Populates the Binder */
     void operator()(ast::VarDec& e) override;
     void operator()(ast::FunctionDec& e) override;
     void operator()(ast::TypeDec& e) override;
-    void operator()(ForExp& e) override;
-    void operator()(WhileExp& e) override;
+    void operator()(ast::ForExp& e) override;
+    void operator()(ast::WhileExp& e) override;
 
     /* Check the existance in the Binder */
     void operator()(ast::SimpleVar& e) override;
@@ -109,14 +109,19 @@ namespace bind
     // FIXME: Some code was deleted here.
     /// \}
 
+    void scope_begin();
+    void scope_end();
+
   protected:
     /// Binding errors handler.
     misc::error error_;
 
     // FIXME: Some code was deleted here (More members).
     // Start Fix
-    misc::scoped_map<misc::symbol, ast::Ast> map_;
-    std::stack<ast::Ast> loops_;
+    misc::scoped_map<misc::symbol, ast::VarDec*> map_vardec_;
+    misc::scoped_map<misc::symbol, ast::FunctionDec*> map_fundec_;
+    misc::scoped_map<misc::symbol, ast::TypeDec*> map_typedec_;
+    std::stack<ast::Exp*> loops_;
     bool in_loop_ = false;
     // End Fix
   };

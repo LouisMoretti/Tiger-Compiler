@@ -27,19 +27,27 @@ namespace misc
                                + ": put call with empty scoped map");
       }
 
-    (*scoped_map_.end()).insert(std::pair<Key, Data>(key, value));
+    if (scoped_map_.back().contains(key))
+      {
+        scoped_map_.back()[key] = value;
+      }
+    else
+      {
+        scoped_map_.back().insert(std::pair<Key, Data>(key, value));
+      }
   }
 
   template <typename Key, typename Data>
   Data scoped_map<Key, Data>::get(const Key& key) const
   {
-    if (scoped_map_.empty() || !(*scoped_map_.end()).contains(key))
+    if (scoped_map_.empty() || !scoped_map_.back().contains(key))
       {
+        //TODO: need to use the error type
         throw std::range_error("scoped-map.hxx: l-" + std::to_string(__LINE__)
                                + ": key not found");
       }
 
-    return (*scoped_map_.end()).at(key);
+    return scoped_map_.back().at(key);
   }
 
   template <typename Key, typename Data>
@@ -47,16 +55,16 @@ namespace misc
   {
     if (scoped_map_.empty())
       {
-        scoped_map_.emplace_back(std::unordered_map<Key, Data>());
+        scoped_map_.emplace_back(std::map<Key, Data>());
       }
     else
       {
-        auto& last_to_copy = *scoped_map_.end();
-        scoped_map_.emplace_back(std::unordered_map<Key, Data>());
-        auto& last = (*scoped_map_.end());
+        auto& last_to_copy = scoped_map_.back();
+        scoped_map_.emplace_back(std::map<Key, Data>());
+        auto& last = scoped_map_.back();
         for (auto& pair : last_to_copy)
           {
-            last.insert(last.end(), pair);
+            last.insert(pair);
           }
       }
   }
@@ -69,9 +77,7 @@ namespace misc
                                + ": invalid end scope");
       }
 
-    auto last_elm = scoped_map_;
-    --last_elm;
-    scoped_map_.erase(last_elm);
+    scoped_map_.pop_back();
   }
 
   template <typename Key, typename Data>

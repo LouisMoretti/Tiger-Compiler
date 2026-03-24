@@ -5,12 +5,13 @@
 
 // FIXME: Some code was deleted here.
 
+#include "libbind.hh"
 #include <ast/libast.hh>
 #include "ast/tasks.hh"
 #include "bind/binder.hh"
 
 void launch_bind()
 {
-  Binder binder;
-  binder(ast::tasks::the_program);
+  bind::Binder binder;
+  binder(*ast::tasks::the_program);
 }
