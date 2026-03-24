@@ -76,7 +76,9 @@ namespace ast
 
   void PrettyPrinter::operator()(const ArrayExp& e)
   {
-    ostr_ << e.type_name_get() << " [";
+    ostr_ << e.type_name_get();
+
+    ostr_ << " [";
     e.size_get().accept(*this);
 
     ostr_ << "] of ";
@@ -337,7 +339,13 @@ namespace ast
     misc::decindent(ostr_);
   }
 
-  void PrettyPrinter::operator()(const NameTy& e) { ostr_ << e.name_get(); }
+  void PrettyPrinter::operator()(const NameTy& e)
+  {
+    ostr_ << e.name_get();
+
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.def_get() << " */";
+  }
 
   void PrettyPrinter::operator()(const NilExp& e)
   {
@@ -471,8 +479,15 @@ namespace ast
 
   void PrettyPrinter::operator()(const TypeDec& e)
   {
-    ostr_ << "type " << e.name_get() << " = ";
+    ostr_ << "type " << e.name_get();
+
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << &e << " */";
+
+    ostr_ << " = ";
+
     e.ty_get().accept(*this);
+
     misc::iendl(ostr_);
   }
 

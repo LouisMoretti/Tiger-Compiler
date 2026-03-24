@@ -68,8 +68,13 @@ namespace bind
   {
     for (const auto& dec : e)
       {
+        if (map_typedec_.contains(dec->name_get()))
+          {
+            error_ << misc::error::error_type::bind;
+            error_ << "duplicated type: " << dec->name_get();
+            error_.exit();
+          }
         dec->ty_get().accept(*this);
-        map_typedec_.put(dec->name_get(), dec);
       }
     for (const auto& dec : e)
       {
@@ -111,9 +116,7 @@ namespace bind
   }
   void Binder::operator()(ast::TypeDec& e)
   {
-    // TODO check if its string or int
-    if (e.name_get() != "string" && e.name_get() != "int")
-      map_typedec_.put(e.name_get(), &e);
+    map_typedec_.put(e.name_get(), &e);
   }
 
   void Binder::operator()(ast::ForExp& e)
@@ -123,6 +126,7 @@ namespace bind
     loops_.push(&e);
     scope_begin();
     e.vardec_get().accept(*this);
+    e.hi_get().accept(*this);
     e.body_get().accept(*this);
     scope_end();
     loops_.pop();

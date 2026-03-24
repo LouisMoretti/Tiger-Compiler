@@ -18,7 +18,7 @@ namespace bind::tasks
   DISJUNCTIVE_TASK_DECLARE("bound",
                            "Make sure bindings (regular or taking overloading "
                            "or objects constructs into account) are computed",
-                           "binding-compute");
+                           "bindings-compute");
   TASK_DECLARE("B|bindings-display",
                "binding and printing a file",
                bind_print,
