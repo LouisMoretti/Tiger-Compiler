@@ -58,7 +58,9 @@ namespace misc
         i--;
       }
 
-    return nullptr;
+    //TODO: need to use the error type
+    throw std::range_error("scoped-map.hxx: l-" + std::to_string(__LINE__)
+                           + ": key not found");
   }
 
   template <typename Key, typename Data>
