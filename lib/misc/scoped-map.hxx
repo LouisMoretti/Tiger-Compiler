@@ -27,7 +27,14 @@ namespace misc
                                + ": put call with empty scoped map");
       }
 
-    (*scoped_map_.end()).insert(std::pair<Key, Data>(key, value));
+    if (*scoped_map_.end().contains(key))
+      {
+        *scoped_map_.end()[key] = value;
+      }
+    else
+      {
+        (*scoped_map_.end()).insert(std::pair<Key, Data>(key, value));
+      }
   }
 
   template <typename Key, typename Data>
@@ -39,7 +46,22 @@ namespace misc
                                + ": key not found");
       }
 
-    return (*scoped_map_.end()).at(key);
+    auto& end = scoped_map_.end();
+    Data res;
+    bool found = false;
+
+    while (!found && end != scoped_map_.begin())
+      {
+        if (end.contains(key))
+          {
+            res = end[key];
+            found = true;
+          }
+
+        end--;
+      }
+
+    return res;
   }
 
   template <typename Key, typename Data>
@@ -47,16 +69,16 @@ namespace misc
   {
     if (scoped_map_.empty())
       {
-        scoped_map_.emplace_back(std::unordered_map<Key, Data>());
+        scoped_map_.emplace_back(std::map<Key, Data>());
       }
     else
       {
         auto& last_to_copy = *scoped_map_.end();
-        scoped_map_.emplace_back(std::unordered_map<Key, Data>());
+        scoped_map_.emplace_back(std::map<Key, Data>());
         auto& last = (*scoped_map_.end());
         for (auto& pair : last_to_copy)
           {
-            last.insert(last.end(), pair);
+            last.insert(pair);
           }
       }
   }
@@ -69,9 +91,7 @@ namespace misc
                                + ": invalid end scope");
       }
 
-    auto last_elm = scoped_map_;
-    --last_elm;
-    scoped_map_.erase(last_elm);
+    scoped_map_.erase(scoped_map_.end());
   }
 
   template <typename Key, typename Data>

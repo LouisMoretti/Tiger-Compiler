@@ -30,7 +30,7 @@ namespace misc
     std::ostream& dump(std::ostream& ostr) const;
 
   private:
-    std::vector<std::unordered_map<Key, Data>> scoped_map_;
+    std::vector<std::map<Key, Data>> scoped_map_;
     // End Fix
   };
 
