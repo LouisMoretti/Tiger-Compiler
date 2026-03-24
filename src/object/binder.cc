@@ -26,12 +26,14 @@ namespace object
   void Binder::operator()(ast::SimpleVar& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   // Handle the case of `Object'.
   void Binder::operator()(ast::NameTy& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   /*---------------.
@@ -94,7 +96,8 @@ namespace object
   template <class D> void Binder::chunk_visit(ast::Chunk<D>& e)
   {
     // Shorthand.
-    using chunk_type = ast::Chunk<D>;
+    // using chunk_type = ast::Chunk<D>;
+    (void)e;
     // FIXME: Some code was deleted here (Two passes: once on headers, then on bodies).
   }
 
@@ -104,6 +107,7 @@ namespace object
   void Binder::visit_dec_header<ast::FunctionDec>(ast::FunctionDec& e)
   {
     // FIXME: Some code was deleted here (Call the super type).
+    (void)e;
   }
 
   // Compute the bindings of this function's body.
@@ -114,6 +118,7 @@ namespace object
     bool saved_within_method_dec = within_method_dec_;
     within_method_dec_ = false;
     // FIXME: Some code was deleted here (Call the super type).
+    (void)e;
     within_method_dec_ = saved_within_method_dec;
     within_class_ty_ = saved_within_class_ty;
   }
@@ -128,6 +133,7 @@ namespace object
   void Binder::operator()(ast::MethodDec& e)
   {
     // FIXME: Some code was deleted here (Scope begins).
+    (void)e;
     bool saved_within_class_ty = within_class_ty_;
     within_class_ty_ = false;
     bool saved_within_method_dec = within_method_dec_;
