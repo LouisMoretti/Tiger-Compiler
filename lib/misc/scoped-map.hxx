@@ -55,14 +55,14 @@ namespace misc
   {
     if (scoped_map_.empty())
       {
-        scoped_map_.emplace_back(std::map<Key, Data>());
+        scoped_map_.emplace_back();
       }
     else
       {
         auto& last_to_copy = scoped_map_.back();
-        scoped_map_.emplace_back(std::map<Key, Data>());
+        scoped_map_.emplace_back();
         auto& last = scoped_map_.back();
-        for (auto& pair : last_to_copy)
+        for (auto pair : last_to_copy)
           {
             last.insert(pair);
           }
