@@ -103,7 +103,7 @@ namespace misc
   template <typename Key, typename Data>
   bool scoped_map<Key, Data>::contains(const Key& key)
   {
-    return (*scoped_map_.back()).contains(key);
+    return scoped_map_.back().contains(key);
   }
 
   template <typename Key, typename Data>

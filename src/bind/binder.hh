@@ -80,6 +80,9 @@ namespace bind
     void operator()(ast::NameTy& e) override;
 
     void operator()(ast::FunctionChunk& e);
+    void operator()(ast::TypeChunk& e);
+
+    void operator()(ast::VarChunk& e);
 
     /* Change the scope, new Binder */
     void operator()(ast::SeqExp& e) override;

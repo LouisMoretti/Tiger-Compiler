@@ -8,6 +8,7 @@
 #include <ast/all.hh>
 #include <bind/binder.hh>
 
+#include <set>
 #include <misc/contract.hh>
 
 #include "ast/exp.hh"
@@ -44,20 +45,67 @@ namespace bind
   /* Populates the Binder */
   void Binder::operator()(ast::VarDec& e) { map_vardec_.put(e.name_get(), &e); }
 
-  void Binder::operator()(ast::FunctionChunk& e)
+  void Binder::operator()(ast::VarChunk& e)
   {
+    std::set<misc::symbol> vars;
     for (const auto& dec : e)
       {
-        map_fundec_.put(dec->name_get(), dec);
+        if (vars.find(dec->name_get()) != vars.end())
+          {
+            error_ << misc::error::error_type::bind;
+            error_ << "duplicated parameter: " << dec->name_get();
+            error_.exit();
+          }
+        vars.insert(dec->name_get());
+      }
+    for (const auto& dec : e)
+      {
         dec->accept(*this);
       }
   }
 
-  void Binder::operator()(ast::FunctionDec& e) { e.body_get()->accept(*this); }
+  void Binder::operator()(ast::TypeChunk& e)
+  {
+    for (const auto& dec : e)
+      {
+        dec->ty_get().accept(*this);
+        map_typedec_.put(dec->name_get(), dec);
+      }
+    for (const auto& dec : e)
+      {
+        dec->accept(*this);
+      }
+  }
+
+  void Binder::operator()(ast::FunctionChunk& e)
+  {
+    for (const auto& dec : e)
+      {
+        dec->formals_get().accept(*this);
+        if (map_fundec_.contains(dec->name_get()))
+          {
+            error_ << misc::error::error_type::bind;
+            error_ << "duplicated function: " << dec->name_get();
+            error_.exit();
+          }
+        map_fundec_.put(dec->name_get(), dec);
+      }
+    for (const auto& dec : e)
+      {
+        dec->accept(*this);
+      }
+  }
+
+  void Binder::operator()(ast::FunctionDec& e)
+  {
+    if (e.body_get())
+      e.body_get()->accept(*this);
+  }
   void Binder::operator()(ast::TypeDec& e)
   {
     // TODO check if its string or int
-    map_typedec_.put(e.name_get(), &e);
+    if (e.name_get() != "string" && e.name_get() != "int")
+      map_typedec_.put(e.name_get(), &e);
   }
 
   void Binder::operator()(ast::ForExp& e)
@@ -98,7 +146,7 @@ namespace bind
     if (!ast_obtained)
       {
         error_ << misc::error::error_type::bind;
-        error_ << "undeclared function: " << e.name_get();
+        error_ << "undeclared/undefined function: " << e.name_get();
         error_.exit();
       }
     e.def_set(ast_obtained);
