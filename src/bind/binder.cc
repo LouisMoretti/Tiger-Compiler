@@ -51,28 +51,23 @@ namespace bind
   }
 
   /* Populates the Binder */
-  void Binder::operator()(ast::VarDec& e)
-  {
-    map_vardec_.put(e.name_get(), e.init_get());
-  }
+  void Binder::operator()(ast::VarDec& e) { map_vardec_.put(e.name_get(), &e); }
 
   void Binder::operator()(ast::FunctionDec& e)
   {
-    map_fundec_.put(e.name_get(), e.body_get());
+    map_fundec_.put(e.name_get(), &e);
   }
   void Binder::operator()(ast::TypeDec& e)
   {
-    map_typedec_.put(e.name_get(), e.ty_get());
+    map_typedec_.put(e.name_get(), &e);
   }
 
   void Binder::operator()(ast::ForExp& e)
   {
-    e.def_set(&e);
     in_loop_ = true;
-    ast::Exp* loop_for = e;
-    loops_.push(loop_for);
+    loops_.push(&e);
     scope_begin();
-    e.body_get().visit(*this);
+    e.body_get().accept(*this);
     scope_end();
     loops_.pop();
     in_loop_ = false;
@@ -80,11 +75,9 @@ namespace bind
 
   void Binder::operator()(ast::WhileExp& e)
   {
-    e.def_set(&e);
     in_loop_ = true;
-    ast::Exp* loop_while = e;
-    loops_.push(loop_while);
-    e.body_get.visit(*this);
+    loops_.push(&e);
+    e.body_get().accept(*this);
     loops_.pop();
     in_loop_ = false;
   }
