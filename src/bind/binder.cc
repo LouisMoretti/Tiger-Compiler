@@ -49,6 +49,7 @@ namespace bind
                      nullptr); // Adding primitive types int & string to the map
     map_typedec_.put("string", nullptr);
     super_type::operator()(e);
+    scope_end();
   }
 
   /* Populates the Binder */
