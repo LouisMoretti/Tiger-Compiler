@@ -8,8 +8,10 @@
 #include <ast/all.hh>
 #include <bind/binder.hh>
 
+#include <set>
 #include <misc/contract.hh>
 
+#include "ast/exp.hh"
 #include "misc/error.hh"
 
 namespace bind
@@ -25,78 +27,143 @@ namespace bind
 
   // Start Fix
 
-  /* Initializer */
-  void Binder::operator()(ast::Ast& e)
+  /* Create and Delete scope functions */
+  void Binder::scope_begin()
   {
-    map_.put("int", nullptr); // Adding primitive types int & string to the map
-    map_.put("string", nullptr);
-    super_type::operator()(e);
+    map_vardec_.scope_begin();
+    map_typedec_.scope_begin();
+    map_fundec_.scope_begin();
+  }
+
+  void Binder::scope_end()
+  {
+    map_vardec_.scope_end();
+    map_typedec_.scope_end();
+    map_fundec_.scope_end();
   }
 
   /* Populates the Binder */
-  void Binder::operator()(ast::VarDec& e)
+  void Binder::operator()(ast::VarDec& e) { map_vardec_.put(e.name_get(), &e); }
+
+  void Binder::operator()(ast::VarChunk& e)
   {
-    map_.put(e.name_get(), e.init_get());
+    std::set<misc::symbol> vars;
+    for (const auto& dec : e)
+      {
+        if (vars.find(dec->name_get()) != vars.end())
+          {
+            error_ << misc::error::error_type::bind;
+            error_ << "duplicated parameter: " << dec->name_get();
+            error_.exit();
+          }
+        vars.insert(dec->name_get());
+      }
+    for (const auto& dec : e)
+      {
+        dec->accept(*this);
+      }
+  }
+
+  void Binder::operator()(ast::TypeChunk& e)
+  {
+    for (const auto& dec : e)
+      {
+        dec->ty_get().accept(*this);
+        map_typedec_.put(dec->name_get(), dec);
+      }
+    for (const auto& dec : e)
+      {
+        dec->accept(*this);
+      }
+  }
+
+  void Binder::operator()(ast::FunctionChunk& e)
+  {
+    for (const auto& dec : e)
+      {
+        if (map_fundec_.contains(dec->name_get()))
+          {
+            error_ << misc::error::error_type::bind;
+            error_ << "duplicated function: " << dec->name_get();
+            error_.exit();
+          }
+        map_fundec_.put(dec->name_get(), dec);
+      }
+    for (const auto& dec : e)
+      {
+        dec->accept(*this);
+      }
   }
 
   void Binder::operator()(ast::FunctionDec& e)
   {
-    map_.put(e.name_get(), e.body_get());
+    bool copy = in_loop_;
+    in_loop_ = false;
+    scope_begin();
+    for (const auto& dec : e.formals_get())
+      {
+        dec->accept(*this);
+      }
+    if (e.body_get())
+      e.body_get()->accept(*this);
+    scope_end();
+    in_loop_ = copy;
   }
   void Binder::operator()(ast::TypeDec& e)
   {
-    map_.put(e.name_get(), e.ty_get());
+    // TODO check if its string or int
+    if (e.name_get() != "string" && e.name_get() != "int")
+      map_typedec_.put(e.name_get(), &e);
   }
 
-  void Binder::operator()(ForExp& e)
+  void Binder::operator()(ast::ForExp& e)
   {
-    e.def_set(&e);
+    bool copy = in_loop_;
     in_loop_ = true;
-    loops_.push(e);
-    map_.begin_scope();
-    e.body_get.visit(*this);
-    map_.end_scope();
+    loops_.push(&e);
+    scope_begin();
+    e.vardec_get().accept(*this);
+    e.body_get().accept(*this);
+    scope_end();
     loops_.pop();
+    in_loop_ = copy;
   }
 
-  void Binder::operator()(WhileExp& e)
+  void Binder::operator()(ast::WhileExp& e)
   {
-    e.def_set(&e);
+    bool copy = in_loop_;
     in_loop_ = true;
-    loops_.push(e);
-    map_.begin_scope();
-    e.body_get.visit(*this);
-    map_.end_scope();
+    loops_.push(&e);
+    e.body_get().accept(*this);
     loops_.pop();
+    in_loop_ = copy;
   }
 
   /* Check the existance in the Binder */
   void Binder::operator()(ast::SimpleVar& e)
   {
-    try
-      {
-        auto ast_obtained = map_.get(e.name_get());
-        e.def_set(&ast_obtained);
-      }
-    catch (std::range_error error)
+    auto ast_obtained = map_vardec_.get(e.name_get());
+    if (!ast_obtained)
       {
         error_ << misc::error::error_type::bind;
         error_ << "undeclared variable: " << e.name_get();
         error_.exit();
       }
+    e.def_set(ast_obtained);
   }
   void Binder::operator()(ast::CallExp& e)
   {
-    try
-      {
-        auto ast_obtained = map_.get(e.name_get());
-        e.def_set(ast_obtained);
-      }
-    catch (std::range_error error)
+    auto ast_obtained = map_fundec_.get(e.name_get());
+    if (!ast_obtained)
       {
         error_ << misc::error::error_type::bind;
-        error_ << "undeclared function: " << e.name_get();
+        error_ << "undeclared/undefined function: " << e.name_get();
         error_.exit();
+      }
+    e.def_set(ast_obtained);
+    for (const auto& dec : e.args_get())
+      {
+        dec->accept(*this);
       }
   }
 
@@ -107,48 +174,55 @@ namespace bind
         if (!(loops_.empty()))
           {
             auto ast_obtained = loops_.top();
-            loops_.pop();
-            e.def_set(&ast_obtained);
+            e.def_set(ast_obtained);
           }
-        // Error Case break without loop
+        else
+          {
+            error_ << misc::error::error_type::bind;
+            error_ << "break outside loop: ";
+            error_.exit();
+          }
       }
-    // Error Case break inside scope inside loop
+    else
+      {
+        error_ << misc::error::error_type::bind;
+        error_ << "Invalid break";
+        error_.exit();
+      }
   }
 
   void Binder::operator()(ast::NameTy& e)
   {
-    try
-      {
-        auto ast_obtained = map_.get(e.name_get());
-        e.def_set(&ast_obtained);
-      }
-    catch (std::range_error error)
+    auto ast_obtained = map_typedec_.get(e.name_get());
+    if (!ast_obtained && e.name_get() != "int" && e.name_get() != "string")
       {
         error_ << misc::error::error_type::bind;
         error_ << "undeclared type: " << e.name_get();
         error_.exit();
       }
+    e.def_set(ast_obtained);
   }
 
   /* Change the scope, new Binder */
   void Binder::operator()(ast::SeqExp& e)
   {
-    for (size_t i; i < e.exps_get().size(); i++)
+    for (size_t i = 0; i < e.exps_get().size(); i++)
       {
-        map_.begin_scope();
+        scope_begin();
         e.exps_get().at(i)->accept(*this);
-        map_.end_scope();
+        scope_end();
       }
   }
   void Binder::operator()(ast::LetExp& e)
   {
-    map_.begin_scope();
+    bool copy = in_loop_;
+    scope_begin();
+    in_loop_ = false;
     e.chunks_get().accept(*this);
-    map_.end_scope();
 
-    map_.begin_scope();
     e.body_get().accept(*this);
-    map_.end_scope();
+    scope_end();
+    in_loop_ = copy;
   }
 
   // End Fix

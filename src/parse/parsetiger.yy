@@ -200,7 +200,8 @@
 %type <ast::exps_type*>       func_prms
 %type <ast::Var*>             lvalue lvalue.big
 
-%type <ast::FunctionChunk*>   funcdec
+%type <ast::FunctionChunk*>   functionChunk
+%type <ast::FunctionDec*>     funcdec
 %type <ast::VarChunk*>        vardec
 // End Fix
 
@@ -212,21 +213,22 @@
 // which can be understood as a list of two TypeChunk containing
 // a unique TypeDec each, or a single TypeChunk containing two TypeDec.
 // We want the latter.
-%precedence CHUNKS
-%precedence TYPE
 // FIXED: Some code was deleted here (Other declarations).
 // Start Fix
 
-
-%precedence THEN
-%precedence ELSE DO OF
+%precedence ASSIGN THEN DO OF
+%precedence ELSE
 %left OR
 %left AND
 %nonassoc GE LE EQ NE LT GT
 %left PLUS MINUS
 %left TIMES DIVIDE
 %precedence UMINUS
-%precedence ASSIGN
+
+%precedence CHUNKS
+%precedence TYPE
+
+%precedence FUNCTION PRIMITIVE
 // End Fix
 
 %start program
@@ -373,7 +375,7 @@ chunks:
 | tychunk   chunks        { $$ = $2; $$->push_front($1); }
   // FIXED: Some code was deleted here (More rules).
   // Start Fix
-| funcdec chunks
+| functionChunk chunks
   { $$ = $2; $$->push_front($1); }
 | vardec chunks
   { $$ = $2; $$->push_front($1); }
@@ -385,32 +387,38 @@ chunks:
 // End Fix
 
 // Start Fix
+functionChunk:
+  funcdec %prec CHUNKS
+    { $$ = make_FunctionChunk(@$); $$->emplace_back(*$1); }
+  | funcdec[function] functionChunk[next]
+    { $$ = $next; $$->emplace_back(*$function); }
+
 funcdec:
   "function" ID[name] "(" tyfields[fields] ")" ":" typeid[type] "=" exp[body]
     {
-      $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+      auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
         varchunk->emplace_back(*make_VarDec(@$, field->name_get(), &field->type_name_get(), nullptr));
       }
-      $$->emplace_back(*make_FunctionDec(@$, $name, varchunk, $type, $body)); }
+      $$ = make_FunctionDec(@$, $name, varchunk, $type, $body); }
   | "function" ID[name] "(" tyfields[fields] ")" "=" exp[body]
-    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+    { auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
         varchunk->emplace_back(*make_VarDec(@$, field->name_get(), &field->type_name_get(), nullptr));
       }
-      $$->emplace_back(*make_FunctionDec(@$, $name, varchunk, nullptr, $body)); }
+      $$ = make_FunctionDec(@$, $name, varchunk, nullptr, $body); }
   | "primitive" ID[name] "(" tyfields[fields] ")" ":" typeid[type]
-    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+    { auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
         varchunk->emplace_back(*make_VarDec(@$, field->name_get(), &field->type_name_get(), nullptr));
       }
-      $$->emplace_back(*make_FunctionDec(@$, $name, varchunk, $type, nullptr)); }
+      $$ = make_FunctionDec(@$, $name, varchunk, $type, nullptr); }
   | "primitive" ID[name] "(" tyfields[fields] ")"
-    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+    { auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
         varchunk->emplace_back(*make_VarDec(@$, field->name_get(), &field->type_name_get(), nullptr));
       }
-      $$->emplace_back(*make_FunctionDec(@$, $name, varchunk, nullptr, nullptr)); }
+      $$ = make_FunctionDec(@$, $name, varchunk, nullptr, nullptr); }
 ;
 
 vardec:
