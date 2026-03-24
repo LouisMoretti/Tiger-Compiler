@@ -23,6 +23,8 @@ namespace misc
     // FIXME: Some code was deleted here.
     // Start Fix
   public:
+    scoped_map();
+
     void put(const Key& key, const Data& value);
     Data get(const Key& key) const;
     void scope_begin();

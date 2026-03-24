@@ -18,6 +18,8 @@ namespace misc
   // FIXME: Some code was deleted here.
   // Start Fix
 
+  Binder::scoped_map() { scope_begin(); }
+
   template <typename Key, typename Data>
   void scoped_map<Key, Data>::put(const Key& key, const Data& value)
   {
