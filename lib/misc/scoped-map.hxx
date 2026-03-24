@@ -46,6 +46,19 @@ namespace misc
 
   template <typename Key, typename Data>
   Data scoped_map<Key, Data>::get(const Key& key) const
+    requires(pointer_type_concept<Key, Data>)
+  {
+    if (scoped_map_.empty() || !scoped_map_.back().contains(key))
+      {
+        return nullptr;
+      }
+
+    return scoped_map_.back().at(key);
+  }
+
+  template <typename Key, typename Data>
+  Data scoped_map<Key, Data>::get(const Key& key) const
+    requires(!pointer_type_concept<Key, Data>)
   {
     if (scoped_map_.empty() || !scoped_map_.back().contains(key))
       {
