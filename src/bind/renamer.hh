@@ -5,8 +5,11 @@
 
 #pragma once
 
+#include <map>
 #include <ast/default-visitor.hh>
 #include <ast/non-object-visitor.hh>
+#include "ast/all.hh"
+#include "misc/symbol.hh"
 
 namespace bind
 {
@@ -23,6 +26,7 @@ namespace bind
     using super_type::operator();
 
     // FIXME: Some code was deleted here.
+    Renamer() = default;
 
     // Visit methods.
     /// \brief Process a declaration body or a usage site.
@@ -34,15 +38,22 @@ namespace bind
     /// \name Visiting definition sites.
     /// \{
     // FIXME: Some code was deleted here.
+    void operator()(ast::VarDec& e) override;
+    void operator()(ast::FunctionDec& e) override;
+    void operator()(ast::TypeDec& e) override;
     /// \}
 
     /// \name Visiting usage sites.
     /// \{
     // FIXME: Some code was deleted here.
+    void operator()(ast::SimpleVar& e) override;
+    void operator()(ast::CallExp& e) override;
+    void operator()(ast::NameTy& e) override;
     /// \}
 
   private:
     // FIXME: Some code was deleted here.
+    std::map<const ast::Dec*, misc::symbol> unique_names_;
   };
 
 } // namespace bind
