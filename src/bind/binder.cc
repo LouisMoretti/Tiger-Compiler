@@ -81,9 +81,6 @@ namespace bind
   {
     for (const auto& dec : e)
       {
-        scope_begin();
-        dec->formals_get().accept(*this);
-        scope_end();
         if (map_fundec_.contains(dec->name_get()))
           {
             error_ << misc::error::error_type::bind;
@@ -100,8 +97,17 @@ namespace bind
 
   void Binder::operator()(ast::FunctionDec& e)
   {
+    bool copy = in_loop_;
+    in_loop_ = false;
+    scope_begin();
+    for (const auto& dec : e.formals_get())
+      {
+        dec->accept(*this);
+      }
     if (e.body_get())
       e.body_get()->accept(*this);
+    scope_end();
+    in_loop_ = copy;
   }
   void Binder::operator()(ast::TypeDec& e)
   {
@@ -112,6 +118,7 @@ namespace bind
 
   void Binder::operator()(ast::ForExp& e)
   {
+    bool copy = in_loop_;
     in_loop_ = true;
     loops_.push(&e);
     scope_begin();
@@ -119,16 +126,17 @@ namespace bind
     e.body_get().accept(*this);
     scope_end();
     loops_.pop();
-    in_loop_ = false;
+    in_loop_ = copy;
   }
 
   void Binder::operator()(ast::WhileExp& e)
   {
+    bool copy = in_loop_;
     in_loop_ = true;
     loops_.push(&e);
     e.body_get().accept(*this);
     loops_.pop();
-    in_loop_ = false;
+    in_loop_ = copy;
   }
 
   /* Check the existance in the Binder */
@@ -166,7 +174,6 @@ namespace bind
         if (!(loops_.empty()))
           {
             auto ast_obtained = loops_.top();
-            loops_.pop();
             e.def_set(ast_obtained);
           }
         else
@@ -187,7 +194,7 @@ namespace bind
   void Binder::operator()(ast::NameTy& e)
   {
     auto ast_obtained = map_typedec_.get(e.name_get());
-    if (!ast_obtained)
+    if (!ast_obtained && e.name_get() != "int" && e.name_get() != "string")
       {
         error_ << misc::error::error_type::bind;
         error_ << "undeclared type: " << e.name_get();
@@ -208,11 +215,14 @@ namespace bind
   }
   void Binder::operator()(ast::LetExp& e)
   {
+    bool copy = in_loop_;
     scope_begin();
+    in_loop_ = false;
     e.chunks_get().accept(*this);
 
     e.body_get().accept(*this);
     scope_end();
+    in_loop_ = copy;
   }
 
   // End Fix

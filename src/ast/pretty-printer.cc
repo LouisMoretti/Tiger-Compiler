@@ -37,7 +37,7 @@ namespace ast
     {
       ostr << e.name_get();
       if (bindings_display(ostr))
-        ostr << " /* " << &e << " */";
+        ostr << " /* " << &e << " */ ";
       return ostr;
     }
   } // namespace
@@ -104,7 +104,7 @@ namespace ast
     ostr_ << "break";
 
     if (bindings_display(ostr_))
-      ostr_ << " /* " << e.def_get() << " */";
+      ostr_ << " /* " << e.def_get() << " */ ";
   }
 
   void PrettyPrinter::operator()(const CallExp& e)
@@ -112,7 +112,7 @@ namespace ast
     ostr_ << e.name_get();
 
     if (bindings_display(ostr_))
-      ostr_ << " /* " << e.def_get() << " */";
+      ostr_ << " /* " << e.def_get() << " */ ";
 
     auto act = e.args_get();
 
@@ -181,8 +181,6 @@ namespace ast
     if (bindings_display(ostr_))
       ostr_ << "/* " << &e << " */ ";
 
-    ostr_ << e.vardec_get().name_get() << " := ";
-
     e.vardec_get().accept(*this);
 
     ostr_ << " to ";
@@ -210,7 +208,7 @@ namespace ast
     ostr_ << e.name_get();
 
     if (bindings_display(ostr_))
-      ostr_ << "/* " << &e << " */ ";
+      ostr_ << " /* " << &e << " */ ";
 
     ostr_ << "(";
 
