@@ -101,6 +101,12 @@ namespace misc
   }
 
   template <typename Key, typename Data>
+  bool scoped_map<Key, Data>::contains(const Key& key)
+  {
+    return (*scoped_map_.back()).contains(key);
+  }
+
+  template <typename Key, typename Data>
   std::ostream& scoped_map<Key, Data>::dump(std::ostream& ostr) const
   {
     int i = 1;

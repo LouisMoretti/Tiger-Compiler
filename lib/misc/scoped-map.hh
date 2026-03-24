@@ -40,6 +40,7 @@ namespace misc
       requires(!pointer_type_concept<Key, Data>);
     void scope_begin();
     void scope_end();
+    bool contains(const Key& key);
     std::ostream& dump(std::ostream& ostr) const;
 
   private:
