@@ -176,9 +176,14 @@ namespace ast
 
   void PrettyPrinter::operator()(const ForExp& e)
   {
-    ostr_ << "for " << e.vardec_get().name_get() << " := ";
+    ostr_ << "for ";
 
-    e.vardec_get().init_get()->accept(*this);
+    if (bindings_display(ostr_))
+      ostr_ << "/* " << &e << " */ ";
+
+    ostr_ << e.vardec_get().name_get() << " := ";
+
+    e.vardec_get().accept(*this);
 
     ostr_ << " to ";
 
@@ -203,6 +208,9 @@ namespace ast
       }
 
     ostr_ << e.name_get();
+
+    if (bindings_display(ostr_))
+      ostr_ << "/* " << &e << " */ ";
 
     ostr_ << "(";
 
@@ -411,6 +419,7 @@ namespace ast
 
     if (e.fields_get().empty())
       {
+        ostr_ << " }";
         return;
       }
 
@@ -480,6 +489,9 @@ namespace ast
         ostr_ << e.name_get();
       }
 
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << &e << " */";
+
     if (e.type_name_get() != nullptr)
       {
         ostr_ << " : ";
@@ -495,7 +507,12 @@ namespace ast
 
   void PrettyPrinter::operator()(const WhileExp& e)
   {
-    ostr_ << "while " << e.test_get() << " do";
+    ostr_ << "while ";
+
+    if (bindings_display(ostr_))
+      ostr_ << "/* " << &e << " */ ";
+
+    ostr_ << e.test_get() << " do";
 
     misc::incindent(ostr_);
     misc::iendl(ostr_);

@@ -80,12 +80,12 @@ namespace misc
     else
       {
         auto& last_to_copy = scoped_map_.back();
-        scoped_map_.emplace_back();
-        auto& last = scoped_map_.back();
+        std::map n = std::map<Key, Data>();
         for (auto pair : last_to_copy)
           {
-            last.insert(pair);
+            n.insert(pair);
           }
+        scoped_map_.push_back(n);
       }
   }
 
@@ -115,10 +115,9 @@ namespace misc
       {
         ostr << "level : " << i << "\n";
 
-        for (auto act : level)
+        for (auto const& [key, value] : level)
           {
-            ostr << "key : " << act.key << "\t\t| value : " << act.value
-                 << "\n";
+            ostr << "key : " << key << "\t\t| value : " << value << "\n";
           }
 
         i++;

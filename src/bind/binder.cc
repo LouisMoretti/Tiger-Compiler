@@ -81,7 +81,9 @@ namespace bind
   {
     for (const auto& dec : e)
       {
+        scope_begin();
         dec->formals_get().accept(*this);
+        scope_end();
         if (map_fundec_.contains(dec->name_get()))
           {
             error_ << misc::error::error_type::bind;
@@ -113,6 +115,7 @@ namespace bind
     in_loop_ = true;
     loops_.push(&e);
     scope_begin();
+    e.vardec_get().accept(*this);
     e.body_get().accept(*this);
     scope_end();
     loops_.pop();
@@ -150,6 +153,10 @@ namespace bind
         error_.exit();
       }
     e.def_set(ast_obtained);
+    for (const auto& dec : e.args_get())
+      {
+        dec->accept(*this);
+      }
   }
 
   void Binder::operator()(ast::BreakExp& e)
@@ -203,9 +210,7 @@ namespace bind
   {
     scope_begin();
     e.chunks_get().accept(*this);
-    scope_end();
 
-    scope_begin();
     e.body_get().accept(*this);
     scope_end();
   }
