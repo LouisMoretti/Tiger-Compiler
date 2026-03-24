@@ -7,7 +7,9 @@
 
 // Start Fix
 
+#define DEFINE_TASKS 1
 #include "bind/tasks.hh"
+#undef DEFINE_TASKS
 
 #include "ast/libast.hh"
 #include "bind/libbind.hh"

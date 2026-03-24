@@ -6,6 +6,7 @@
 #pragma once
 
 #include <stack>
+#include <string>
 #include <unordered_map>
 
 #include <ast/default-visitor.hh>
@@ -65,9 +66,6 @@ namespace bind
 
     Binder() = default;
 
-    /* Initializer */
-    void operator()(ast::Ast& e) override;
-
     /* Populates the Binder */
     void operator()(ast::VarDec& e) override;
     void operator()(ast::FunctionDec& e) override;
@@ -80,6 +78,8 @@ namespace bind
     void operator()(ast::CallExp& e) override;
     void operator()(ast::BreakExp& e) override;
     void operator()(ast::NameTy& e) override;
+
+    void operator()(ast::FunctionChunk& e);
 
     /* Change the scope, new Binder */
     void operator()(ast::SeqExp& e) override;

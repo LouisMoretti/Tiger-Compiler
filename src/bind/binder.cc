@@ -41,26 +41,22 @@ namespace bind
     map_fundec_.scope_end();
   }
 
-  /* Initializer */
-  void Binder::operator()(ast::Ast& e)
-  {
-    scope_begin();
-    map_typedec_.put("int",
-                     nullptr); // Adding primitive types int & string to the map
-    map_typedec_.put("string", nullptr);
-    super_type::operator()(e);
-    scope_end();
-  }
-
   /* Populates the Binder */
   void Binder::operator()(ast::VarDec& e) { map_vardec_.put(e.name_get(), &e); }
 
-  void Binder::operator()(ast::FunctionDec& e)
+  void Binder::operator()(ast::FunctionChunk& e)
   {
-    map_fundec_.put(e.name_get(), &e);
+    for (const auto& dec : e)
+      {
+        map_fundec_.put(dec->name_get(), dec);
+        dec->accept(*this);
+      }
   }
+
+  void Binder::operator()(ast::FunctionDec& e) { e.body_get()->accept(*this); }
   void Binder::operator()(ast::TypeDec& e)
   {
+    // TODO check if its string or int
     map_typedec_.put(e.name_get(), &e);
   }
 
@@ -158,8 +154,7 @@ namespace bind
   void Binder::operator()(ast::LetExp& e)
   {
     scope_begin();
-    e.chunks_get().accept(
-      *this); // TODO fix go through all header then all body
+    e.chunks_get().accept(*this);
     scope_end();
 
     scope_begin();
