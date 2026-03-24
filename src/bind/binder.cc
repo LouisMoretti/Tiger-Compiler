@@ -44,6 +44,7 @@ namespace bind
   /* Initializer */
   void Binder::operator()(ast::Ast& e)
   {
+    scope_begin();
     map_typedec_.put("int",
                      nullptr); // Adding primitive types int & string to the map
     map_typedec_.put("string", nullptr);

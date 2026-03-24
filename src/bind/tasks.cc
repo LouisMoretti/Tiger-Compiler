@@ -7,10 +7,10 @@
 
 // Start Fix
 
-#include "ast/tasks.hh"
+#include "bind/tasks.hh"
 
 #include "ast/libast.hh"
-#include "libbind.hh"
+#include "bind/libbind.hh"
 
 #include "bind/binder.hh"
 
