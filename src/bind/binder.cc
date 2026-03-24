@@ -198,7 +198,6 @@ namespace bind
   void Binder::operator()(ast::NameTy& e)
   {
     auto ast_obtained = map_typedec_.get(e.name_get());
-    std::cout << "was: " << ast_obtained << "\n";
     if (!ast_obtained && e.name_get() != "int" && e.name_get() != "string")
       {
         error_ << misc::error::error_type::bind;
@@ -206,7 +205,6 @@ namespace bind
         error_.exit();
       }
     e.def_set(ast_obtained);
-    std::cout << "got: " << e.def_get() << "\n";
   }
 
   /* Change the scope, new Binder */
