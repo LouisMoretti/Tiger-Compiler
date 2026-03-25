@@ -11,6 +11,8 @@
 #include <misc/separator.hh>
 #include "ast/seq-exp.hh"
 
+#include <type/class.hh>
+
 namespace ast
 {
   // Anonymous namespace: these functions are private to this file.
