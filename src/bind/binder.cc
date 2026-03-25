@@ -43,7 +43,19 @@ namespace bind
   }
 
   /* Populates the Binder */
-  void Binder::operator()(ast::VarDec& e) { map_vardec_.put(e.name_get(), &e); }
+  void Binder::operator()(ast::VarDec& e)
+  {
+    map_vardec_.put(e.name_get(), &e);
+    if (e.type_name_get())
+      {
+        e.type_name_get()->accept(*this);
+      }
+
+    if (e.init_get())
+      {
+        e.init_get()->accept(*this);
+      }
+  }
 
   void Binder::operator()(ast::VarChunk& e)
   {
@@ -74,10 +86,7 @@ namespace bind
             error_ << "duplicated type: " << dec->name_get();
             error_.exit();
           }
-        dec->ty_get().accept(*this);
-      }
-    for (const auto& dec : e)
-      {
+
         dec->accept(*this);
       }
   }

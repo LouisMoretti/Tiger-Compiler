@@ -7,6 +7,10 @@
 
 #include <misc/map.hh>
 #include <misc/symbol.hh>
+#include <type/class.hh>
 
 namespace object
-{} // namespace object
+{
+  /// Names associated to class types.
+  using class_names_type = misc::map<const type::Class*, misc::symbol>;
+} // namespace object

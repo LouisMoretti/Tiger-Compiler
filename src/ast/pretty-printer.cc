@@ -11,6 +11,8 @@
 #include <misc/separator.hh>
 #include "ast/seq-exp.hh"
 
+#include <type/class.hh>
+
 namespace ast
 {
   // Anonymous namespace: these functions are private to this file.
@@ -63,8 +65,17 @@ namespace ast
   /* Foo[10]. */
   void PrettyPrinter::operator()(const SubscriptVar& e)
   {
-    ostr_ << e.var_get() << '[' << misc::incindent << e.index_get()
-          << misc::decindent << ']';
+    ostr_ << e.var_get();
+
+    if (bindings_display(ostr_))
+      ostr_ << " ";
+
+    ostr_ << '[' << misc::incindent << e.index_get() << misc::decindent;
+
+    if (bindings_display(ostr_))
+      ostr_ << " ";
+
+    ostr_ << ']';
   }
 
   void PrettyPrinter::operator()(const CastExp& e)
@@ -80,6 +91,9 @@ namespace ast
 
     ostr_ << " [";
     e.size_get().accept(*this);
+
+    if (bindings_display(ostr_))
+      ostr_ << " ";
 
     ostr_ << "] of ";
     e.init_get().accept(*this);
