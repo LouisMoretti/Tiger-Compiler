@@ -43,7 +43,14 @@ namespace bind
   }
 
   /* Populates the Binder */
-  void Binder::operator()(ast::VarDec& e) { map_vardec_.put(e.name_get(), &e); }
+  void Binder::operator()(ast::VarDec& e)
+  {
+    map_vardec_.put(e.name_get(), &e);
+    if (e.type_name_get())
+      {
+        e.type_name_get()->accept(*this);
+      }
+  }
 
   void Binder::operator()(ast::VarChunk& e)
   {
