@@ -81,10 +81,7 @@ namespace bind
             error_ << "duplicated type: " << dec->name_get();
             error_.exit();
           }
-        dec->ty_get().accept(*this);
-      }
-    for (const auto& dec : e)
-      {
+
         dec->accept(*this);
       }
   }
