@@ -19,7 +19,14 @@ namespace bind
 
   void Renamer::operator()(ast::FunctionDec& e)
   {
-    visit(e, &e);
+    // Skip primitives.
+    if (e.body_get() == nullptr)
+      return;
+
+    // Skip rename of "_main".
+    if (e.name_get() != "_main")
+      visit(e, &e);
+
     super_type::operator()(e);
   }
 
@@ -37,7 +44,9 @@ namespace bind
 
   void Renamer::operator()(ast::CallExp& e)
   {
-    visit(e, e.def_get());
+    // Skip primitives.
+    if (e.def_get() != nullptr && e.def_get()->body_get() != nullptr)
+      visit(e, e.def_get());
     super_type::operator()(e);
   }
 

@@ -197,7 +197,14 @@ namespace ast
     if (bindings_display(ostr_))
       ostr_ << "/* " << &e << " */ ";
 
-    e.vardec_get().accept(*this);
+    ostr_ << e.vardec_get().name_get();
+
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << &(e.vardec_get()) << " */";
+
+    ostr_ << " := ";
+
+    e.vardec_get().init_get()->accept(*this);
 
     ostr_ << " to ";
 
@@ -255,6 +262,7 @@ namespace ast
         misc::incindent(ostr_);
         misc::iendl(ostr_);
         e.body_get()->accept(*this);
+        misc::iendl(ostr_);
       }
     else
       {
