@@ -10,7 +10,6 @@ namespace ast
 {
   NilExp::NilExp(const Location& location)
     : Exp(location)
-    , TypeConstructor()
   {}
 
   void NilExp::accept(ConstVisitor& v) const { v(*this); }

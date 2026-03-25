@@ -6,14 +6,11 @@
 #pragma once
 
 #include <ast/exp.hh>
-#include <ast/type-constructor.hh>
 
 namespace ast
 {
   /// NilExp.
-  class NilExp
-    : public Exp
-    , public TypeConstructor
+  class NilExp : public Exp
   {
   public:
     /** \name Ctor & dtor.

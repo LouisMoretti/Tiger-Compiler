@@ -60,6 +60,5 @@ Some of these classes also inherit from other classes.
 /TypeConstructor/
   /Ty/              ()
   FunctionDec       (VarChunk formals, NameTy result, Exp body)
-  NilExp            ()
   TypeDec           (Ty ty)
 
