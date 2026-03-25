@@ -15,12 +15,15 @@
 #include "bind/libbind.hh"
 
 #include "bind/binder.hh"
+#include "bind/renamer.hh"
 
 namespace bind::tasks
 {
   void bind() { launch_bind(); }
 
   void bind_print() { ast::bindings_display(std::cout) = true; }
+
+  void rename() { launch_rename(); }
 
 } // namespace bind::tasks
 

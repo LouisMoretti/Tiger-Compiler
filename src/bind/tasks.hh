@@ -12,7 +12,7 @@
 
 namespace bind::tasks
 {
-  TASK_GROUP("2. Binding");
+  TASK_GROUP("3. Binding");
 
   TASK_DECLARE("b|bindings-compute", "binding a file", bind, "parse");
   DISJUNCTIVE_TASK_DECLARE("bound",
@@ -23,6 +23,10 @@ namespace bind::tasks
                "binding and printing a file",
                bind_print,
                "parse");
+  TASK_DECLARE("rename",
+               "TODO: Trouver quoi dire.",
+               rename,
+               "bindings-compute");
 } // namespace bind::tasks
 
 // End Fix

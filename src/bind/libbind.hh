@@ -6,3 +6,4 @@
 // FIXME: Some code was deleted here.
 
 void launch_bind();
+void launch_rename();
