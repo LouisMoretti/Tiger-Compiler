@@ -50,6 +50,11 @@ namespace bind
       {
         e.type_name_get()->accept(*this);
       }
+
+    if (e.init_get())
+      {
+        e.init_get()->accept(*this);
+      }
   }
 
   void Binder::operator()(ast::VarChunk& e)
