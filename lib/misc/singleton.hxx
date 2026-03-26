@@ -8,10 +8,10 @@
 
 namespace misc
 {
-  template <typename T> const Singleton<T>& misc::Singleton<T>::instance()
+  template <typename T> const T& misc::Singleton<T>::instance()
   {
-    static Singleton instance;
-    return instance;
+    static T singleton_;
+    return singleton_;
   }
 
 } // namespace misc

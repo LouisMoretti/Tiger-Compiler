@@ -17,7 +17,7 @@ namespace misc
     Singleton& operator=(const Singleton&) = delete;
     Singleton& operator=(Singleton&&) = delete;
 
-    static const Singleton& instance();
+    static const T& instance();
 
   private:
     Singleton() = default;
