@@ -1,11 +1,11 @@
-z /**
+/**
  ** \file misc/singleton.hh
  ** \brief Generic singleton
  */
 
 #pragma once
 
-  namespace misc
+namespace misc
 {
   template <typename T> class Singleton
   {
@@ -21,8 +21,9 @@ z /**
 
   private:
     Singleton() = default;
+    // End Fix
   };
 
-#include "misc/singleton.hxx"
-
 } // namespace misc
+
+#include "misc/singleton.hxx"
