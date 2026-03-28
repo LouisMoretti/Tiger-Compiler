@@ -24,7 +24,7 @@ namespace bind::tasks
                bind_print,
                "parse");
   TASK_DECLARE("rename",
-               "renamer the variables after binding",
+               "rename the variables after binding",
                rename,
                "bindings-compute");
 } // namespace bind::tasks
