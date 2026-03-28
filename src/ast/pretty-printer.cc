@@ -92,8 +92,8 @@ namespace ast
     ostr_ << " [";
     e.size_get().accept(*this);
 
-    if (bindings_display(ostr_))
-      ostr_ << " ";
+    // if (bindings_display(ostr_))
+    //   ostr_ << " ";
 
     ostr_ << "] of ";
     e.init_get().accept(*this);
