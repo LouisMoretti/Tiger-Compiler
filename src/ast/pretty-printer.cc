@@ -527,6 +527,9 @@ namespace ast
     if (bindings_display(ostr_))
       ostr_ << " /* " << &e << " */";
 
+    if (escapes_display(ostr_) && e.escape_get())
+      ostr_ << " /* escaping */";
+
     if (e.type_name_get() != nullptr)
       {
         ostr_ << " : ";

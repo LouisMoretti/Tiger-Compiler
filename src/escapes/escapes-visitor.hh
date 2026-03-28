@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <map>
+#include <ast/all.hh>
 #include <ast/default-visitor.hh>
 #include <ast/non-object-visitor.hh>
 
@@ -52,6 +54,17 @@ namespace escapes
     using super_type::operator();
 
     // FIXME: Some code was deleted here.
+    void operator()(ast::VarDec& e) override;
+    void operator()(ast::SimpleVar& e) override;
+
+    void operator()(ast::FunctionDec& e) override;
+    void operator()(ast::ForExp& e) override;
+    void operator()(ast::SeqExp& e) override;
+    void operator()(ast::LetExp& e) override;
+
+  private:
+    int scope_ = 0;
+    std::map<const ast::VarDec*, int> vars_scope_;
   };
 
 } // namespace escapes
