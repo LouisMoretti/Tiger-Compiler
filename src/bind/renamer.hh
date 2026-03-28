@@ -25,7 +25,7 @@ namespace bind
     // Import overloaded virtual functions.
     using super_type::operator();
 
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     Renamer() = default;
 
     // Visit methods.
@@ -37,7 +37,7 @@ namespace bind
 
     /// \name Visiting definition sites.
     /// \{
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     void operator()(ast::VarDec& e) override;
     void operator()(ast::FunctionDec& e) override;
     void operator()(ast::TypeDec& e) override;
@@ -52,7 +52,7 @@ namespace bind
     /// \}
 
   private:
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     std::map<const ast::Dec*, misc::symbol> unique_names_;
   };
 
