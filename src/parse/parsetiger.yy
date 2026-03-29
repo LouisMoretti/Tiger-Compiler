@@ -200,7 +200,8 @@
 %type <ast::exps_type*>       func_prms
 %type <ast::Var*>             lvalue lvalue.big
 
-%type <ast::FunctionChunk*>   funcdec
+%type <ast::FunctionChunk*>   functionChunk
+%type <ast::FunctionDec*>     funcdec
 %type <ast::VarChunk*>        vardec
 // End Fix
 
@@ -212,21 +213,22 @@
 // which can be understood as a list of two TypeChunk containing
 // a unique TypeDec each, or a single TypeChunk containing two TypeDec.
 // We want the latter.
-%precedence CHUNKS
-%precedence TYPE
 // FIXED: Some code was deleted here (Other declarations).
 // Start Fix
 
-
-%precedence THEN
-%precedence ELSE DO OF
+%precedence ASSIGN THEN DO OF
+%precedence ELSE
 %left OR
 %left AND
 %nonassoc GE LE EQ NE LT GT
 %left PLUS MINUS
 %left TIMES DIVIDE
 %precedence UMINUS
-%precedence ASSIGN
+
+%precedence CHUNKS
+%precedence TYPE
+
+%precedence FUNCTION PRIMITIVE
 // End Fix
 
 %start program
@@ -269,7 +271,7 @@ exp:
     { $$ = make_IntExp(@$, $1); }
   // FIXED: Some code was deleted here (More rules).
   // Start Fix
-  | STRING 
+  | STRING
     { $$ = make_StringExp(@$, $1); }
   | "nil"
     { $$ = make_NilExp(@$); }
@@ -373,49 +375,61 @@ chunks:
 | tychunk   chunks        { $$ = $2; $$->push_front($1); }
   // FIXED: Some code was deleted here (More rules).
   // Start Fix
-| funcdec chunks
+| functionChunk chunks
   { $$ = $2; $$->push_front($1); }
 | vardec chunks
   { $$ = $2; $$->push_front($1); }
+| "import" STRING[import]
+  { $$ = td.parse_import($import, @$); }
 | CHUNKS[meta] "(" INT[id] ")" chunks[list]
   { $$ = $list; $$->splice_front(*metavar<ast::ChunkList>(td, $id)); }
 ;
 // End Fix
 
 // Start Fix
+functionChunk:
+  funcdec %prec CHUNKS
+    { $$ = make_FunctionChunk(@$); $$->emplace_back(*$1); }
+  | funcdec[function] functionChunk[next]
+    { $$ = $next; $$->emplace_back(*$function); }
+
 funcdec:
   "function" ID[name] "(" tyfields[fields] ")" ":" typeid[type] "=" exp[body]
     {
-      $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$); 
+      auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
-        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+        varchunk->emplace_back(*make_VarDec(@$, field->name_get(), &field->type_name_get(), nullptr));
       }
-      $$->push_front(*make_FunctionDec(@$, $name, varchunk, $type, $body)); }
+      $$ = make_FunctionDec(@$, $name, varchunk, $type, $body); }
   | "function" ID[name] "(" tyfields[fields] ")" "=" exp[body]
-    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+    { auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
-        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+        varchunk->emplace_back(*make_VarDec(@$, field->name_get(), &field->type_name_get(), nullptr));
       }
-      $$->push_front(*make_FunctionDec(@$, $name, varchunk, nullptr, $body)); }
+      $$ = make_FunctionDec(@$, $name, varchunk, nullptr, $body); }
   | "primitive" ID[name] "(" tyfields[fields] ")" ":" typeid[type]
-    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+    { auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
-        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+        varchunk->emplace_back(*make_VarDec(@$, field->name_get(), &field->type_name_get(), nullptr));
       }
-      $$->push_front(*make_FunctionDec(@$, $name, varchunk, $type, nullptr)); }
+      $$ = make_FunctionDec(@$, $name, varchunk, $type, nullptr); }
   | "primitive" ID[name] "(" tyfields[fields] ")"
-    { $$ = make_FunctionChunk(@$); auto varchunk = make_VarChunk(@$);
+    { auto varchunk = make_VarChunk(@$);
       for (auto field: *$fields) {
-        varchunk->push_front(*make_VarDec(@$, field->name_get(), make_NameTy(@$, field->name_get()), nullptr));
+        varchunk->emplace_back(*make_VarDec(@$, field->name_get(), &field->type_name_get(), nullptr));
       }
-      $$->push_front(*make_FunctionDec(@$, $name, varchunk, nullptr, nullptr)); }
+      $$ = make_FunctionDec(@$, $name, varchunk, nullptr, nullptr); }
 ;
 
 vardec:
   "var" ID[name] ":" typeid[type] ":=" exp[value]
-    { $$ = make_VarChunk(@$); $$->push_front(*make_VarDec(@$, $name, $type, $value)); }
+    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, $type, $value)); }
   | "var" ID[name] ":=" exp[value]
-    { $$ = make_VarChunk(@$); $$->push_front(*make_VarDec(@$, $name, nullptr, $value)); }
+    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, nullptr, $value)); }
+  | "var" ID[name] ":" typeid[type]
+    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, $type, make_StringExp(@$, "nullptr"))); }
+  | "var" ID[name]
+    { $$ = make_VarChunk(@$); $$->emplace_back(*make_VarDec(@$, $name, nullptr, make_StringExp(@$, "nullptr"))); }
 ;
 // End Fix
 
@@ -470,4 +484,5 @@ parse::parser::error(const location_type& l, const std::string& m)
   // FIXED: Some code was deleted here.
   td.error_ << misc::error::error_type::parse;
   td.error_ << "Parsing Error was encountered at line " << l << ": " << m << std::endl;
+  td.error_.exit();
 }

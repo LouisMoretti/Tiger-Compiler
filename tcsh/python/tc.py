@@ -32,6 +32,12 @@ try_import(
         "parse",
         "object",
         "ast",
+        "bind",
+        "escapes",
+        "type",
+        "combine",
+        "astclone",
+        "desugar",
     ],
 )
 

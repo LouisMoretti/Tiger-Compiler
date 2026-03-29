@@ -219,8 +219,10 @@ namespace ast
     // FIXED: Some code was deleted here.
     // Start Fix
     e.formals_get().accept(*this);
-    e.result_get()->accept(*this);
-    e.body_get()->accept(*this);
+    if (e.result_get())
+      e.result_get()->accept(*this);
+    if (e.body_get())
+      e.body_get()->accept(*this);
     // End Fix
   }
 

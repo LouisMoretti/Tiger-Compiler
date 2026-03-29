@@ -9,6 +9,7 @@ AST_NODES =  \
   src/ast/chunk-list.hh src/ast/chunk-list.hxx src/ast/chunk-list.cc \
   src/ast/class-ty.hh src/ast/class-ty.hxx src/ast/class-ty.cc \
   src/ast/dec.hh src/ast/dec.hxx src/ast/dec.cc \
+  src/ast/escapable.hh src/ast/escapable.hxx src/ast/escapable.cc \
   src/ast/exp.hh src/ast/exp.hxx src/ast/exp.cc \
   src/ast/field.hh src/ast/field.hxx src/ast/field.cc \
   src/ast/field-init.hh src/ast/field-init.hxx src/ast/field-init.cc \
@@ -31,6 +32,8 @@ AST_NODES =  \
   src/ast/string-exp.hh src/ast/string-exp.hxx src/ast/string-exp.cc \
   src/ast/subscript-var.hh src/ast/subscript-var.hxx src/ast/subscript-var.cc \
   src/ast/ty.hh src/ast/ty.hxx src/ast/ty.cc \
+  src/ast/typable.hh src/ast/typable.hxx src/ast/typable.cc \
+  src/ast/type-constructor.hh src/ast/type-constructor.hxx src/ast/type-constructor.cc \
   src/ast/type-dec.hh src/ast/type-dec.hxx src/ast/type-dec.cc \
   src/ast/var.hh src/ast/var.hxx src/ast/var.cc \
   src/ast/var-dec.hh src/ast/var-dec.hxx src/ast/var-dec.cc \
