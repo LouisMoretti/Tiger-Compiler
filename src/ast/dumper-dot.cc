@@ -38,18 +38,24 @@ namespace ast
   void DumperDot::dump_type(const ast::Typable& e)
   {
     // FIXME: Some code was deleted here (Call node_html_field on a e.type_get() if exist).
+    // Start Fix
+    if (e.type_get())
+      {
+        node_html_field("type", e.type_get());
+      }
+    // End Fix
   }
 
   void DumperDot::operator()(const ArrayExp& e)
   {
     unsigned long old_parent_id = node_html_header(e, "ArrayExp");
     dump_type(e);
-    // FIXME: Some code was deleted here (node_html_ports with properties).
+    // FIXED: Some code was deleted here (node_html_ports with properties).
     // Start Fix
     node_html_ports({"type_name", "size", "init"});
     // End Fix
     footer_and_link(old_parent_id);
-    // FIXME: Some code was deleted here (dump).
+    // FIXED: Some code was deleted here (dump).
     // Start Fix
     dump("type_name", e.type_name_get());
     dump("size", e.size_get());
@@ -72,12 +78,12 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "AssignExp");
     dump_type(e);
-    // FIXME: Some code was deleted here (node_html_ports with properties).
+    // FIXED: Some code was deleted here (node_html_ports with properties).
     // Start Fix
     node_html_ports({"var", "exp"});
     // End Fix
     footer_and_link(old_parent_id);
-    // FIXME: Some code was deleted here (dump).
+    // FIXED: Some code was deleted here (dump).
     // Start Fix
     dump("var", e.var_get());
     dump("exp", e.exp_get());
@@ -99,19 +105,19 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "CallExp");
     dump_type(e);
-    // FIXME: Some code was deleted here (node_html_field).
+    // FIXED: Some code was deleted here (node_html_field).
     // Start Fix
     node_html_field("name", e.name_get());
     node_html_ports();
     // End Fix
-    // FIXME: Some code was deleted here (node_html_port_list for each list).
+    // FIXED: Some code was deleted here (node_html_port_list for each list).
     // Start Fix
     node_html_port_list("args", e.args_get());
     // End Fix
     node_html_one_port("def");
     footer_and_link(old_parent_id);
     dump_def(e);
-    // FIXME: Some code was deleted here (dump_list).
+    // FIXED: Some code was deleted here (dump_list).
     // Start Fix
     dump_list("args", e.args_get());
     // End Fix
@@ -164,16 +170,16 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "FieldVar");
     dump_type(e);
-    // FIXME: Some code was deleted here (node_html_field).
+    // FIXED: Some code was deleted here (node_html_field).
     // Start Fix
     node_html_field("name", e.name_get());
     // End Fix
-    // FIXME: Some code was deleted here (node_html_ports with properties).
+    // FIXED: Some code was deleted here (node_html_ports with properties).
     // Start Fix
     node_html_ports({"var"});
     // End Fix
     footer_and_link(old_parent_id);
-    // FIXME: Some code was deleted here (dump).
+    // FIXED: Some code was deleted here (dump).
     // Start Fix
     dump("var", e.var_get());
     // End Fix
@@ -209,12 +215,12 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "IfExp");
     dump_type(e);
-    // FIXME: Some code was deleted here (node_html_ports with properties).
+    // FIXED: Some code was deleted here (node_html_ports with properties).
     // Start Fix
     node_html_ports({"test", "thenclause", "elseclause"});
     // End Fix
     footer_and_link(old_parent_id);
-    // FIXME: Some code was deleted here (dump).
+    // FIXED: Some code was deleted here (dump).
     // Start Fix
     dump("test", e.test_get());
     dump("thenclause", e.thenclause_get());
@@ -236,12 +242,12 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "LetExp");
     dump_type(e);
-    // FIXME: Some code was deleted here (node_html_ports with properties).
+    // FIXED: Some code was deleted here (node_html_ports with properties).
     // Start Fix
     node_html_ports({"chunks", "body"});
     // End Fix
     footer_and_link(old_parent_id);
-    // FIXME: Some code was deleted here (dump).
+    // FIXED: Some code was deleted here (dump).
     // Start Fix
     dump("chunks", e.chunks_get());
     dump("body", e.body_get());
@@ -253,22 +259,22 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "MethodCallExp");
     dump_type(e);
-    // FIXME: Some code was deleted here (node_html_field).
+    // FIXED: Some code was deleted here (node_html_field).
     // Start Fix
     node_html_field("name", e.name_get());
     // End Fix
-    // FIXME: Some code was deleted here (node_html_ports with properties).
+    // FIXED: Some code was deleted here (node_html_ports with properties).
     // Start Fix
     node_html_ports({"object"});
     // End Fix
-    // FIXME: Some code was deleted here (node_html_port_list for each list).
+    // FIXED: Some code was deleted here (node_html_port_list for each list).
     // Start Fix
     node_html_port_list("args", e.args_get());
     // End Fix
     node_html_one_port("def");
     footer_and_link(old_parent_id);
     dump_def(e);
-    // FIXME: Some code was deleted here (dump and dump_list).
+    // FIXED: Some code was deleted here (dump and dump_list).
     // Start Fix
     dump("object", e.object_get());
     dump_list("args", e.args_get());
@@ -334,16 +340,16 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "RecordExp");
     dump_type(e);
-    // FIXME: Some code was deleted here (node_html_ports with properties).
+    // FIXED: Some code was deleted here (node_html_ports with properties).
     // Start Fix
     node_html_ports({"type_name"});
     // End Fix
-    // FIXME: Some code was deleted here (node_html_port_list for each list).
+    // FIXED: Some code was deleted here (node_html_port_list for each list).
     // Start Fix
     node_html_port_list("fields", e.fields_get());
     // End Fix
     footer_and_link(old_parent_id);
-    // FIXME: Some code was deleted here (dump and dump_list).
+    // FIXED: Some code was deleted here (dump and dump_list).
     // Start Fix
     dump("type_name", e.type_name_get());
     dump_list("fields", e.fields_get());
@@ -356,12 +362,12 @@ namespace ast
     unsigned long old_parent_id = node_html_header(e, "RecordTy");
     dump_type(e);
     node_html_ports();
-    // FIXME: Some code was deleted here (node_html_port_list for each list).
+    // FIXED: Some code was deleted here (node_html_port_list for each list).
     // Start Fix
     node_html_port_list("fields", e.fields_get(), true);
     // End Fix
     footer_and_link(old_parent_id);
-    // FIXME: Some code was deleted here (dump_list).
+    // FIXED: Some code was deleted here (dump_list).
     // Start Fix
     dump_list("fields", e.fields_get());
     // End Fix
@@ -373,12 +379,12 @@ namespace ast
     unsigned long old_parent_id = node_html_header(e, "SeqExp");
     dump_type(e);
     node_html_ports();
-    // FIXME: Some code was deleted here (node_html_port_list for each list).
+    // FIXED: Some code was deleted here (node_html_port_list for each list).
     // Start Fix
     node_html_port_list("exps", e.exps_get());
     // End Fix
     footer_and_link(old_parent_id);
-    // FIXME: Some code was deleted here (dump_list).
+    // FIXED: Some code was deleted here (dump_list).
     // Start Fix
     dump_list("exps", e.exps_get());
     // End Fix
@@ -400,7 +406,7 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "StringExp");
     dump_type(e);
-    // FIXME: Some code was deleted here (node_html_field, use misc::escape).
+    // FIXED: Some code was deleted here (node_html_field, use misc::escape).
     // Start Fix
     node_html_field("value", misc::escape(e.value_get()));
     // End Fix
