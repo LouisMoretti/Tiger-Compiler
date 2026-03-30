@@ -10,7 +10,7 @@
 
 namespace type
 {
-  // FIXME: Some code was deleted here (Builtin types : Int, String, Void, Nil).
+  // FIXED: Some code was deleted here (Builtin types : Int, String, Void, Nil).
   // Start Fix
   class Int
     : public misc::Singleton<Int>

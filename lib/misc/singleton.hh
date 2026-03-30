@@ -9,7 +9,7 @@ namespace misc
 {
   template <typename T> class Singleton
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
   public:
     // Start Fix
     Singleton(const Singleton&) = delete;
