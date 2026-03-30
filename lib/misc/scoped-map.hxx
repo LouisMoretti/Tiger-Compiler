@@ -48,12 +48,18 @@ namespace misc
   Data scoped_map<Key, Data>::get(const Key& key) const
     requires(pointer_type_concept<Key, Data>)
   {
-    if (scoped_map_.empty() || !scoped_map_.back().contains(key))
+    if (scoped_map_.empty())
       {
         return nullptr;
       }
 
-    return scoped_map_.back().at(key);
+    for (auto it = scoped_map_.rbegin(); it != scoped_map_.rend(); ++it)
+      {
+        if ((*it).contains(key))
+          return (*it).at(key);
+      }
+
+    return nullptr;
   }
 
   template <typename Key, typename Data>
@@ -73,20 +79,7 @@ namespace misc
   template <typename Key, typename Data>
   void scoped_map<Key, Data>::scope_begin()
   {
-    if (scoped_map_.empty())
-      {
-        scoped_map_.emplace_back();
-      }
-    else
-      {
-        auto& last_to_copy = scoped_map_.back();
-        std::map n = std::map<Key, Data>();
-        for (auto pair : last_to_copy)
-          {
-            n.insert(pair);
-          }
-        scoped_map_.push_back(n);
-      }
+    scoped_map_.emplace_back();
   }
 
   template <typename Key, typename Data> void scoped_map<Key, Data>::scope_end()
@@ -103,7 +96,13 @@ namespace misc
   template <typename Key, typename Data>
   bool scoped_map<Key, Data>::contains(const Key& key)
   {
-    return scoped_map_.back().contains(key);
+    for (auto it = scoped_map_.rbegin(); it != scoped_map_.rend(); ++it)
+      {
+        if ((*it).contains(key))
+          return true;
+      }
+
+    return false;
   }
 
   template <typename Key, typename Data>

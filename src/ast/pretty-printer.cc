@@ -92,8 +92,8 @@ namespace ast
     ostr_ << " [";
     e.size_get().accept(*this);
 
-    if (bindings_display(ostr_))
-      ostr_ << " ";
+    // if (bindings_display(ostr_))
+    //   ostr_ << " ";
 
     ostr_ << "] of ";
     e.init_get().accept(*this);
@@ -526,6 +526,9 @@ namespace ast
 
     if (bindings_display(ostr_))
       ostr_ << " /* " << &e << " */";
+
+    if (escapes_display(ostr_) && e.escape_get())
+      ostr_ << " /* escaping */";
 
     if (e.type_name_get() != nullptr)
       {
