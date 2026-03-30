@@ -19,7 +19,7 @@ namespace misc
 
     static const T& instance();
 
-  private:
+  protected:
     Singleton() = default;
     // End Fix
   };

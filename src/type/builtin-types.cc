@@ -13,7 +13,7 @@
 namespace type
 {
   // FIXME: Some code was deleted here (Int, String, Void, Nil).
-  void Int::accept(ConstVisitor& v) const override { v(*this); }
+  void Int::accept(ConstVisitor& v) const { v(*this); }
 
   void Int::accept(Visitor& v) { v(*this); }
 
