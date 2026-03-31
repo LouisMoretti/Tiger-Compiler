@@ -41,11 +41,22 @@ namespace ast
     const Ty& ty_get() const;
     /// Return type definition.
     Ty& ty_get();
+
+    // Fixed
+    // Start Fix
+    void created_type_set(const type::Type* created_type) override;
+    const type::Type* created_type_get() const override;
+    // End Fix
     /** \} */
 
   protected:
     /// Type definition.
     Ty* ty_;
+
+    // Fixed
+    // Start Fix
+    type::Type* created_type_ = nullptr;
+    // End Fix
   };
 } // namespace ast
 #include <ast/type-dec.hxx>
