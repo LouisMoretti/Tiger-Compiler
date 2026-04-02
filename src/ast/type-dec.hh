@@ -42,7 +42,7 @@ namespace ast
     /// Return type definition.
     Ty& ty_get();
 
-    // Fixed
+    // FIXED
     // Start Fix
     void created_type_set(const type::Type* created_type) override;
     const type::Type* created_type_get() const override;
@@ -53,7 +53,7 @@ namespace ast
     /// Type definition.
     Ty* ty_;
 
-    // Fixed
+    // FIXED
     // Start Fix
     type::Type* created_type_ = nullptr;
     // End Fix

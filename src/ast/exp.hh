@@ -35,7 +35,7 @@ namespace ast
 
     /** \name Accessors.
      ** \{ */
-    // Fixed
+    // FIXED
     // Start Fix
     void type_set(const type::Type type) override;
     const type::Type type_get() const override;
@@ -43,7 +43,7 @@ namespace ast
     /** \} */
 
   protected:
-    // Fixed
+    // FIXED
     // Start Fix
     type::Type type_;
     // End Fix

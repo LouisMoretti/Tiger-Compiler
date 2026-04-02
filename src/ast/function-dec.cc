@@ -37,6 +37,7 @@ namespace ast
   {
     this->created_type_ = created_type;
   }
+
   const type::Type* created_type_get() const { return this->created_type_; }
   // End Fix
 } // namespace ast

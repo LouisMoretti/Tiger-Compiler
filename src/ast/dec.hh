@@ -41,7 +41,7 @@ namespace ast
     /// Set name of the defined entity.
     void name_set(misc::symbol);
 
-    // Fixed
+    // FIXED
     // Start Fix
     void type_set(const type::Type type) override;
     const type::Type type_get() const override;
@@ -52,7 +52,7 @@ namespace ast
     /// Name of the defined entity.
     misc::symbol name_;
 
-    // Fixed
+    // FIXED
     // Start Fix
     type::Type type_;
     // End Fix

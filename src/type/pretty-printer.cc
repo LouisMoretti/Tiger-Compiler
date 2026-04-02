@@ -63,7 +63,7 @@ namespace type
 
   void PrettyPrinter::operator()(const Int&)
   {
-    // Fixed: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     // Start Fix
 
     ostr_ << "int";
@@ -73,7 +73,7 @@ namespace type
 
   void PrettyPrinter::operator()(const String&)
   {
-    // Fixed: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     // Start Fix
 
     ostr_ << "string";
@@ -83,7 +83,7 @@ namespace type
 
   void PrettyPrinter::operator()(const Named& e)
   {
-    // Fixed: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     // Start Fix
 
     ostr_ << e.name_get() << " : " << e.type_get();
@@ -98,7 +98,7 @@ namespace type
 
   void PrettyPrinter::operator()(const Record& e)
   {
-    // Fixed: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     // Start Fix
 
     auto it = e.begin();
@@ -130,7 +130,7 @@ namespace type
 
   void PrettyPrinter::operator()(const Function& e)
   {
-    // Fixed: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     // Start Fix
 
     ostr_ << e.name_get() << "( ";

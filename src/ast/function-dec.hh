@@ -59,7 +59,7 @@ namespace ast
     /// Set instructions.
     void body_set(Exp*);
 
-    // Fixed
+    // FIXED
     // Start Fix
     void created_type_set(const type::Type* created_type) override;
     const type::Type* created_type_get() const override;
@@ -74,7 +74,7 @@ namespace ast
     /// Instructions.
     Exp* body_;
 
-    // Fixed
+    // FIXED
     // Start Fix
     type::Type* created_type_ = nullptr;
     // End Fix
