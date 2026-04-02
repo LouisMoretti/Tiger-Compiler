@@ -92,10 +92,35 @@ namespace type
 
   void TypeChecker::operator()(ast::SimpleVar& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    // Start Fix
+    if (e.def_get())
+      {
+        (*this)(e.def_get());
+      }
+    // End Fix
   }
 
-  // FIXME: Some code was deleted here.
+  // FIXED: Some code was deleted here.
+  // Start Fix
+  void TypeChecker::operator()(ast::FieldVar& e)
+  {
+    // TODO
+
+    (*this)(e.var_get());
+  }
+
+  void TypeChecker::operator()(ast::SubscriptVar& e)
+  {
+    // TODO
+
+    (*this)(e.var_get());
+
+    // TODO: probably needs to be compared with an int
+
+    (*this)(e.index_get());
+  }
+  //End Fix
 
   /*-----------------.
   | Visiting /Exp/.  |
@@ -129,7 +154,68 @@ namespace type
     // FIXME: Some code was deleted here.
   }
 
-  // FIXME: Some code was deleted here.
+  // FIXED: Some code was deleted here.
+  // Start Fix
+  void TypeChecker::operator()(ast::CallExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::ObjectExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::MethodCallExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::ArrayExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::SeqExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::AssignExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::IfExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::WhileExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::ForExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::BreakExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::LetExp& e)
+  {
+    // TODO
+  }
+
+  void TypeChecker::operator()(ast::CastExp& e)
+  {
+    // TODO
+  }
+  // End Fix
 
   /*-----------------.
   | Visiting /Dec/.  |

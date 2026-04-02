@@ -20,19 +20,24 @@ namespace type
   template <typename NodeType>
   void TypeChecker::type_default(NodeType& e, const type::Type* type)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    if (e.type_get() == nullptr)
+      e.type_set(type);
   }
 
   template <typename NodeType>
   void TypeChecker::created_type_default(NodeType& e, const type::Type* type)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    if (e.created_type_get() == nullptr)
+      e.created_type_set(type);
   }
 
   template <typename NodeType>
   void TypeChecker::type_set(NodeType& e, const type::Type* type)
   {
-    // FIXME: Some code was deleted here (Basically e.type_set(type)).
+    // FIXED: Some code was deleted here (Basically e.type_set(type)).
+    e.type_set(type);
   }
 
   /*-----------------.
@@ -64,6 +69,13 @@ namespace type
                                const Type& expected)
   {
     // FIXME: Some code was deleted here.
+    // Start Fix
+    // maybe that this function needs to be recursive to check type inference...
+    if (e.type_get() != expected)
+      {
+        // TODO: maybe we need to call error or error_and_recover
+      }
+    // End Fix
   }
 
   /*------------.
