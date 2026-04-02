@@ -35,9 +35,18 @@ namespace ast
 
     /** \name Accessors.
      ** \{ */
+    // FIXED
+    // Start Fix
+    void type_set(const type::Type type) override;
+    const type::Type type_get() const override;
+    // End Fix
     /** \} */
 
   protected:
+    // FIXED
+    // Start Fix
+    type::Type type_;
+    // End Fix
   };
 } // namespace ast
 #include <ast/exp.hxx>

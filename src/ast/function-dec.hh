@@ -58,6 +58,12 @@ namespace ast
     Exp* body_get();
     /// Set instructions.
     void body_set(Exp*);
+
+    // FIXED
+    // Start Fix
+    void created_type_set(const type::Type* created_type) override;
+    const type::Type* created_type_get() const override;
+    // End Fix
     /** \} */
 
   protected:
@@ -67,6 +73,11 @@ namespace ast
     NameTy* result_;
     /// Instructions.
     Exp* body_;
+
+    // FIXED
+    // Start Fix
+    type::Type* created_type_ = nullptr;
+    // End Fix
   };
 } // namespace ast
 #include <ast/function-dec.hxx>

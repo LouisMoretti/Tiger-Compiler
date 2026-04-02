@@ -13,4 +13,10 @@ namespace ast
     , Typable()
   {}
 
+  // FIXED
+  // Start Fix
+  void Exp::type_set(const type::Type type) { this->type_ = type; }
+  const type::Type Exp::type_get() const { return this->type_; }
+  // End Fix
+
 } // namespace ast

@@ -34,6 +34,25 @@ namespace ast
     /// Accept a non-const visitor \a v.
     void accept(Visitor& v) override = 0;
     /// \}
+
+    /** \name Accessors.
+     ** \{ */
+    // FIXED
+    // Start Fix
+    void type_set(const type::Type type) override;
+    const type::Type type_get() const override;
+
+    void created_type_set(const type::Type* created_type) override;
+    const type::Type* created_type_get() const override;
+    // End Fix
+    /** \} */
+
+  protected:
+    // FIXED
+    // Start Fix
+    type::Type type_;
+    type::Type* created_type_ = nullptr;
+    // End Fix
   };
 } // namespace ast
 #include <ast/ty.hxx>

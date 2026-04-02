@@ -51,24 +51,44 @@ namespace type
 
   void PrettyPrinter::operator()(const Nil&)
   {
-    // FIXME: Some code was deleted here.
+    // Fixed: Some code was deleted here.
+    // Start Fix
+
+    ostr_ << "nil";
+
+    // End Fix
   }
 
   void PrettyPrinter::operator()(const Void&) { ostr_ << "void"; }
 
   void PrettyPrinter::operator()(const Int&)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    // Start Fix
+
+    ostr_ << "int";
+
+    // End Fix
   }
 
   void PrettyPrinter::operator()(const String&)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    // Start Fix
+
+    ostr_ << "string";
+
+    // End Fix
   }
 
   void PrettyPrinter::operator()(const Named& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    // Start Fix
+
+    ostr_ << e.name_get() << " : " << e.type_get();
+
+    // End Fix
   }
 
   void PrettyPrinter::operator()(const Array& e)
@@ -78,7 +98,29 @@ namespace type
 
   void PrettyPrinter::operator()(const Record& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    // Start Fix
+
+    auto it = e.begin();
+    ostr_ << "{";
+
+    if (it != e.end())
+      {
+        (*it).accept(*this);
+        ++it;
+      }
+
+    while (it != e.end())
+      {
+        ostr_ << ", ";
+        (*it).accept(*this);
+
+        ++it;
+      }
+
+    ostr_ << "}";
+
+    // End Fix
   }
 
   void PrettyPrinter::operator()(const Class& e)
@@ -88,7 +130,16 @@ namespace type
 
   void PrettyPrinter::operator()(const Function& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    // Start Fix
+
+    ostr_ << e.name_get() << "( ";
+
+    e.formals_get().accept(*this);
+
+    ostr_ << ") : " << e.result_get();
+
+    // End Fix
   }
 
   void PrettyPrinter::operator()(const Attribute& e)

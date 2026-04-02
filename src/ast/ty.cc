@@ -14,4 +14,16 @@ namespace ast
     , TypeConstructor()
   {}
 
+  // FIXED
+  // Start Fix
+  void Ty::type_set(const type::Type type) { this->type_ = type; }
+  const type::Type Ty::type_get() const { return this->type_; }
+
+  void created_type_set(const type::Type* created_type)
+  {
+    this->created_type_ = created_type;
+  }
+  const type::Type* created_type_get() const { return this->created_type_; }
+  // End Fix
+
 } // namespace ast
