@@ -11,7 +11,7 @@ namespace type
 {
   inline bool operator==(const Type& lhs, const Type& rhs)
   {
-    return lhs.actual() == rhs.actual();
+    return &lhs.actual() == &rhs.actual();
   }
 
   inline bool operator!=(const Type& lhs, const Type& rhs)

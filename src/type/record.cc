@@ -21,10 +21,11 @@ namespace type
   // FIXME: Some code was deleted here (Special implementation of "compatible_with" for Record).
   bool Record::compatible_with(const Type& other) const
   {
-    if (const auto* casted = dynamic_cast<const Nil*>(&other.actual()))
+    if (dynamic_cast<const Nil*>(&other.actual()))
       return true;
 
-    return Type::compatible_with(other);
+    // TODO: static cast ?
+    return dynamic_cast<const Type&>(*this) == other;
   }
 
 } // namespace type
