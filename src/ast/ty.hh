@@ -39,8 +39,8 @@ namespace ast
      ** \{ */
     // FIXED
     // Start Fix
-    void type_set(const type::Type type) override;
-    const type::Type type_get() const override;
+    void type_set(const type::Type* type) override;
+    const type::Type* type_get() const override;
 
     void created_type_set(const type::Type* created_type) override;
     const type::Type* created_type_get() const override;
@@ -50,8 +50,8 @@ namespace ast
   protected:
     // FIXED
     // Start Fix
-    type::Type type_;
-    type::Type* created_type_ = nullptr;
+    const type::Type* type_;
+    const type::Type* created_type_ = nullptr;
     // End Fix
   };
 } // namespace ast

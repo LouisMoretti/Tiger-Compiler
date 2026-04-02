@@ -106,14 +106,14 @@ namespace type
 
     if (it != e.end())
       {
-        (*it).accept(*this);
+        (*it).type_get().accept(*this);
         ++it;
       }
 
     while (it != e.end())
       {
         ostr_ << ", ";
-        (*it).accept(*this);
+        (*it).type_get().accept(*this);
 
         ++it;
       }
@@ -133,7 +133,7 @@ namespace type
     // FIXED: Some code was deleted here.
     // Start Fix
 
-    ostr_ << e.name_get() << "( ";
+    ostr_ << "function_call( ";
 
     e.formals_get().accept(*this);
 

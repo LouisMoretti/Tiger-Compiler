@@ -14,7 +14,7 @@ namespace ast
    ** \brief Create a new type.
    */
 
-  class TypeConstructor : public Ast
+  class TypeConstructor
   {
     // FIXME: Some code was deleted here.
   public:

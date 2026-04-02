@@ -76,7 +76,7 @@ namespace ast
 
     // FIXED
     // Start Fix
-    type::Type* created_type_ = nullptr;
+    const type::Type* created_type_ = nullptr;
     // End Fix
   };
 } // namespace ast

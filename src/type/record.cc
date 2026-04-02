@@ -27,7 +27,7 @@ namespace type
 
     misc::error error_;
     error_ << misc::error::error_type::type;
-    error_ << "No field with key: " << key;
+    error_ << "No field with key: " << key.get();
     error_.exit();
   }
 
@@ -43,7 +43,7 @@ namespace type
 
     misc::error error_;
     error_ << misc::error::error_type::type;
-    error_ << "No field with key: " << key;
+    error_ << "No field with key: " << key.get();
     error_.exit();
   }
 
