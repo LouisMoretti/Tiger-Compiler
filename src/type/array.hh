@@ -12,7 +12,8 @@ namespace type
   /// Array types.
   class Array : public Type
   {
-    // FIXME: Some code was deleted here.
+    void accept(ConstVisitor& v) const override;
+    void accept(Visitor& v) override;
   };
 
 } // namespace type

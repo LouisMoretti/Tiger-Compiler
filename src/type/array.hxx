@@ -10,5 +10,7 @@
 namespace type
 {
   // FIXME: Some code was deleted here.
+  // inline void Array::accept(ConstVisitor& v) const { v(*this); }
+  // inline void Array::accept(Visitor& v) { v(*this); }
 
 } // namespace type
