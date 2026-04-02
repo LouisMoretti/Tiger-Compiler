@@ -22,9 +22,17 @@ namespace type
   {}
 
   // Inherited functions
-  void Named::accept(ConstVisitor& v) const { v(*this); }
+  void Named::accept(ConstVisitor& v) const
+  {
+    // FIXED: Some code was deleted here.
+    v(*this);
+  }
 
-  void Named::accept(Visitor& v) { v(*this); }
+  void Named::accept(Visitor& v)
+  {
+    // FIXED: Some code was deleted here.
+    v(*this);
+  }
 
   bool Named::sound() const
   {
