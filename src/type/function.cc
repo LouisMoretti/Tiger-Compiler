@@ -25,7 +25,7 @@ namespace type
 
   void Function::accept(Visitor& v) { v(*this); }
 
-  // FIXME: Some code was deleted here.
+  // FIXED: Some code was deleted here.
   bool Function::compatible_with(const Type& other) const
   {
     if (const auto* casted = dynamic_cast<const Function*>(&other.actual()))

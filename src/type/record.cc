@@ -8,7 +8,6 @@
 #include <type/builtin-types.hh>
 #include <type/record.hh>
 #include <type/visitor.hh>
-#include "type/type.hh"
 
 namespace type
 {
@@ -18,14 +17,12 @@ namespace type
 
   // FIXME: Some code was deleted here (Field manipulators).
 
-  // FIXME: Some code was deleted here (Special implementation of "compatible_with" for Record).
+  // FIXED: Some code was deleted here (Special implementation of "compatible_with" for Record).
   bool Record::compatible_with(const Type& other) const
   {
     if (dynamic_cast<const Nil*>(&other.actual()))
       return true;
-
-    // TODO: static cast ?
-    return dynamic_cast<const Type&>(*this) == other;
+    return &this->actual() == &other.actual();
   }
 
 } // namespace type
