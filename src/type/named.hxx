@@ -6,6 +6,7 @@
 
 #include <misc/contract.hh>
 #include <type/named.hh>
+#include "misc/error.hh"
 
 namespace type
 {
@@ -19,7 +20,14 @@ namespace type
 
   inline const Type& Named::actual() const
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    if (type_)
+      return type_->actual();
+
+    misc::error error_;
+    error_ << misc::error::error_type::type;
+    error_ << "Uninitialized type in named.";
+    error_.exit();
   }
 
 } // namespace type
