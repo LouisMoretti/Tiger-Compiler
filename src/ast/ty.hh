@@ -50,7 +50,7 @@ namespace ast
   protected:
     // FIXED
     // Start Fix
-    const type::Type* type_;
+    const type::Type* type_ = nullptr;
     const type::Type* created_type_ = nullptr;
     // End Fix
   };

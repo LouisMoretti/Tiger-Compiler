@@ -267,12 +267,14 @@ namespace type
 
   void TypeChecker::operator()(ast::AssignExp& e)
   {
-    const ast::VarDec* v = dynamic_cast<const ast::VarDec*>(&e.var_get());
+    const ast::SimpleVar* v = dynamic_cast<const ast::SimpleVar*>(&e.var_get());
 
-    if (v && var_read_only_.contains(v))
+    if (v && var_read_only_.contains(v->def_get()))
       {
-        check_types(e, "var", *type(e.var_get()), "exp", *type(e.exp_get()));
+        error(e, "Updating read-only variable");
       }
+    check_types(e, "var", *type(e.var_get()), "exp", *type(e.exp_get()));
+    e.type_set(&Void::instance());
   }
 
   void TypeChecker::operator()(ast::IfExp& e)
