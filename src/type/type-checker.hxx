@@ -94,7 +94,7 @@ namespace type
     if (!rt)
       {
         // unreachable
-        error_and_recover(e, "wrong type", e.type_get()->actual());
+        error_and_recover(e, "wrong type", e.created_type_get()->actual());
       }
 
     check_types(e, "body", *type(*e.body_get()), "return", rt->result_get());
