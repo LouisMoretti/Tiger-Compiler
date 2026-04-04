@@ -176,13 +176,18 @@ namespace type
   void TypeChecker::operator()(ast::RecordExp& e)
   {
     // FIXED: Some code was deleted here.
-    const Record* r = dynamic_cast<const Record*>(e.type_name_get().def_get());
-
+    const Record* r = dynamic_cast<const Record*>(
+      e.type_name_get().def_get()->ty_get().type_get());
+    if (!r)
+      {
+        error(e, "RecordExp: Untyped");
+      }
     for (size_t i = 0; i < e.fields_get().size(); ++i)
       {
         check_types(e, "left field", r->fields_get()[i].type_get(),
                     "right field", *type(e.fields_get()[i]->init_get()));
       }
+    type_set(e, e.type_name_get().type_get());
   }
 
   void TypeChecker::operator()(ast::OpExp& e)
