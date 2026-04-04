@@ -32,7 +32,6 @@ namespace type
     // FIXED: Some code was deleted here.
     if (e.created_type_get() == nullptr)
       e.created_type_set(type);
-    // TODO: Rajouter type_set ?
   }
 
   template <typename NodeType>
@@ -87,11 +86,14 @@ namespace type
   void TypeChecker::visit_routine_body(Routine_Node& e)
   {
     // FIXED: Some code was deleted here.
-    // TODO: Dynamic or static cast ??
-    const Routine_Type* rt =
-      dynamic_cast<const Routine_Type*>(e.created_type_get());
+    const Routine_Type* rt = dynamic_cast<const Routine_Type*>(e.type_get());
 
-    check_types(e, "body", *type(*e.body_get()), "routine", rt->result_get());
+    if (!rt)
+      {
+        error_and_recover(e, "wrong type", e.type_get()->actual());
+      }
+
+    check_types(e, "body", *type(*e.body_get()), "return", rt->result_get());
   }
 
 } // namespace type

@@ -1,0 +1,5 @@
+let
+  type weirdo = array of weirdo
+in
+  print("I'm a creep.\n")
+end

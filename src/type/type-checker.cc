@@ -110,13 +110,12 @@ namespace type
     // FIXED: Some code was deleted here.
     // Start Fix
 
-    // No need for if because bider already checked.
-    // if (e.def_get())
-    //   {
-    //     (*this)(*e.def_get());
-    //   }
+    // need for if because binder might not be called
 
-    type_set(e, type(*e.def_get()));
+    if (e.def_get())
+      {
+        type_set(e, type(*e.def_get()));
+      }
     // End Fix
   }
 
@@ -176,7 +175,14 @@ namespace type
 
   void TypeChecker::operator()(ast::RecordExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const Record* r = dynamic_cast<const Record*>(e.type_name_get().def_get());
+
+    for (size_t i = 0; i < e.fields_get().size(); ++i)
+      {
+        check_types(e, "left field", r->fields_get()[i].type_get(),
+                    "right field", *type(e.fields_get()[i]->init_get()));
+      }
   }
 
   void TypeChecker::operator()(ast::OpExp& e)
@@ -217,7 +223,11 @@ namespace type
       dynamic_cast<const Function*>(e.def_get()->created_type_get());
 
     size_t len = f->formals_get().fields_get().size();
-    // TODO: Assert args.size() == len.
+
+    if (e.args_get().size() != len)
+      {
+        error(e, "invalid number of arguments");
+      }
 
     for (size_t i = 0; i < len; ++i)
       check_types(e, "argument", *type(*e.args_get()[i]), "formal",
@@ -240,7 +250,10 @@ namespace type
 
   void TypeChecker::operator()(ast::ArrayExp& e)
   {
-    // TODO
+    check_types(e, "len", *type(e.size_get()), "given", Int::instance());
+
+    check_types(e, "array", *type(e.type_name_get()), "elements",
+                *type(e.init_get()));
   }
 
   void TypeChecker::operator()(ast::SeqExp& e)
@@ -254,27 +267,42 @@ namespace type
 
   void TypeChecker::operator()(ast::AssignExp& e)
   {
-    // TODO
+    const ast::VarDec* v = dynamic_cast<const ast::VarDec*>(&e.var_get());
+
+    if (v && var_read_only_.contains(v))
+      {
+        check_types(e, "var", *type(e.var_get()), "exp", *type(e.exp_get()));
+      }
   }
 
   void TypeChecker::operator()(ast::IfExp& e)
   {
     check_type(e.test_get(), "expected int", Int::instance());
-    check_types(e, "then", e.thenclause_get(), "else", e.elseclause_get());
+
+    check_types(e, "then", *type(e.thenclause_get()), "else",
+                *type(e.elseclause_get()));
+
     type_set(e, e.thenclause_get().type_get());
   }
 
   void TypeChecker::operator()(ast::WhileExp& e)
   {
     check_type(e.test_get(), "expected int", Int::instance());
-    // TODO: Check body type with ??
+
+    check_type(e.body_get(), "expected void", Void::instance());
 
     type_set(e, &Void::instance());
   }
 
   void TypeChecker::operator()(ast::ForExp& e)
   {
-    // TODO
+    check_types(e, "var",
+                *type(e.vardec_get().type_name_get()->def_get()->ty_get()),
+                "init", *type(*e.vardec_get().init_get()));
+
+    var_read_only_.insert(&e.vardec_get());
+
+    check_type(e.body_get(), "expected void", Void::instance());
   }
 
   void TypeChecker::operator()(ast::BreakExp& e)
@@ -285,7 +313,10 @@ namespace type
   void TypeChecker::operator()(ast::LetExp& e)
   {
     e.chunks_get().accept(*this);
+
     type_set(e, type(e.body_get()));
+
+    check_type(e.body_get(), "expected void", Void::instance());
   }
 
   void TypeChecker::operator()(ast::CastExp& e)
@@ -339,7 +370,12 @@ namespace type
   void TypeChecker::operator()(ast::VarDec& e)
   {
     // FIXED: Some code was deleted here.
-    // TODO: Cas type_name_get() == null car optional.
+
+    if (e.type_name_get() == nullptr)
+      {
+        error(e, "No type given for the VarDec");
+      }
+
     const Type* t = type(*e.type_name_get());
 
     if (e.init_get())
@@ -380,11 +416,18 @@ namespace type
     type(e.ty_get());
 
     const Named* n = dynamic_cast<const Named*>(e.created_type_get());
-    // TODO: Error if (!n).
+
+    if (!n)
+      {
+        error(e, "dynamic cast failed, cannot cast TypeDec to Named");
+      }
 
     n->type_set(e.ty_get().created_type_get());
 
-    // TODO: Check here for recursive named ?? (sound)
+    if (!n->sound())
+      {
+        error_and_recover(e, "cycle of type detected", e.name_get());
+      }
   }
 
   /*------------------.
@@ -412,10 +455,10 @@ namespace type
       type_set(e, &Int::instance());
     else if (e.name_get() == "string")
       type_set(e, &String::instance());
-    // else if (e.def_get() != nullptr)
-    else
+    else if (e.def_get() != nullptr)
       type_set(e, e.def_get()->created_type_get());
-    // TODO: Error if (e.def_get() == nullptr) ???
+    else
+      error(e, "No definition for NameTy");
   }
 
   void TypeChecker::operator()(ast::RecordTy& e)
