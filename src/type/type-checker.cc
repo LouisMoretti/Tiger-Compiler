@@ -382,6 +382,8 @@ namespace type
           {
             error(e, "No detectable type");
           }
+
+        return;
       }
 
     const Type* t = type(*e.type_name_get());
