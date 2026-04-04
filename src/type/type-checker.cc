@@ -303,6 +303,8 @@ namespace type
     var_read_only_.insert(&e.vardec_get());
 
     check_type(e.body_get(), "expected void", Void::instance());
+
+    type_set(e, &Void::instance());
   }
 
   void TypeChecker::operator()(ast::BreakExp& e)
@@ -373,7 +375,14 @@ namespace type
 
     if (e.type_name_get() == nullptr)
       {
-        error(e, "No type given for the VarDec");
+        if (e.init_get())
+          {
+            e.type_set(e.init_get()->type_get());
+          }
+        else
+          {
+            error(e, "No detectable type");
+          }
       }
 
     const Type* t = type(*e.type_name_get());
