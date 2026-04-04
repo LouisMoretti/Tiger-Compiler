@@ -296,9 +296,8 @@ namespace type
 
   void TypeChecker::operator()(ast::ForExp& e)
   {
-    check_types(e, "var",
-                *type(e.vardec_get().type_name_get()->def_get()->ty_get()),
-                "init", *type(*e.vardec_get().init_get()));
+    check_type(e.vardec_get(), "expected int", Int::instance());
+    check_type(e.hi_get(), "expected int", Int::instance());
 
     var_read_only_.insert(&e.vardec_get());
 
