@@ -25,7 +25,8 @@ namespace type
   const Type* TypeChecker::type(ast::Typable& e)
   {
     // FIXED: Some code was deleted here.
-    e.accept(*this);
+    if (!e.type_get())
+      e.accept(*this);
     return e.type_get();
   }
 
@@ -187,7 +188,7 @@ namespace type
         check_types(e, "left field", r->fields_get()[i].type_get(),
                     "right field", *type(e.fields_get()[i]->init_get()));
       }
-    type_set(e, e.type_name_get().type_get());
+    type_set(e, type(e.type_name_get()));
   }
 
   void TypeChecker::operator()(ast::OpExp& e)
@@ -204,6 +205,9 @@ namespace type
     else if (e.oper_get() == ast::OpExp::Oper::eq
              || e.oper_get() == ast::OpExp::Oper::ne)
       {
+        auto tmp1 = type(e.left_get());
+        auto tmp2 = type(e.right_get());
+
         check_types(e, "left op", *type(e.left_get()), "right op",
                     *type(e.right_get()));
       }
@@ -261,6 +265,8 @@ namespace type
 
     check_types(e, "array", *type(e.type_name_get()), "elements",
                 *type(e.init_get()));
+
+    e.type_set(e.type_name_get().type_get());
   }
 
   void TypeChecker::operator()(ast::SeqExp& e)
