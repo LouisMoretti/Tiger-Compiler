@@ -467,7 +467,6 @@ namespace type
     const Record* r = type(e.fields_get());
 
     created_type_default(e, r);
-    type_default(e, r);
   }
 
   void TypeChecker::operator()(ast::ArrayTy& e)
@@ -476,7 +475,6 @@ namespace type
     const Array* a = new Array(*type(e.base_type_get()));
 
     created_type_default(e, a);
-    type_default(e, a);
   }
 
 } // namespace type

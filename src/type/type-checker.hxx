@@ -32,6 +32,8 @@ namespace type
     // FIXED: Some code was deleted here.
     if (e.created_type_get() == nullptr)
       e.created_type_set(type);
+
+    type_default(e, type);
   }
 
   template <typename NodeType>
@@ -86,10 +88,12 @@ namespace type
   void TypeChecker::visit_routine_body(Routine_Node& e)
   {
     // FIXED: Some code was deleted here.
-    const Routine_Type* rt = dynamic_cast<const Routine_Type*>(e.type_get());
+    const Routine_Type* rt =
+      dynamic_cast<const Routine_Type*>(e.created_type_get());
 
     if (!rt)
       {
+        // unreachable
         error_and_recover(e, "wrong type", e.type_get()->actual());
       }
 
