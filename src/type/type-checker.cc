@@ -34,8 +34,8 @@ namespace type
   {
     auto res = new Record;
     // FIXED: Some code was deleted here.
-    for (const auto& var : e)
-      res->field_add(var->name_get(), *type(var->type_name_get()));
+    for (const auto& field : e)
+      res->field_add(field->name_get(), *type(field->type_name_get()));
 
     return res;
   }
