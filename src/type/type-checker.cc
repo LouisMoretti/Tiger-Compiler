@@ -484,7 +484,10 @@ namespace type
     else if (e.def_get() != nullptr)
       type_set(e, e.def_get()->created_type_get());
     else
-      error(e, "No definition for NameTy");
+      {
+        //error(e, "No definition for NameTy");
+        return;
+      }
   }
 
   void TypeChecker::operator()(ast::RecordTy& e)
