@@ -228,10 +228,12 @@ namespace type
       {
         error(e, "invalid number of arguments");
       }
-
-    for (size_t i = 0; i < len; ++i)
-      check_types(e, "argument", *type(*e.args_get()[i]), "formal",
-                  f->formals_get().fields_get()[i].type_get());
+    else
+      {
+        for (size_t i = 0; i < len; ++i)
+          check_types(e, "argument", *type(*e.args_get()[i]), "formal",
+                      f->formals_get().fields_get()[i].type_get());
+      }
 
     type_set(e, &f->result_get());
   }
@@ -273,6 +275,7 @@ namespace type
       {
         error(e, "Updating read-only variable");
       }
+
     check_types(e, "var", *type(e.var_get()), "exp", *type(e.exp_get()));
     e.type_set(&Void::instance());
   }
