@@ -205,9 +205,6 @@ namespace type
     else if (e.oper_get() == ast::OpExp::Oper::eq
              || e.oper_get() == ast::OpExp::Oper::ne)
       {
-        auto tmp1 = type(e.left_get());
-        auto tmp2 = type(e.right_get());
-
         check_types(e, "left op", *type(e.left_get()), "right op",
                     *type(e.right_get()));
       }
