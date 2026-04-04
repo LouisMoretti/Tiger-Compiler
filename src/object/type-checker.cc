@@ -35,10 +35,14 @@ namespace object
   void TypeChecker::operator()(ast::SimpleVar& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void TypeChecker::operator()(ast::FieldVar& e)
   {
+    (void)e;
+    return;
+
     const type::Type* def_type = nullptr;
     // FIXME: Some code was deleted here (Grab type).
     auto class_type = dynamic_cast<const type::Class*>(&def_type->actual());
@@ -59,6 +63,7 @@ namespace object
   void TypeChecker::operator()(ast::NameTy& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   /*-----------------.
@@ -80,6 +85,7 @@ namespace object
     //    a.print() /* error */
     // end
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void TypeChecker::operator()(ast::OpExp& e)
@@ -96,16 +102,19 @@ namespace object
     //   a = b
     // end
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void TypeChecker::operator()(ast::ObjectExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void TypeChecker::operator()(ast::MethodCallExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   /*-----------------.
@@ -156,6 +165,9 @@ namespace object
   {
     assertion(current_);
 
+    (void)e;
+    return;
+
     // FIXME: Some code was deleted here.
 
     // Check for multiple definitions in the current class.
@@ -167,6 +179,7 @@ namespace object
     const auto* super_meth_type =
       dynamic_cast<const type::Method*>(current_->meth_type(e.name_get()));
     // FIXME: Some code was deleted here.
+    (void)super_meth_type;
   }
 
   // Type check this method's body.
@@ -225,6 +238,8 @@ namespace object
     // FIXME: Some code was deleted here (Set the type of the super class).
 
     // FIXME: Some code was deleted here (Recursively update the list of subclasses of the super classes).
+
+    (void)e;
   }
 
   // Handle the members of a class.

@@ -9,8 +9,13 @@
 namespace type
 {
   // FIXED: Some code was deleted here.
-  // TODO: Check if need to store type inside.
+  Array::Array(const Type& type)
+    : type_(type)
+  {}
+
   void Array::accept(ConstVisitor& v) const { v(*this); }
   void Array::accept(Visitor& v) { v(*this); }
+
+  const Type& Array::type_get() const { return type_; }
 
 } // namespace type

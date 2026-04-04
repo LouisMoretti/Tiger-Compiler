@@ -35,6 +35,7 @@ namespace object
   void Renamer::operator()(ast::MethodChunk& e)
   {
     // FIXME: Some code was deleted here (Just recurse on children nodes).
+    (void)e;
   }
 
   void Renamer::operator()(ast::MethodDec& e)
@@ -58,6 +59,7 @@ namespace object
 
     // Collect the name of the classes.
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   /*-----------------------.
@@ -67,6 +69,7 @@ namespace object
   void Renamer::operator()(ast::MethodCallExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   /*--------------------------------------.
@@ -76,16 +79,19 @@ namespace object
   void Renamer::operator()(ast::ClassTy& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Renamer::operator()(ast::ObjectExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Renamer::operator()(ast::LetExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   /*--------------.

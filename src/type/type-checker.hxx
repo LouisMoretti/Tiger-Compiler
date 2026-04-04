@@ -9,6 +9,7 @@
 #include <type/pretty-printer.hh>
 #include <type/type-checker.hh>
 #include <type/types.hh>
+#include "type/builtin-types.hh"
 
 namespace type
 {
@@ -31,6 +32,7 @@ namespace type
     // FIXED: Some code was deleted here.
     if (e.created_type_get() == nullptr)
       e.created_type_set(type);
+    // TODO: Rajouter type_set ?
   }
 
   template <typename NodeType>
@@ -58,9 +60,10 @@ namespace type
   {
     error(loc, msg, exp);
 
-    const type::Type* nil_error_ = nullptr;
-    // FIXME: Some code was deleted here (Get the Nil type).
-    loc.type_set(nil_error_);
+    // const type::Type* nil_error_ = nullptr;
+    // FIXED: Some code was deleted here (Get the Nil type).
+    // loc.type_set(nil_error_);
+    loc.type_set(&Nil::instance());
   }
 
   template <typename NodeType>
@@ -68,13 +71,11 @@ namespace type
                                const std::string& s,
                                const Type& expected)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     // Start Fix
-    // maybe that this function needs to be recursive to check type inference...
-    if (e.type_get() != expected)
-      {
-        // TODO: maybe we need to call error or error_and_recover
-      }
+    type(e);
+    if (e.type_get()->actual() != expected)
+      error_and_recover(e, s, e.type_get()->actual());
     // End Fix
   }
 
@@ -85,7 +86,12 @@ namespace type
   template <typename Routine_Type, typename Routine_Node>
   void TypeChecker::visit_routine_body(Routine_Node& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    // TODO: Dynamic or static cast ??
+    const Routine_Type* rt =
+      dynamic_cast<const Routine_Type*>(e.created_type_get());
+
+    check_types(e, "body", *type(*e.body_get()), "routine", rt->result_get());
   }
 
 } // namespace type

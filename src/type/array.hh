@@ -14,8 +14,15 @@ namespace type
   {
     // FIXED: Some code was deleted here.
   public:
+    Array(const Type& type);
+
     void accept(ConstVisitor& v) const override;
     void accept(Visitor& v) override;
+
+    const Type& type_get() const;
+
+  private:
+    const Type& type_;
   };
 
 } // namespace type
