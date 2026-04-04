@@ -376,7 +376,7 @@ namespace type
       {
         if (e.init_get())
           {
-            e.type_set(e.init_get()->type_get());
+            e.type_set(type(*e.init_get()));
           }
         else
           {
