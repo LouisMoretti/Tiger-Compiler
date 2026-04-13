@@ -517,18 +517,23 @@ namespace ast
   {
     if (e.init_get())
       {
-        ostr_ << "var " << e.name_get();
+        ostr_ << "var ";
+
+        if (escapes_display(ostr_) && e.escape_get())
+          ostr_ << "/* escaping */ ";
+
+        ostr_ << e.name_get();
       }
     else
       {
+        if (escapes_display(ostr_) && e.escape_get())
+          ostr_ << "/* escaping */ ";
+
         ostr_ << e.name_get();
       }
 
     if (bindings_display(ostr_))
       ostr_ << " /* " << &e << " */";
-
-    if (escapes_display(ostr_) && e.escape_get())
-      ostr_ << " /* escaping */";
 
     if (e.type_name_get() != nullptr)
       {
