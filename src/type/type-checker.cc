@@ -332,8 +332,6 @@ namespace type
     e.chunks_get().accept(*this);
 
     type_set(e, type(e.body_get()));
-
-    check_type(e.body_get(), "expected void", Void::instance());
   }
 
   void TypeChecker::operator()(ast::CastExp& e)
