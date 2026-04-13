@@ -27,7 +27,7 @@ def get_mode(test_type : str) -> str:
     elif test_type == "bind":
         return "-bBA"
     elif test_type == "type":
-        return "-beBEA"
+        return "-AT"
     return "-A"
 
 @pytest.mark.parametrize("filepath,test_type", param_filepaths)
