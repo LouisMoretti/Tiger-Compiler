@@ -226,7 +226,15 @@ namespace astclone
 
   void Cloner::operator()(const ast::RecordTy& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const Location& location = e.location_get();
+    fields_type* record_fields = new fields_type();
+    for (auto f : e.fields_get())
+      {
+        record_fields->emplace_back(recurse(f));
+      }
+    auto recordty = new RecordTy(location, record_fields);
+    result_ = recordty;
   }
 
   void Cloner::operator()(const ast::SeqExp& e)
