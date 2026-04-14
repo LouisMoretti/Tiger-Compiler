@@ -308,17 +308,20 @@ namespace astclone
 
   void Cloner::operator()(const ast::MethodChunk& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    chunk_visit<ast::MethodChunk>(e);
   }
 
   void Cloner::operator()(const ast::TypeChunk& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    chunk_visit<ast::TypeChunk>(e);
   }
 
   void Cloner::operator()(const ast::VarChunk& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    chunk_visit<ast::VarChunk>(e);
   }
 
 } // namespace astclone
