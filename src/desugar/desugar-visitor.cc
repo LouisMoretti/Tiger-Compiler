@@ -25,6 +25,8 @@ namespace desugar
   void DesugarVisitor::operator()(const ast::OpExp& e)
   {
     // FIXME: Some code was deleted here.
+    result_ = new ast::CallExp(e.location_get(), "streq",
+                               new ast::exps_type(e.left_get(), e.right_get()));
   }
 
   /*----------------------.
@@ -70,6 +72,63 @@ namespace desugar
   void DesugarVisitor::operator()(const ast::ForExp& e)
   {
     // FIXME: Some code was deleted here.
+    // TODO: Check if names are right (Keep old names when necessary)
+    // TODO: Fix compilation...
+    ast::ChunkList* decs = new ast::ChunkList(e.location_get() + 1);
+    ast::VarChunk* varChunk = new ast::VarChunk(e.location_get());
+    varChunk->emplace_back(
+      *(new ast::VarDec(e.location_get() + 1, misc::symbol("_lo"), nullptr,
+                        e.vardec_get().init_get())));
+    varChunk->emplace_back(*(new ast::VarDec(
+      e.location_get() + 2, misc::symbol("_hi"), nullptr, e.hi_get())));
+    varChunk->emplace_back(*(new ast::VarDec(
+      e.location_get() + 3, misc::symbol("i"), nullptr,
+      new ast::SimpleVar(e.location_get() + 3, misc::symbol("_lo")))));
+    decs->emplace_back(varChunk);
+    result_ = new ast::LetExp(
+      e.location_get(), decs,
+      new ast::SeqExp(
+        e.location_get() + 5,
+        new ast::exps_type(new ast::IfExp(
+          e.location_get() + 6,
+          new ast::OpExp(
+            e.location_get() + 6,
+            new ast::SimpleVar(e.location_get() + 6, misc::symbol("i")),
+            ast::OpExp::Oper::lt,
+            new ast::SimpleVar(e.location_get() + 6, misc::symbol("_hi"))),
+          new ast::WhileExp(
+            e.location_get() + 7, new ast::IntExp(e.location_get() + 7, 1),
+            new ast::SeqExp(
+              e.location_get() + 8,
+              new ast::exps_type(
+                e.body_get(),
+                new ast::IfExp(
+                  e.location_get() + 8 + e.body_get().location_get(),
+                  new ast::OpExp(
+                    e.location_get() + 8 + e.body_get().location_get(),
+                    new ast::SimpleVar(e.location_get() + 8
+                                         + e.body_get().location_get(),
+                                       misc::symbol("i")),
+                    ast::OpExp::Oper::eq,
+                    new ast::SimpleVar(e.location_get() + 8
+                                         + e.body_get().location_get(),
+                                       misc::symbol("_hi"))),
+                  new ast::BreakExp(e.location_get() + 9
+                                    + e.body_get().location_get())),
+                new ast::AssignExp(
+                  e.location_get() + 10 + e.body_get().location_get(),
+                  new ast::SimpleVar(e.location_get() + 10
+                                       + e.body_get().location_get(),
+                                     misc::symbol("i")),
+                  new ast::OpExp(
+                    e.location_get() + 10 + e.body_get().location_get(),
+                    new ast::SimpleVar(e.location_get() + 10
+                                         + e.body_get().location_get(),
+                                       misc::symbol("i")),
+                    ast::OpExp::Oper::add,
+                    new ast::IntExp(e.location_get() + 10
+                                      + e.body_get().location_get(),
+                                    1))))))))));
   }
 
 } // namespace desugar
