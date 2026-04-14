@@ -1,3 +1,4 @@
+#include <cassert>
 #include <ast/all.hh>
 #include <ast/default-visitor.hh>
 #include <ast/non-object-visitor.hh>
@@ -49,7 +50,20 @@ namespace llvmtranslate
     void operator()(const ast::FunctionDec& e) override
     {
       // Keep track of the current function
-      // FIXME: Some code was deleted here.
+      // FIXED: Some code was deleted here.
+      auto tmp = this->actual_func_;
+      const type::Function* cast =
+        dynamic_cast<const type::Function*>(&e.type_get()->actual());
+
+      assert(cast && "function dec not a function, error in type checker");
+
+      this->actual_func_ = cast;
+
+      this->escaped_[this->actual_func_] = misc::set<const ast::VarDec*>();
+
+      super_type::operator()(e);
+
+      this->actual_func_ = tmp;
     }
 
     void operator()(const ast::CallExp& e) override
@@ -60,7 +74,19 @@ namespace llvmtranslate
 
       // Check whether there are any newly collected escaped variables.
       // If there are, mark the iteration as modified.
-      // FIXME: Some code was deleted here.
+      // FIXED: Some code was deleted here.
+
+      for (auto arg : e.args_get())
+        {
+          const ast::VarDec* cast = dynamic_cast<const ast::VarDec*>(arg);
+
+          assert(cast && "var dec not a vardec, error in type checker");
+
+          if (cast->escape_get())
+            {
+              escaped_.at(this->actual_func_).insert(cast);
+            }
+        }
     }
 
     void operator()(const ast::SimpleVar& e) override
@@ -78,7 +104,8 @@ namespace llvmtranslate
     escaped_map_type escaped_;
 
     /// Current visiting function.
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const type::Function* actual_func_;
   };
 
   escaped_map_type collect_escapes(const ast::Ast& ast)
