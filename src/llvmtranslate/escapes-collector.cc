@@ -70,7 +70,7 @@ namespace llvmtranslate
     {
       super_type::operator()(e);
 
-      // FIXME: Some code was deleted here.
+      // FIXED: Some code was deleted here.
 
       // Check whether there are any newly collected escaped variables.
       // If there are, mark the iteration as modified.
@@ -93,7 +93,15 @@ namespace llvmtranslate
     {
       // Associate escaped variables declared in parent frames with their
       // functions
-      // FIXME: Some code was deleted here.
+      // FIXED: Some code was deleted here.
+      const ast::VarDec* cast = dynamic_cast<const ast::VarDec*>(e.def_get());
+
+      assert(cast && "var dec not a vardec, error in type checker");
+
+      if (cast->escape_get())
+        {
+          escaped_.at(this->actual_func_).insert(cast);
+        }
     }
 
   private:
