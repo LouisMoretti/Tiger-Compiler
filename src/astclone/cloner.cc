@@ -47,7 +47,10 @@ namespace astclone
 
   void Cloner::operator()(const ast::BreakExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const Location& location = e.location_get();
+    auto breakexp = new BreakExp(location);
+    result_ = breakexp;
   }
 
   void Cloner::operator()(const ast::CallExp& e)
