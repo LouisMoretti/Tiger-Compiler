@@ -219,8 +219,7 @@ namespace astclone
     NameTy* type_name = recurse(e.type_name_get());
     fieldinits_type* fields = new fieldinits_type();
     for (auto v : e.fields_get())
-      fields->emplace_back(new FieldInit(v->location_get(), v->name_get(),
-                                         recurse(v->init_get())));
+      fields->emplace_back(recurse(*v));
     result_ = new RecordExp(location, type_name, fields);
   }
 
