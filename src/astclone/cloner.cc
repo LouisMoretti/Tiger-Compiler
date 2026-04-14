@@ -108,7 +108,12 @@ namespace astclone
 
   void Cloner::operator()(const ast::FieldVar& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const Location& location = e.location_get();
+    misc::symbol field_name = e.name_get();
+    Var* field_var = recurse(e.var_get());
+    auto fieldvar = new FieldVar(location, field_var, field_name);
+    result_ = fieldvar;
   }
 
   void Cloner::operator()(const ast::ForExp& e)
