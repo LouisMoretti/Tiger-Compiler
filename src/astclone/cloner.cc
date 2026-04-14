@@ -55,7 +55,16 @@ namespace astclone
 
   void Cloner::operator()(const ast::CallExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const Location& location = e.location_get();
+    misc::symbol call_name = e.name_get();
+    exps_type* call_args = new exps_type();
+    for (auto e : e.args_get())
+      {
+        call_args->emplace_back(recurse(e));
+      }
+    auto callexp = new CallExp(location, call_name, call_args);
+    result_ = callexp;
   }
 
   void Cloner::operator()(const ast::CastExp& e)
