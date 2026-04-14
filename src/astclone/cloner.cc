@@ -259,7 +259,11 @@ namespace astclone
 
   void Cloner::operator()(const ast::StringExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const Location& location = e.location_get();
+    std::string string_value = e.value_get();
+    auto stringexp = new StringExp(location, string_value);
+    result_ = stringexp;
   }
 
   void Cloner::operator()(const ast::SubscriptVar& e)
