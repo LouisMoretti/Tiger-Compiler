@@ -239,7 +239,15 @@ namespace astclone
 
   void Cloner::operator()(const ast::SeqExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const Location& location = e.location_get();
+    exps_type* seq_exps = new exps_type();
+    for (auto f : e.exps_get())
+      {
+        seq_exps->emplace_back(recurse(f));
+      }
+    auto seqexp = new SeqExp(location, seq_exps);
+    result_ = seqexp;
   }
 
   void Cloner::operator()(const ast::SimpleVar& e)
