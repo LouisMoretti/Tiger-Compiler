@@ -219,7 +219,13 @@ namespace llvmtranslate
   void Translator::operator()(const ast::SimpleVar& e)
   {
     // Void var types are actually Ints represented by a 0
-    // FIXME: Some code was deleted here.
+    // FIXEDME: Some code was deleted here.
+    // Start Fix
+    auto ltype = e.type_get() == &type::Void::instance()
+    ? i64_t(ctx_)
+    : llvm_type(*e.type_get());
+    value_ = builder_.CreateLoad(ltype, access_var(e), e.name_get().get());
+    // End Fix
   }
 
   void Translator::operator()(const ast::FieldVar& e)
@@ -453,6 +459,11 @@ namespace llvmtranslate
   {
     // Void var types are actually Ints represented by a 0
     // FIXME: Some code was deleted here.
+    auto ltype = e.type_get() == &type::Void::instance()
+    ? i64_t(ctx_)
+    : llvm_type(*e.type_get());
+    value_ = builder_.CreateAlloca(ltype, 1, nullptr, e.name_get().get());
+    // Emplace into locals?
   }
 
 } // namespace llvmtranslate
