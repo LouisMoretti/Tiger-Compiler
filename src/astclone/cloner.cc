@@ -37,7 +37,12 @@ namespace astclone
 
   void Cloner::operator()(const ast::AssignExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const Location& location = e.location_get();
+    Var* assign_var = recurse(e.var_get());
+    Exp* assign_exp = recurse(e.exp_get());
+    auto assignexp = new AssignExp(location, assign_var, assign_exp);
+    result_ = assignexp;
   }
 
   void Cloner::operator()(const ast::BreakExp& e)
