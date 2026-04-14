@@ -61,7 +61,7 @@ namespace astclone
     exps_type* call_args = new exps_type();
     for (auto e : e.args_get())
       {
-        call_args->emplace_back(recurse(e));
+        call_args->emplace_back(recurse(*e));
       }
     auto callexp = new CallExp(location, call_name, call_args);
     result_ = callexp;
@@ -231,7 +231,7 @@ namespace astclone
     fields_type* record_fields = new fields_type();
     for (auto f : e.fields_get())
       {
-        record_fields->emplace_back(recurse(f));
+        record_fields->emplace_back(recurse(*f));
       }
     auto recordty = new RecordTy(location, record_fields);
     result_ = recordty;
@@ -244,7 +244,7 @@ namespace astclone
     exps_type* seq_exps = new exps_type();
     for (auto f : e.exps_get())
       {
-        seq_exps->emplace_back(recurse(f));
+        seq_exps->emplace_back(recurse(*f));
       }
     auto seqexp = new SeqExp(location, seq_exps);
     result_ = seqexp;
