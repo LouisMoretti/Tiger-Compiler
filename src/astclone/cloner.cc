@@ -288,7 +288,9 @@ namespace astclone
     misc::symbol name = e.name_get();
     NameTy* type_name = recurse(e.type_name_get());
     Exp* init = recurse(e.init_get());
-    // FIXME: Some code was deleted here (Cloned node instantiation).
+    // FIXED: Some code was deleted here (Cloned node instantiation).
+    auto vardec = new VarDec(location, name, type_name, init);
+    result_ = vardec;
   }
 
   void Cloner::operator()(const ast::WhileExp& e)
