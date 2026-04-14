@@ -19,7 +19,13 @@ namespace astclone
 
   void Cloner::operator()(const ast::ArrayExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const Location& location = e.location_get();
+    NameTy* array_name = recurse(e.type_name_get());
+    Exp* array_size = recurse(e.size_get());
+    Exp* array_init = recurse(e.init_get());
+    auto arrayexp = new ArrayExp(location, array_name, array_size, array_init);
+    result_ = arrayexp;
   }
 
   void Cloner::operator()(const ast::ArrayTy& e)
@@ -110,11 +116,11 @@ namespace astclone
 
   void Cloner::operator()(const ast::IfExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     const Location& location = e.location_get();
-    Exp *test_cond = recurse(e.test_get());
-    Exp *clause_else = recurse(e.elseclause_get());
-    Exp *clause_then = recurse(e.thenclause_get());
+    Exp* test_cond = recurse(e.test_get());
+    Exp* clause_else = recurse(e.elseclause_get());
+    Exp* clause_then = recurse(e.thenclause_get());
     auto ifexp = new IfExp(location, test_cond, clause_else, clause_then);
     result_ = ifexp;
   }
@@ -128,11 +134,11 @@ namespace astclone
 
   void Cloner::operator()(const ast::LetExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     const Location& location = e.location_get();
-    Exp *let_body = recurse(e.body_get());
-    ChunkList *let_chunks = recurse(e.chunks_get());
-    auto letexp = new LetExp(location,let_chunks, let_body);
+    Exp* let_body = recurse(e.body_get());
+    ChunkList* let_chunks = recurse(e.chunks_get());
+    auto letexp = new LetExp(location, let_chunks, let_body);
     result_ = letexp;
   }
 
@@ -173,7 +179,6 @@ namespace astclone
   void Cloner::operator()(const ast::ObjectExp& e)
   {
     // FIXME: Some code was deleted here.
-
   }
 
   void Cloner::operator()(const ast::OpExp& e)
@@ -187,12 +192,13 @@ namespace astclone
 
   void Cloner::operator()(const ast::RecordExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     const Location& location = e.location_get();
     NameTy* type_name = recurse(e.type_name_get());
     fieldinits_type* fields = new fieldinits_type();
-    for (auto v: e.fields_get())
-      fields->emplace_back(new FieldInit(v->location_get(), v->name_get(), recurse(v->init_get())));
+    for (auto v : e.fields_get())
+      fields->emplace_back(new FieldInit(v->location_get(), v->name_get(),
+                                         recurse(v->init_get())));
     result_ = new RecordExp(location, type_name, fields);
   }
 
