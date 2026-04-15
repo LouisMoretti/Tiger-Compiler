@@ -453,6 +453,17 @@ namespace llvmtranslate
     // Then, add the escaped variables and the rest of the arguments to the
     // list of arguments, and return the correct value.
     // FIXME: Some code was deleted here.
+    auto name = module_.getNamedGlobal(e.name_get().get());
+
+    if (!e.def_get()->body_get())
+        e.def_get()->name_set("tc_name");
+
+    const type::Function* cast = dynamic_cast<const type::Function*>(&e.def_get()->type_get()->actual());
+
+    for (auto var : escaped_.at(cast))
+      {
+        // TODO e.def_get()->formals_get().emplace_back(*var);
+      }
   }
 
   void Translator::operator()(const ast::VarDec& e)
