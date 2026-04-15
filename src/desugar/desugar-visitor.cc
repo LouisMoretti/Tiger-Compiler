@@ -156,16 +156,22 @@ namespace desugar
 
     in << " let "
           " var _lo := "
-       << recurse(e.vardec_get().init_get()) << " var _hi := " << recurse(e.hi_get())
-       << " var i := _lo "
+       << recurse(e.vardec_get().init_get())
+       << " var _hi := " << recurse(e.hi_get()) << " var "
+       << e.vardec_get().name_get()
+       << " := _lo "
           " in "
-          " if i <= _hi then "
+          " if "
+       << e.vardec_get().name_get()
+       << " <= _hi then "
           " while 1 do "
           " ( "
-       << recurse(e.body_get())
-       << "; if i = _hi then "
+       << recurse(e.body_get()) << "; if " << e.vardec_get().name_get()
+       << " = _hi then "
           " break; "
-          " i := i + 1 "
+          " "
+       << e.vardec_get().name_get() << " := " << e.vardec_get().name_get()
+       << " + 1 "
           " ) "
           " end ";
     // result_ = parse::parse(in);

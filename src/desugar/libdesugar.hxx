@@ -14,6 +14,7 @@
 #include <desugar/libdesugar.hh>
 #include <escapes/libescapes.hh>
 #include <type/libtype.hh>
+#include "ast/tasks.hh"
 
 namespace desugar
 {
@@ -25,12 +26,14 @@ namespace desugar
   {
     misc::error e;
     // FIXME: Some code was deleted here.
+    ast::tasks::the_program.reset(&tree);
     e.ice_on_error_here();
     launch_bind();
 
     e.ice_on_error_here();
     e << type::types_check(tree);
     e.ice_on_error_here();
+    ast::tasks::the_program.release();
   }
 
   // Explicit instantiation.
