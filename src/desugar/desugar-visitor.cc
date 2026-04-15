@@ -156,13 +156,13 @@ namespace desugar
 
     in << " let "
           " var _lo := "
-       << e.vardec_get().init_get() << " var _hi := " << e.hi_get()
+       << recurse(e.vardec_get().init_get()) << " var _hi := " << recurse(e.hi_get())
        << " var i := _lo "
           " in "
           " if i <= _hi then "
           " while 1 do "
           " ( "
-       << e.body_get()
+       << recurse(e.body_get())
        << "; if i = _hi then "
           " break; "
           " i := i + 1 "

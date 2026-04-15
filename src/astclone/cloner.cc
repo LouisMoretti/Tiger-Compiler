@@ -59,9 +59,9 @@ namespace astclone
     const Location& location = e.location_get();
     misc::symbol call_name = e.name_get();
     exps_type* call_args = new exps_type();
-    for (auto e : e.args_get())
+    for (auto a : e.args_get())
       {
-        call_args->emplace_back(recurse(*e));
+        call_args->emplace_back(recurse(*a));
       }
     auto callexp = new CallExp(location, call_name, call_args);
     result_ = callexp;
@@ -143,7 +143,7 @@ namespace astclone
     Exp* test_cond = recurse(e.test_get());
     Exp* clause_else = recurse(e.elseclause_get());
     Exp* clause_then = recurse(e.thenclause_get());
-    auto ifexp = new IfExp(location, test_cond, clause_else, clause_then);
+    auto ifexp = new IfExp(location, test_cond, clause_then, clause_else);
     result_ = ifexp;
   }
 

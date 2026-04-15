@@ -74,6 +74,7 @@ int             [0-9]+
 whitechar       [ \t]
 endofline       (\n\r|\r\n|\r|\n)
 id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
+reserved_id     _[a-zA-Z0-9_]*
 // End Fix
 
 %class{
@@ -217,6 +218,7 @@ id              ([a-zA-Z][0-9a-zA-Z_]*)|_main
 "_namety"         return TOKEN(NAMETY);
 "_cast"           return TOKEN(CAST);
 {id}              return TOKEN_VAL(ID, text());
+{reserved_id}     return TOKEN_VAL(ID, text());
 <<EOF>>           {
                   return TOKEN(EOF);
                   }
