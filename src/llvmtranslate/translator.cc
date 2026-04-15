@@ -197,8 +197,8 @@ namespace llvmtranslate
                            + function_type.formals_get().fields_get().size());
         for (const auto dec : escapes)
           {
-            llvm::Type* var_ltype = nullptr;
-            // FIXME: Some code was deleted here (Get the llvm type of the VarDec).
+            llvm::Type* var_ltype = llvm_type(*dec->type_get());
+            // FIXEDME: Some code was deleted here (Get the llvm type of the VarDec).
             args_types.emplace_back(llvm::PointerType::getUnqual(var_ltype));
           }
       }
