@@ -25,11 +25,25 @@ namespace desugar
   void DesugarVisitor::operator()(const ast::OpExp& e)
   {
     // FIXME: Some code was deleted here.
-    if (desugar_string_cmp_p_)
+    if (desugar_string_cmp_p_
+        && *e.left_get().type_get() == type::String::instance())
       {
-        result_ = new ast::CallExp(
-          e.location_get(), "streq",
-          new ast::exps_type{recurse(e.left_get()), recurse(e.right_get())});
+        if (e.oper_get() == ast::OpExp::Oper::eq)
+          {
+            result_ =
+              new ast::CallExp(e.location_get(), "streq",
+                               new ast::exps_type{recurse(e.left_get()),
+                                                  recurse(e.right_get())});
+          }
+        else
+          {
+            result_ = new ast::OpExp(
+              e.location_get(),
+              new ast::CallExp(e.location_get(), "strcmp",
+                               new ast::exps_type{recurse(e.left_get()),
+                                                  recurse(e.right_get())}),
+              e.oper_get(), new ast::IntExp(e.location_get(), 0));
+          }
       }
     else
       {

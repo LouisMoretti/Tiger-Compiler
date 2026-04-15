@@ -43,6 +43,8 @@ src/parse/scantiger.hh
 src/tc
 src/version.cc
 src/version.stamp
+src/llvmtranslate/runtime.cc
+src/llvmtranslate/runtime.ll
 # lib/misc/test-deref
 # lib/misc/test-deref.trs
 # lib/misc/test-error
