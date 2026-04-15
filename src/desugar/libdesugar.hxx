@@ -15,6 +15,7 @@
 #include <escapes/libescapes.hh>
 #include <type/libtype.hh>
 #include "ast/tasks.hh"
+#include "bind/binder.hh"
 
 namespace desugar
 {
@@ -25,15 +26,13 @@ namespace desugar
   template <typename A> void bind_and_types_check(A& tree)
   {
     misc::error e;
-    // FIXME: Some code was deleted here.
-    ast::tasks::the_program.reset(&tree);
-    e.ice_on_error_here();
-    launch_bind();
+    // FIXED: Some code was deleted here.
+    bind::Binder binder;
+    binder(tree);
 
     e.ice_on_error_here();
     e << type::types_check(tree);
     e.ice_on_error_here();
-    ast::tasks::the_program.release();
   }
 
   // Explicit instantiation.
