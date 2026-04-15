@@ -197,8 +197,8 @@ namespace llvmtranslate
                            + function_type.formals_get().fields_get().size());
         for (const auto dec : escapes)
           {
-            llvm::Type* var_ltype = llvm_type(*dec->type_get());
             // FIXEDME: Some code was deleted here (Get the llvm type of the VarDec).
+            llvm::Type* var_ltype = llvm_type(*dec->type_get());
             args_types.emplace_back(llvm::PointerType::getUnqual(var_ltype));
           }
       }
@@ -458,12 +458,11 @@ namespace llvmtranslate
   void Translator::operator()(const ast::VarDec& e)
   {
     // Void var types are actually Ints represented by a 0
-    // FIXME: Some code was deleted here.
+    // FIXEDME: Some code was deleted here.
     auto ltype = e.type_get() == &type::Void::instance()
     ? i64_t(ctx_)
     : llvm_type(*e.type_get());
     value_ = builder_.CreateAlloca(ltype, 1, nullptr, e.name_get().get());
-    // Emplace into locals?
   }
 
 } // namespace llvmtranslate
