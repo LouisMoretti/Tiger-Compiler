@@ -25,8 +25,16 @@ namespace desugar
   void DesugarVisitor::operator()(const ast::OpExp& e)
   {
     // FIXME: Some code was deleted here.
-    result_ = new ast::CallExp(e.location_get(), "streq",
-                               new ast::exps_type(e.left_get(), e.right_get()));
+    if (desugar_string_cmp_p_)
+      {
+        result_ = new ast::CallExp(
+          e.location_get(), "streq",
+          new ast::exps_type{recurse(e.left_get()), recurse(e.right_get())});
+      }
+    else
+      {
+        super_type::operator()(e);
+      }
   }
 
   /*----------------------.
@@ -72,63 +80,96 @@ namespace desugar
   void DesugarVisitor::operator()(const ast::ForExp& e)
   {
     // FIXME: Some code was deleted here.
-    // TODO: Check if names are right (Keep old names when necessary)
-    // TODO: Fix compilation...
-    ast::ChunkList* decs = new ast::ChunkList(e.location_get() + 1);
-    ast::VarChunk* varChunk = new ast::VarChunk(e.location_get());
-    varChunk->emplace_back(
-      *(new ast::VarDec(e.location_get() + 1, misc::symbol("_lo"), nullptr,
-                        e.vardec_get().init_get())));
-    varChunk->emplace_back(*(new ast::VarDec(
-      e.location_get() + 2, misc::symbol("_hi"), nullptr, e.hi_get())));
-    varChunk->emplace_back(*(new ast::VarDec(
-      e.location_get() + 3, misc::symbol("i"), nullptr,
-      new ast::SimpleVar(e.location_get() + 3, misc::symbol("_lo")))));
-    decs->emplace_back(varChunk);
-    result_ = new ast::LetExp(
-      e.location_get(), decs,
-      new ast::SeqExp(
-        e.location_get() + 5,
-        new ast::exps_type(new ast::IfExp(
-          e.location_get() + 6,
-          new ast::OpExp(
-            e.location_get() + 6,
-            new ast::SimpleVar(e.location_get() + 6, misc::symbol("i")),
-            ast::OpExp::Oper::lt,
-            new ast::SimpleVar(e.location_get() + 6, misc::symbol("_hi"))),
-          new ast::WhileExp(
-            e.location_get() + 7, new ast::IntExp(e.location_get() + 7, 1),
-            new ast::SeqExp(
-              e.location_get() + 8,
-              new ast::exps_type(
-                e.body_get(),
-                new ast::IfExp(
-                  e.location_get() + 8 + e.body_get().location_get(),
-                  new ast::OpExp(
-                    e.location_get() + 8 + e.body_get().location_get(),
-                    new ast::SimpleVar(e.location_get() + 8
-                                         + e.body_get().location_get(),
-                                       misc::symbol("i")),
-                    ast::OpExp::Oper::eq,
-                    new ast::SimpleVar(e.location_get() + 8
-                                         + e.body_get().location_get(),
-                                       misc::symbol("_hi"))),
-                  new ast::BreakExp(e.location_get() + 9
-                                    + e.body_get().location_get())),
-                new ast::AssignExp(
-                  e.location_get() + 10 + e.body_get().location_get(),
-                  new ast::SimpleVar(e.location_get() + 10
-                                       + e.body_get().location_get(),
-                                     misc::symbol("i")),
-                  new ast::OpExp(
-                    e.location_get() + 10 + e.body_get().location_get(),
-                    new ast::SimpleVar(e.location_get() + 10
-                                         + e.body_get().location_get(),
-                                       misc::symbol("i")),
-                    ast::OpExp::Oper::add,
-                    new ast::IntExp(e.location_get() + 10
-                                      + e.body_get().location_get(),
-                                    1))))))))));
+    // // TODO: Check if names are right (Keep old names when necessary)
+    // // TODO: Fix compilation...
+    // ast::ChunkList* decs = new ast::ChunkList(e.location_get());
+    // ast::VarChunk* varChunk = new ast::VarChunk(e.location_get());
+    // varChunk->emplace_back(
+    //   *(new ast::VarDec(e.location_get(), misc::symbol("_lo"), nullptr,
+    //                     e.vardec_get().init_get())));
+
+    // varChunk->emplace_back(*(new ast::VarDec(
+    //   e.location_get(), misc::symbol("_hi"), nullptr, e.hi_get())));
+
+    // varChunk->emplace_back(*(new ast::VarDec(
+    //   e.location_get(), misc::symbol("i"), nullptr,
+    //   new ast::SimpleVar(e.location_get(), misc::symbol("_lo")))));
+
+    // decs->emplace_back(varChunk);
+    // result_ = new ast::LetExp(
+    //   e.location_get(), decs,
+    //   new ast::SeqExp(
+    //     e.location_get(),
+    //     new ast::exps_type(new ast::IfExp(
+    //       e.location_get(),
+    //       new ast::OpExp(
+    //         e.location_get(),
+    //         new ast::SimpleVar(e.location_get(), misc::symbol("i")),
+    //         ast::OpExp::Oper::lt,
+    //         new ast::SimpleVar(e.location_get(), misc::symbol("_hi"))),
+    //       new ast::WhileExp(
+    //         e.location_get(), new ast::IntExp(e.location_get(), 1),
+    //         new ast::SeqExp(
+    //           e.location_get(),
+    //           new ast::exps_type(
+    //             e.body_get(),
+    //             new ast::IfExp(
+    //               e.location_get() + e.body_get().location_get(),
+    //               new ast::OpExp(
+    //                 e.location_get() + e.body_get().location_get(),
+    //                 new ast::SimpleVar(e.location_get()
+    //                                      + e.body_get().location_get(),
+    //                                    misc::symbol("i")),
+    //                 ast::OpExp::Oper::eq,
+    //                 new ast::SimpleVar(e.location_get()
+    //                                      + e.body_get().location_get(),
+    //                                    misc::symbol("_hi"))),
+    //               new ast::BreakExp(e.location_get()
+    //                                 + e.body_get().location_get())),
+    //             new ast::AssignExp(
+    //               e.location_get() + e.body_get().location_get(),
+    //               new ast::SimpleVar(e.location_get()
+    //                                    + e.body_get().location_get(),
+    //                                  misc::symbol("i")),
+    //               new ast::OpExp(
+    //                 e.location_get() + e.body_get().location_get(),
+    //                 new ast::SimpleVar(e.location_get()
+    //                                      + e.body_get().location_get(),
+    //                                    misc::symbol("i")),
+    //                 ast::OpExp::Oper::add,
+    //                 new ast::IntExp(e.location_get()
+    //                                   + e.body_get().location_get(),
+    //                                 1))))))))));
+
+    if (!desugar_for_p_)
+      {
+        super_type::operator()(e);
+        return;
+      }
+
+    parse::Tweast in;
+    // parse::location l;
+    // ast::Exp* exp = new ast::SeqExp(l, new ast::exps_type);
+    // ast::Var* var = new ast::SimpleVar(l, "a");
+    // ast::NameTy* namety = new ast::NameTy(l, "int");
+    // ast::ChunkList* chunks = new ast::ChunkList(l);
+
+    in << " let "
+          " var _lo := "
+       << e.vardec_get().init_get() << " var _hi := " << e.hi_get()
+       << " var i := _lo "
+          " in "
+          " if i <= _hi then "
+          " while 1 do "
+          " ( "
+       << e.body_get()
+       << "; if i = _hi then "
+          " break; "
+          " i := i + 1 "
+          " ) "
+          " end ";
+    // result_ = parse::parse(in);
+    result_ = std::get<ast::Exp*>(parse::parse(in));
   }
 
 } // namespace desugar
