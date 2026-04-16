@@ -52,7 +52,7 @@ namespace llvmtranslate
 
   void LLVMTypeVisitor::operator()(const type::Named& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXEDME: Some code was deleted here.
     type_ = llvm::StructType::create(ctx_);
   }
 

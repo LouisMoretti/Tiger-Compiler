@@ -210,8 +210,10 @@ namespace llvmtranslate
       args_types.emplace_back(llvm_type(field.type_get()));
 
     llvm::Type* result_ltype = nullptr;
-    // FIXME: Some code was deleted here (If the result is void typed, we assign llvm void type to result_ltype).
-    result_ltype = llvm_type(function_type.result_get());
+    // FIXEDME: Some code was deleted here (If the result is void typed, we assign llvm void type to result_ltype).
+    auto ltype = e.type_get() == &type::Void::instance()
+      ? result_ltype = i64_t(ctx_)
+      : result_ltype = llvm_type(function_type.type_get());
 
     return llvm::FunctionType::get(result_ltype, args_types, false);
   }
@@ -222,8 +224,8 @@ namespace llvmtranslate
     // FIXEDME: Some code was deleted here.
     // Start Fix
     auto ltype = e.type_get() == &type::Void::instance()
-    ? i64_t(ctx_)
-    : llvm_type(*e.type_get());
+      ? i64_t(ctx_)
+      : llvm_type(*e.type_get());
     value_ = builder_.CreateLoad(ltype, access_var(e), e.name_get().get());
     // End Fix
   }
@@ -456,9 +458,10 @@ namespace llvmtranslate
     auto name = module_.getNamedGlobal(e.name_get().get());
 
     if (!e.def_get()->body_get())
-        e.def_get()->name_set("tc_name");
+      e.def_get()->name_set("tc_name");
 
-    const type::Function* cast = dynamic_cast<const type::Function*>(&e.def_get()->type_get()->actual());
+    const type::Function* cast =
+      dynamic_cast<const type::Function*>(&e.def_get()->type_get()->actual());
 
     for (auto var : escaped_.at(cast))
       {
@@ -471,8 +474,8 @@ namespace llvmtranslate
     // Void var types are actually Ints represented by a 0
     // FIXEDME: Some code was deleted here.
     auto ltype = e.type_get() == &type::Void::instance()
-    ? i64_t(ctx_)
-    : llvm_type(*e.type_get());
+      ? i64_t(ctx_)
+      : llvm_type(*e.type_get());
     value_ = builder_.CreateAlloca(ltype, 1, nullptr, e.name_get().get());
   }
 
