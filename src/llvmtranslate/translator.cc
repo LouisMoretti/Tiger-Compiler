@@ -211,9 +211,10 @@ namespace llvmtranslate
 
     llvm::Type* result_ltype = nullptr;
     // FIXEDME: Some code was deleted here (If the result is void typed, we assign llvm void type to result_ltype).
-    auto ltype = e.type_get() == &type::Void::instance()
-      ? result_ltype = i64_t(ctx_)
-      : result_ltype = llvm_type(function_type.type_get());
+
+    auto ltype = function_type.result_get() == type::Void::instance()
+      ? result_ltype = llvm::Type::getVoidTy(ctx_)
+      : result_ltype = llvm_type(function_type.result_get());
 
     return llvm::FunctionType::get(result_ltype, args_types, false);
   }
@@ -242,12 +243,18 @@ namespace llvmtranslate
 
   void Translator::operator()(const ast::NilExp& e)
   {
-    // FIXME: Some code was deleted here (Create a null pointer).
+    // FIXEDME: Some code was deleted here (Create a null pointer).
+    auto pointer_type =
+      llvm::dyn_cast<llvm::PointerType>(llvm_type(*e.type_get()));
+
+    value_ = llvm::ConstantPointerNull::get(pointer_type);
   }
 
   void Translator::operator()(const ast::IntExp& e)
   {
-    // FIXME: Some code was deleted here (Integers in Tiger are all 64bit signed).
+    // FIXEDME: Some code was deleted here (Integers in Tiger are all 64bit signed).
+    value_ =
+      llvm::ConstantInt::get(llvm::Type::getInt64Ty(ctx_), e.value_get());
   }
 
   void Translator::operator()(const ast::StringExp& e)
