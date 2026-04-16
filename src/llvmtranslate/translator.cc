@@ -260,8 +260,7 @@ namespace llvmtranslate
   void Translator::operator()(const ast::StringExp& e)
   {
     // FIXED: Some code was deleted here (Strings are translated as `i8*` values, like C's `char*`).
-    value_ = llvm::IRBuilderBase::CreateGlobalStringPtr(e.value_get(), "", 1,
-                                                        &module_);
+    value_ = builder_.CreateGlobalStringPtr(e.value_get(), "", 1, &module_);
   }
 
   void Translator::operator()(const ast::RecordExp& e)
