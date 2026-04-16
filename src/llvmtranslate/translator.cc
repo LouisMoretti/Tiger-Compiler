@@ -103,6 +103,7 @@ namespace llvmtranslate
 
   llvm::Value* Translator::access_var(const ast::Var& e)
   {
+    // TODO last function to do, it's the hardest one
     if (auto var_ast = dynamic_cast<const ast::SimpleVar*>(&e))
       {
         // FIXME: Some code was deleted here.
@@ -266,8 +267,12 @@ namespace llvmtranslate
   void Translator::operator()(const ast::RecordExp& e)
   {
     // Get the record type
-    const type::Record* record_type = nullptr;
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const type::Record* record_type =
+      dynamic_cast<const type::Record*>(e.type_name_get().type_get());
+
+    assert(record_type != nullptr
+           && "error cannot get record type from record exp in translator");
 
     // Type the record and use get_record_ltype() to get its LLVM type
     llvm_type(*record_type);
@@ -282,16 +287,23 @@ namespace llvmtranslate
       i64_t(ctx_), struct_ltype, sizeof_val, nullptr, malloc_, "malloccall");
 
     // Init the fields
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+
+    for (auto f : e.fields_get())
+      {
+        // TODO visit the field
+        // TODO add an operand for the field number (first field = 0, second field = 1...)
+      }
 
     value_ = malloc_val;
   }
 
   void Translator::operator()(const ast::OpExp& e)
   {
-    // FIXED but maybe FIXME : Some code was deleted here.
+    // FIXME : Some code was deleted here.
     // The comparison instructions returns an i1, and we need an i64, since everything
     // is an i64 in Tiger. Use a zero-extension to avoid this.
+    // TODO create the operation, visit both right and left operand
     value_ = builder_.CreateZExtOrTrunc(value_, i64_t(ctx_), "op_zext");
   }
 
@@ -394,8 +406,9 @@ namespace llvmtranslate
     bool is_primitive = e.body_get() == nullptr;
     auto name = function_dec_name(e);
 
-    const type::Type* node_type = nullptr;
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const type::Type* node_type = llvm_type(*e.result_get().type_get());
+
     auto& function_type = static_cast<const type::Function&>(*node_type);
     auto function_ltype = llvm_function_type(function_type);
 
@@ -470,7 +483,7 @@ namespace llvmtranslate
     //
     // Then, add the escaped variables and the rest of the arguments to the
     // list of arguments, and return the correct value.
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     auto name = module_.getNamedGlobal(e.name_get().get());
 
     if (!e.def_get()->body_get())
@@ -479,10 +492,11 @@ namespace llvmtranslate
     const type::Function* cast =
       dynamic_cast<const type::Function*>(&e.def_get()->type_get()->actual());
 
-    for (auto var : escaped_.at(cast))
-      {
-        // TODO e.def_get()->formals_get().emplace_back(*var);
-      }
+    // takes all parameters in the set
+    // TODO auto args = escaped_.at(cast);
+    // TODO args.merge(e.formals_get());
+
+    // TODO builder_.CreateCall(, args);
   }
 
   void Translator::operator()(const ast::VarDec& e)
