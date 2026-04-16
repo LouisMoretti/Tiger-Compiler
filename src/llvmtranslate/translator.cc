@@ -289,7 +289,7 @@ namespace llvmtranslate
 
   void Translator::operator()(const ast::OpExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED but maybe FIXME : Some code was deleted here.
     // The comparison instructions returns an i1, and we need an i64, since everything
     // is an i64 in Tiger. Use a zero-extension to avoid this.
     value_ = builder_.CreateZExtOrTrunc(value_, i64_t(ctx_), "op_zext");
@@ -350,7 +350,15 @@ namespace llvmtranslate
 
   void Translator::operator()(const ast::BreakExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
+    const ast::WhileExp* while_node =
+      dynamic_cast<const ast::WhileExp*>(e.def_get());
+
+    assert(while_node != nullptr
+           && "cannot access to while definition of breakexp in translator, "
+              "error in type_checker or no for-desugar done");
+
+    value_ = builder_.CreateBr(loop_end_.at(while_node));
   }
 
   void Translator::operator()(const ast::ArrayExp& e)
