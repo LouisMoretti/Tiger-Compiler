@@ -197,7 +197,7 @@ namespace llvmtranslate
                            + function_type.formals_get().fields_get().size());
         for (const auto dec : escapes)
           {
-            // FIXEDME: Some code was deleted here (Get the llvm type of the VarDec).
+            // FIXED: Some code was deleted here (Get the llvm type of the VarDec).
             llvm::Type* var_ltype = llvm_type(*dec->type_get());
             args_types.emplace_back(llvm::PointerType::getUnqual(var_ltype));
           }
@@ -210,7 +210,7 @@ namespace llvmtranslate
       args_types.emplace_back(llvm_type(field.type_get()));
 
     llvm::Type* result_ltype = nullptr;
-    // FIXEDME: Some code was deleted here (If the result is void typed, we assign llvm void type to result_ltype).
+    // FIXED: Some code was deleted here (If the result is void typed, we assign llvm void type to result_ltype).
 
     auto ltype = function_type.result_get() == type::Void::instance()
       ? result_ltype = llvm::Type::getVoidTy(ctx_)
@@ -222,7 +222,7 @@ namespace llvmtranslate
   void Translator::operator()(const ast::SimpleVar& e)
   {
     // Void var types are actually Ints represented by a 0
-    // FIXEDME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     // Start Fix
     auto ltype = e.type_get() == &type::Void::instance()
       ? i64_t(ctx_)
@@ -243,7 +243,7 @@ namespace llvmtranslate
 
   void Translator::operator()(const ast::NilExp& e)
   {
-    // FIXEDME: Some code was deleted here (Create a null pointer).
+    // FIXED: Some code was deleted here (Create a null pointer).
     auto pointer_type =
       llvm::dyn_cast<llvm::PointerType>(llvm_type(*e.type_get()));
 
@@ -252,14 +252,16 @@ namespace llvmtranslate
 
   void Translator::operator()(const ast::IntExp& e)
   {
-    // FIXEDME: Some code was deleted here (Integers in Tiger are all 64bit signed).
+    // FIXED: Some code was deleted here (Integers in Tiger are all 64bit signed).
     value_ =
       llvm::ConstantInt::get(llvm::Type::getInt64Ty(ctx_), e.value_get());
   }
 
   void Translator::operator()(const ast::StringExp& e)
   {
-    // FIXME: Some code was deleted here (Strings are translated as `i8*` values, like C's `char*`).
+    // FIXED: Some code was deleted here (Strings are translated as `i8*` values, like C's `char*`).
+    value_ = llvm::IRBuilderBase::CreateGlobalStringPtr(e.value_get(), "", 1,
+                                                        &module_);
   }
 
   void Translator::operator()(const ast::RecordExp& e)
@@ -363,8 +365,8 @@ namespace llvmtranslate
   void Translator::operator()(const ast::CastExp& e)
   {
     auto exp_val = translate(e.exp_get());
-    llvm::Type* ltype = nullptr;
-    // FIXME: Some code was deleted here (Destination llvm type).
+    // FIXED: Some code was deleted here (Destination llvm type).
+    llvm::Type* ltype = llvm_type(*e.ty_get().type_get());
     value_ = builder_.CreateBitCast(exp_val, ltype, "cast_exp");
   }
 
@@ -479,7 +481,7 @@ namespace llvmtranslate
   void Translator::operator()(const ast::VarDec& e)
   {
     // Void var types are actually Ints represented by a 0
-    // FIXEDME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     auto ltype = e.type_get() == &type::Void::instance()
       ? i64_t(ctx_)
       : llvm_type(*e.type_get());
