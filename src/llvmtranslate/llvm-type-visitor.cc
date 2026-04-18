@@ -53,7 +53,8 @@ namespace llvmtranslate
   void LLVMTypeVisitor::operator()(const type::Named& e)
   {
     // FIXEDME: Some code was deleted here.
-    type_ = llvm::StructType::create(ctx_);
+    // type_ = llvm::StructType::create(ctx_);
+    operator()(e.actual());
   }
 
   void LLVMTypeVisitor::operator()(const type::Record& e)
@@ -69,7 +70,10 @@ namespace llvmtranslate
         std::vector<llvm::Type*> field_types;
         field_types.reserve(e.fields_get().size());
         // FIXEDME: Some code was deleted here
-        structs_.emplace(&e, llvm::StructType::create(ctx_));
+        // structs_.emplace(&e, llvm::StructType::create(ctx_));
+        for (const auto& f : e.fields_get())
+          field_types.push_back(llvm_type(f.type_get()));
+
         structs_[&e]->setBody(std::move(field_types), false);
       }
 
@@ -80,7 +84,7 @@ namespace llvmtranslate
   {
     // Arrays are pointers to the array elements, like in C.
     // FIXEDME: Some code was deleted here.
-    type_ = llvm::PointerType::get(llvm_type(e.type_get()), 3);
+    type_ = llvm::PointerType::get(llvm_type(e.type_get()), 1);
   }
 
 } // namespace llvmtranslate

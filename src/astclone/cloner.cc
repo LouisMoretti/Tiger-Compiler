@@ -20,6 +20,7 @@ namespace astclone
   void Cloner::operator()(const ast::ArrayExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::ArrayTy& e)
@@ -32,16 +33,19 @@ namespace astclone
   void Cloner::operator()(const ast::AssignExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::BreakExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::CallExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::CastExp& e)
@@ -86,6 +90,7 @@ namespace astclone
   void Cloner::operator()(const ast::FieldVar& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::ForExp& e)
@@ -111,6 +116,7 @@ namespace astclone
   void Cloner::operator()(const ast::IfExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::IntExp& e)
@@ -123,11 +129,13 @@ namespace astclone
   void Cloner::operator()(const ast::LetExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::MethodCallExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::MethodDec& e)
@@ -156,6 +164,7 @@ namespace astclone
   void Cloner::operator()(const ast::ObjectExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::OpExp& e)
@@ -170,16 +179,19 @@ namespace astclone
   void Cloner::operator()(const ast::RecordExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::RecordTy& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::SeqExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::SimpleVar& e)
@@ -192,6 +204,7 @@ namespace astclone
   void Cloner::operator()(const ast::StringExp& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::SubscriptVar& e)
@@ -235,16 +248,19 @@ namespace astclone
   void Cloner::operator()(const ast::MethodChunk& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::TypeChunk& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
   void Cloner::operator()(const ast::VarChunk& e)
   {
     // FIXME: Some code was deleted here.
+    (void)e;
   }
 
 } // namespace astclone

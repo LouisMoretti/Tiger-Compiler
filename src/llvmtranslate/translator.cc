@@ -407,7 +407,7 @@ namespace llvmtranslate
     auto name = function_dec_name(e);
 
     // FIXED: Some code was deleted here.
-    const type::Type* node_type = llvm_type(*e.result_get().type_get());
+    const type::Type* node_type = e.type_get();
 
     auto& function_type = static_cast<const type::Function&>(*node_type);
     auto function_ltype = llvm_function_type(function_type);
