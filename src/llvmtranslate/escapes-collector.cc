@@ -71,23 +71,34 @@ namespace llvmtranslate
       super_type::operator()(e);
 
       // FIXED: Some code was deleted here.
+      if (e.def_get() == nullptr)
+        return;
 
       // Check whether there are any newly collected escaped variables.
       // If there are, mark the iteration as modified.
       // FIXED: Some code was deleted here.
 
-      for (auto arg : e.args_get())
-        {
-          const ast::VarDec* cast = dynamic_cast<const ast::VarDec*>(arg);
+      // for (auto arg : e.args_get())
+      //   {
+      //     const ast::VarDec* cast = dynamic_cast<const ast::VarDec*>(arg);
+      //     // assert(cast != nullptr
+      //     //        && "var dec not a vardec, error in type checker");
+      //     if (cast && cast->escape_get())
+      //       {
+      //         escaped_.at(this->actual_func_).insert(cast);
+      //       }
+      //   }
 
-          // assert(cast != nullptr
-          //        && "var dec not a vardec, error in type checker");
+      const type::Function* def_type =
+        dynamic_cast<const type::Function*>(&e.def_get()->type_get()->actual());
+      if (def_type == nullptr || escaped_.count(def_type) == 0)
+        return;
 
-          if (cast && cast->escape_get())
-            {
-              escaped_.at(this->actual_func_).insert(cast);
-            }
-        }
+      auto& def_escaped = escaped_.at(actual_func_);
+
+      for (const auto escaped : escaped_.at(def_type))
+        if (def_escaped.insert(escaped).second)
+          did_modify_ = true;
     }
 
     void operator()(const ast::SimpleVar& e) override
