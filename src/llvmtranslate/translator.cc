@@ -235,11 +235,20 @@ namespace llvmtranslate
   void Translator::operator()(const ast::FieldVar& e)
   {
     // FIXME: Some code was deleted here.
+    auto ltype = e.type_get() == &type::Void::instance()
+      ? i64_t(ctx_)
+      : llvm_type(*e.type_get());
+    value_ = builder_.CreateLoad(ltype, access_var(e), e.name_get().get());
   }
 
   void Translator::operator()(const ast::SubscriptVar& e)
   {
     // FIXME: Some code was deleted here.
+    auto ltype = e.type_get() == &type::Void::instance()
+      ? i64_t(ctx_)
+      : llvm_type(*e.type_get());
+    // value_ = builder_.CreateLoad(ltype, access_var(e), e.name_get().get());
+    value_ = builder_.CreateLoad(ltype, access_var(e), "");
   }
 
   void Translator::operator()(const ast::NilExp& e)
@@ -261,7 +270,7 @@ namespace llvmtranslate
   void Translator::operator()(const ast::StringExp& e)
   {
     // FIXED: Some code was deleted here (Strings are translated as `i8*` values, like C's `char*`).
-    value_ = builder_.CreateGlobalStringPtr(e.value_get(), "", 1, &module_);
+    value_ = builder_.CreateGlobalStringPtr(e.value_get(), "Str", 1, &module_);
   }
 
   void Translator::operator()(const ast::RecordExp& e)
@@ -292,6 +301,7 @@ namespace llvmtranslate
     for (auto f : e.fields_get())
       {
         // TODO visit the field
+        // auto feild = translate(f->init_get());
         // TODO add an operand for the field number (first field = 0, second field = 1...)
       }
 
@@ -303,7 +313,11 @@ namespace llvmtranslate
     // FIXME : Some code was deleted here.
     // The comparison instructions returns an i1, and we need an i64, since everything
     // is an i64 in Tiger. Use a zero-extension to avoid this.
-    // TODO create the operation, visit both right and left operand
+    auto left = translate(e.left_get());
+    auto right = translate(e.right_get());
+
+    // TODO: Switch for all oper.
+
     value_ = builder_.CreateZExtOrTrunc(value_, i64_t(ctx_), "op_zext");
   }
 
@@ -312,11 +326,23 @@ namespace llvmtranslate
     // An empty SeqExp is an empty expression, so we should return an int
     // containing 0, since its type is void.
     // FIXME: Some code was deleted here.
+    if (e.exps_get().empty())
+      {
+        value_ = llvm::ConstantInt::get(i64_t(ctx_), 0);
+      }
+    else
+      {
+        for (auto exp : e.exps_get())
+          value_ = translate(*exp);
+      }
   }
 
   void Translator::operator()(const ast::AssignExp& e)
   {
     // FIXME: Some code was deleted here.
+    auto exp = translate(e.exp_get());
+    builder_.CreateStore(exp, access_var(e.var_get()));
+    value_ = llvm::ConstantInt::get(i64_t(ctx_), 0);
   }
 
   void Translator::operator()(const ast::IfExp& e)
@@ -379,6 +405,7 @@ namespace llvmtranslate
     // fill the array with the default value, then
     // return the pointer to the allocated zone.
     // FIXME: Some code was deleted here (Use `init_array`).
+    value_ = init_array(translate(e.size_get()), translate(e.init_get()));
   }
 
   void Translator::operator()(const ast::CastExp& e)
@@ -409,7 +436,8 @@ namespace llvmtranslate
     // FIXED: Some code was deleted here.
     const type::Type* node_type = e.type_get();
 
-    auto& function_type = static_cast<const type::Function&>(*node_type);
+    auto& function_type =
+      static_cast<const type::Function&>(node_type->actual());
     auto function_ltype = llvm_function_type(function_type);
 
     // Main and primitives have External linkage.
@@ -450,9 +478,10 @@ namespace llvmtranslate
                                        the_function);
     builder_.SetInsertPoint(bb);
 
-    const type::Type* node_type = nullptr;
+    // const type::Type* node_type = nullptr;
     // FIXME: Some code was deleted here.
-    auto& function_type = static_cast<const type::Function&>(*node_type);
+    auto& function_type =
+      static_cast<const type::Function&>(e.type_get()->actual());
     auto& escaped = escaped_[&function_type];
     auto& formals = e.formals_get();
 
@@ -496,7 +525,7 @@ namespace llvmtranslate
     // TODO auto args = escaped_.at(cast);
     // TODO args.merge(e.formals_get());
 
-    // TODO builder_.CreateCall(, args);
+    // TODO builder_.CreateCall(, args); add name "Call" quand type non void
   }
 
   void Translator::operator()(const ast::VarDec& e)

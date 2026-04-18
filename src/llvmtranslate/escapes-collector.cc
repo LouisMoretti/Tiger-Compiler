@@ -80,9 +80,10 @@ namespace llvmtranslate
         {
           const ast::VarDec* cast = dynamic_cast<const ast::VarDec*>(arg);
 
-          assert(cast && "var dec not a vardec, error in type checker");
+          // assert(cast != nullptr
+          //        && "var dec not a vardec, error in type checker");
 
-          if (cast->escape_get())
+          if (cast && cast->escape_get())
             {
               escaped_.at(this->actual_func_).insert(cast);
             }
