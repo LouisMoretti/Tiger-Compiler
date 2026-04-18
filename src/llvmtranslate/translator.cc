@@ -495,7 +495,26 @@ namespace llvmtranslate
 
     // FIXME: Some code was deleted here (Create alloca instructions for each variable).
 
+    for (const auto f : formals)
+      {
+        auto ltype = f->type_get() == &type::Void::instance()
+          ? i64_t(ctx_)
+          : llvm_type(*f->type_get());
+
+        auto alloca = create_alloca(the_function, ltype, f->name_get().get());
+        locals_[current_function_][f] = alloca;
+        builder_.CreateStore(&*arg_it, alloca);
+        arg_it++;
+      }
+
     // FIXME: Some code was deleted here (Create a return instruction).
+
+    auto body = translate(*e.body_get());
+
+    if (function_type.result_get() == type::Void::instance())
+      builder_.CreateRetVoid();
+    else
+      builder_.CreateRet(body);
 
     // Validate the generated code, checking for consistency.
     llvm::verifyFunction(*the_function);
