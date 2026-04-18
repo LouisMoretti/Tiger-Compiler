@@ -3,10 +3,10 @@
 
 namespace llvmtranslate
 {
-const char* runtime_string()
-{
-  return
-R"0(; ModuleID = 'src/llvmtranslate/tiger-runtime.c'
+  const char* runtime_string()
+  {
+    return
+      R"0(; ModuleID = 'src/llvmtranslate/tiger-runtime.c'
 source_filename = "src/llvmtranslate/tiger-runtime.c"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-unknown-linux-gnu"
@@ -612,5 +612,5 @@ attributes #8 = { nounwind willreturn memory(read) }
 !4 = !{i32 7, !"frame-pointer", i32 2}
 !5 = !{!"clang version 18.1.8"}
 )0";
-}
+  }
 } // namespace llvmtranslate
