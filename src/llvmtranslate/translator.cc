@@ -234,7 +234,7 @@ namespace llvmtranslate
 
   void Translator::operator()(const ast::FieldVar& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     auto ltype = e.type_get() == &type::Void::instance()
       ? i64_t(ctx_)
       : llvm_type(*e.type_get());
@@ -243,12 +243,12 @@ namespace llvmtranslate
 
   void Translator::operator()(const ast::SubscriptVar& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     auto ltype = e.type_get() == &type::Void::instance()
       ? i64_t(ctx_)
       : llvm_type(*e.type_get());
     // value_ = builder_.CreateLoad(ltype, access_var(e), e.name_get().get());
-    value_ = builder_.CreateLoad(ltype, access_var(e), "");
+    value_ = builder_.CreateLoad(ltype, access_var(e), "subscript");
   }
 
   void Translator::operator()(const ast::NilExp& e)
@@ -310,7 +310,7 @@ namespace llvmtranslate
 
   void Translator::operator()(const ast::OpExp& e)
   {
-    // FIXME : Some code was deleted here.
+    // FIXED : Some code was deleted here.
     // The comparison instructions returns an i1, and we need an i64, since everything
     // is an i64 in Tiger. Use a zero-extension to avoid this.
     auto left = translate(e.left_get());
@@ -325,7 +325,7 @@ namespace llvmtranslate
   {
     // An empty SeqExp is an empty expression, so we should return an int
     // containing 0, since its type is void.
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     if (e.exps_get().empty())
       {
         value_ = llvm::ConstantInt::get(i64_t(ctx_), 0);
@@ -339,7 +339,7 @@ namespace llvmtranslate
 
   void Translator::operator()(const ast::AssignExp& e)
   {
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     auto exp = translate(e.exp_get());
     builder_.CreateStore(exp, access_var(e.var_get()));
     value_ = llvm::ConstantInt::get(i64_t(ctx_), 0);
@@ -404,7 +404,7 @@ namespace llvmtranslate
     // Translate the number of elements,
     // fill the array with the default value, then
     // return the pointer to the allocated zone.
-    // FIXME: Some code was deleted here (Use `init_array`).
+    // FIXED: Some code was deleted here (Use `init_array`).
     value_ = init_array(translate(e.size_get()), translate(e.init_get()));
   }
 
@@ -479,7 +479,7 @@ namespace llvmtranslate
     builder_.SetInsertPoint(bb);
 
     // const type::Type* node_type = nullptr;
-    // FIXME: Some code was deleted here.
+    // FIXED: Some code was deleted here.
     auto& function_type =
       static_cast<const type::Function&>(e.type_get()->actual());
     auto& escaped = escaped_[&function_type];
@@ -493,7 +493,7 @@ namespace llvmtranslate
         ++arg_it;
       }
 
-    // FIXME: Some code was deleted here (Create alloca instructions for each variable).
+    // FIXED: Some code was deleted here (Create alloca instructions for each variable).
 
     for (const auto f : formals)
       {
@@ -507,7 +507,7 @@ namespace llvmtranslate
         arg_it++;
       }
 
-    // FIXME: Some code was deleted here (Create a return instruction).
+    // FIXED: Some code was deleted here (Create a return instruction).
 
     auto body = translate(*e.body_get());
 
