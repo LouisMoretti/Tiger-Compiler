@@ -28,7 +28,8 @@ namespace llvmtranslate::tasks
   /// Display the LLVM IR.
   DISJUNCTIVE_TASK_DECLARE("llvm-computed",
                            "default the computation of llvm IR to llvm-compute",
-                           "llvm-compute");
+                           "llvm-compute"
+                           " llvm-gc-compute");
   TASK_DECLARE("llvm-display",
                "display the LLVM IR",
                llvm_display,
