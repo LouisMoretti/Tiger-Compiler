@@ -540,11 +540,49 @@ namespace llvmtranslate
     const type::Function* cast =
       dynamic_cast<const type::Function*>(&e.def_get()->type_get()->actual());
 
-    // takes all parameters in the set
-    // TODO auto args = escaped_.at(cast);
-    // TODO args.merge(e.formals_get());
+    std::vector<llvm::Type*> var_vect;
 
-    // TODO builder_.CreateCall(, args); add name "Call" quand type non void
+    for (auto esc : escaped_.at(cast))
+      {
+        var_vect.emplace_back(llvm_type(*esc->type_get()));
+      }
+
+    for (auto parameter : e.def_get()->formals_get())
+      {
+        var_vect.emplace_back(llvm_type(*parameter->type_get()));
+      }
+
+    llvm::ArrayRef<llvm::Type*> args{var_vect.data(),
+                                     var_vect.data() + var_vect.size()};
+
+    auto ltype = e.def_get()->type_get() == &type::Void::instance()
+      ? i64_t(ctx_)
+      : llvm_type(*e.def_get()->type_get());
+
+    auto func_type = llvm::FunctionType::get(ltype, args, false);
+
+    llvm::GlobalValue::LinkageTypes link_type =
+      llvm::GlobalValue::LinkageTypes::
+        ExternalLinkage; // TODO needs to check with yaka for the enum value
+
+    auto func =
+      llvm::Function::Create(func_type, link_type, "funcCall", nullptr);
+    /* TODO fix FunctionCallee error and CreatCall error with types
+
+    (it's working, just needs to check types)
+
+
+    llvm::FunctionCallee* callee =
+      llvm::FunctionCallee::FunctionCallee{func_type, func};
+
+    if (e.def_get()->type_get() == &type::Void::instance())
+      {
+        value_ = builder_.CreateCall(*callee, args, "", nullptr);
+      }
+    else
+      {
+        value_ = builder_.CreateCall(*callee, args, "funcCall", nullptr);
+      }*/
   }
 
   void Translator::operator()(const ast::VarDec& e)
