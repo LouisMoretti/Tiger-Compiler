@@ -580,57 +580,54 @@ namespace llvmtranslate
     // Then, add the escaped variables and the rest of the arguments to the
     // list of arguments, and return the correct value.
     // FIXED: Some code was deleted here.
-    auto name = module_.getNamedGlobal(e.name_get().get());
+    // auto name = module_.getNamedGlobal(e.name_get().get());
 
-    if (!e.def_get()->body_get())
-      e.def_get()->name_set("tc_name");
+    // if (!e.def_get()->body_get())
+    // TODO: <name> function_dec_name()
+    // e.def_get()->name_set("tc_name");
 
     const type::Function* cast =
       dynamic_cast<const type::Function*>(&e.def_get()->type_get()->actual());
 
-    std::vector<llvm::Type*> var_vect;
+    std::vector<llvm::Value*> var_vect;
 
     for (auto esc : escaped_.at(cast))
       {
-        var_vect.emplace_back(llvm_type(*esc->type_get()));
+        var_vect.emplace_back(*esc->type_get());
       }
 
     for (auto parameter : e.def_get()->formals_get())
       {
-        var_vect.emplace_back(llvm_type(*parameter->type_get()));
+        var_vect.emplace_back(*parameter->type_get());
       }
 
-    llvm::ArrayRef<llvm::Type*> args{var_vect.data(),
-                                     var_vect.data() + var_vect.size()};
+    // llvm::ArrayRef<llvm::Type*> args{var_vect.data(),
+    //                                  var_vect.data() + var_vect.size()};
 
-    auto ltype = e.def_get()->type_get() == &type::Void::instance()
-      ? i64_t(ctx_)
-      : llvm_type(*e.def_get()->type_get());
+    // auto ltype = e.def_get()->type_get() == &type::Void::instance()
+    //   ? i64_t(ctx_)
+    //   : llvm_type(*e.def_get()->type_get());
 
-    auto func_type = llvm::FunctionType::get(ltype, args, false);
+    // auto func_type = llvm::FunctionType::get(ltype, args, false);
 
-    llvm::GlobalValue::LinkageTypes link_type =
-      llvm::GlobalValue::LinkageTypes::
-        ExternalLinkage; // TODO needs to check with yaka for the enum value
+    // llvm::GlobalValue::LinkageTypes link_type =
+    //   llvm::GlobalValue::LinkageTypes::
+    //     ExternalLinkage; // TODO needs to check with yaka for the enum value
 
-    auto func =
-      llvm::Function::Create(func_type, link_type, "funcCall", nullptr);
-    /* TODO fix FunctionCallee error and CreatCall error with types
+    // auto func =
+    //   llvm::Function::Create(func_type, link_type, "funcCall", nullptr);
+    // TODO fix FunctionCallee error and CreatCall error with types
 
-    (it's working, just needs to check types)
+    llvm::Function* func = module_.getFunction(function_dec_name(*e.def_get()));
 
-
-    llvm::FunctionCallee* callee =
-      llvm::FunctionCallee::FunctionCallee{func_type, func};
-
-    if (e.def_get()->type_get() == &type::Void::instance())
+    if (cast.result_get() == &type::Void::instance())
       {
-        value_ = builder_.CreateCall(*callee, args, "", nullptr);
+        value_ = builder_.CreateCall(*func, var_vect);
       }
     else
       {
-        value_ = builder_.CreateCall(*callee, args, "funcCall", nullptr);
-      }*/
+        value_ = builder_.CreateCall(*func, var_vect, "funcCall");
+      }
   }
 
   void Translator::operator()(const ast::VarDec& e)
