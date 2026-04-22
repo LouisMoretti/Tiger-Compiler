@@ -106,17 +106,22 @@ reserved_id     _[a-zA-Z0-9_]*
                         else
                             grown_string += val;
                    }
+\\n               grown_string+='\n';
+\\a               grown_string+='\a';
+\\b               grown_string+='\b';
+\\f               grown_string+='\f';
+\\r               grown_string+='\r';
+\\t               grown_string+='\t';
+\\v               grown_string+='\v';
+\\                grown_string+='\\';
+"\\\""            grown_string+='"';
 
-\\[abfnrtv]       grown_string+=text();
-\\                grown_string+=text();
-"\\\""            grown_string+=text();
-\n                td.location_.lines(1);
-.                 grown_string+=text();
 <<EOF>>         {
                      td.error_ << misc::error::error_type::scan;
                      td.error_ << "Lexing Error was encountered at line" << td.location_ << " unclosed string\n";
                      td.error_.exit();
                 }
+.                 grown_string+=text();
 }
 
 <SC_COMMENT> {
