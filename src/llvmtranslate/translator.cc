@@ -107,10 +107,20 @@ namespace llvmtranslate
     if (auto var_ast = dynamic_cast<const ast::SimpleVar*>(&e))
       {
         // FIXME: Some code was deleted here.
+        // TODO: How to get VarDec other than locals ? But its not set in VarDec. (Question for yaka)
+        // return locals_.at(current_function_)
+        //   .at(dynamic_cast<const ast::VarDec*>(var_ast->def_get()));
       }
     else if (auto arr_ast = dynamic_cast<const ast::SubscriptVar*>(&e))
       {
-        // FIXME: Some code was deleted here.
+        // FIXED: Some code was deleted here.
+        auto arr = translate(arr_ast->var_get());
+        auto index = translate(arr_ast->index_get());
+        return builder_.CreateGEP(
+          llvm_type(dynamic_cast<const type::Array*>(
+                      &arr_ast->var_get().type_get()->actual())
+                      ->type_get()),
+          arr, index, "");
       }
     else if (auto field_ast = dynamic_cast<const ast::FieldVar*>(&e))
       {
@@ -277,8 +287,8 @@ namespace llvmtranslate
   {
     // Get the record type
     // FIXED: Some code was deleted here.
-    const type::Record* record_type =
-      dynamic_cast<const type::Record*>(e.type_name_get().type_get());
+    const type::Record* record_type = dynamic_cast<const type::Record*>(
+      &e.type_name_get().type_get()->actual());
 
     assert(record_type != nullptr
            && "error cannot get record type from record exp in translator");
@@ -300,9 +310,11 @@ namespace llvmtranslate
 
     for (auto f : e.fields_get())
       {
-        // TODO visit the field
-        // auto feild = translate(f->init_get());
-        // TODO add an operand for the field number (first field = 0, second field = 1...)
+        auto field = translate(f->init_get());
+        builder_.CreateStore(field,
+                             builder_.CreateStructGEP(
+                               struct_ltype, malloc_val,
+                               record_type->field_index(f->name_get()), ""));
       }
 
     value_ = malloc_val;
@@ -316,7 +328,39 @@ namespace llvmtranslate
     auto left = translate(e.left_get());
     auto right = translate(e.right_get());
 
-    // TODO: Switch for all oper.
+    switch (e.oper_get())
+      {
+      case ast::OpExp::Oper::add:
+        value_ = builder_.CreateAdd(left, right, "add");
+        break;
+      case ast::OpExp::Oper::sub:
+        value_ = builder_.CreateSub(left, right, "sub");
+        break;
+      case ast::OpExp::Oper::mul:
+        value_ = builder_.CreateMul(left, right, "mul");
+        break;
+      case ast::OpExp::Oper::div:
+        value_ = builder_.CreateSDiv(left, right, "div");
+        break;
+      case ast::OpExp::Oper::eq:
+        value_ = builder_.CreateICmpEQ(left, right, "eq");
+        break;
+      case ast::OpExp::Oper::ne:
+        value_ = builder_.CreateICmpNE(left, right, "ne");
+        break;
+      case ast::OpExp::Oper::lt:
+        value_ = builder_.CreateICmpSLT(left, right, "lt");
+        break;
+      case ast::OpExp::Oper::le:
+        value_ = builder_.CreateICmpSLE(left, right, "le");
+        break;
+      case ast::OpExp::Oper::gt:
+        value_ = builder_.CreateICmpSGT(left, right, "gt");
+        break;
+      case ast::OpExp::Oper::ge:
+        value_ = builder_.CreateICmpSGE(left, right, "ge");
+        break;
+      }
 
     value_ = builder_.CreateZExtOrTrunc(value_, i64_t(ctx_), "op_zext");
   }

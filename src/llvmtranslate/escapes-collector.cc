@@ -59,7 +59,8 @@ namespace llvmtranslate
 
       this->actual_func_ = cast;
 
-      this->escaped_[this->actual_func_] = misc::set<const ast::VarDec*>();
+      if (!this->escaped_.count(this->actual_func_))
+        this->escaped_[this->actual_func_] = misc::set<const ast::VarDec*>();
 
       super_type::operator()(e);
 
