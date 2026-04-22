@@ -103,13 +103,10 @@ namespace llvmtranslate
 
   llvm::Value* Translator::access_var(const ast::Var& e)
   {
-    // TODO last function to do, it's the hardest one
     if (auto var_ast = dynamic_cast<const ast::SimpleVar*>(&e))
       {
-        // FIXME: Some code was deleted here.
-        // TODO: How to get VarDec other than locals ? But its not set in VarDec. (Question for yaka)
-        // return locals_.at(current_function_)
-        //   .at(dynamic_cast<const ast::VarDec*>(var_ast->def_get()));
+        // FIXED: Some code was deleted here.
+        return locals_.at(current_function_).at(var_ast->def_get());
       }
     else if (auto arr_ast = dynamic_cast<const ast::SubscriptVar*>(&e))
       {
@@ -124,21 +121,28 @@ namespace llvmtranslate
       }
     else if (auto field_ast = dynamic_cast<const ast::FieldVar*>(&e))
       {
-        const ast::Var* var = nullptr;
-        // FIXME: Some code was deleted here.
+        // FIXED: Some code was deleted here.
+        const ast::Var* var = &field_ast->var_get();
         auto var_val = translate(*var);
 
-        const type::Record* record_type = nullptr;
-        // FIXME: Some code was deleted here.
-        misc::symbol field_name;
-        // FIXME: Some code was deleted here.
+        // FIXED: Some code was deleted here.
+        const type::Record* record_type =
+          dynamic_cast<const type::Record*>(&var->type_get()->actual());
+        // FIXED: Some code was deleted here.
+        misc::symbol field_name = field_ast->name_get();
+        // FIXED: Some code was deleted here (Get the index of the field).
         int index = -1;
-        // FIXME: Some code was deleted here (Get the index of the field).
+        for (const auto& f : record_type->fields_get())
+          {
+            index++;
+            if (f.name_get() == field_name)
+              break;
+          }
 
         // The GEP instruction provides us with safe pointer arithmetics,
         // usually used with records or arrays.
-        llvm::Type* record_ltype = nullptr;
-        // FIXME: Some code was deleted here (Get record's corresponding LLVM type).
+        // FIXED: Some code was deleted here (Get record's corresponding LLVM type).
+        llvm::Type* record_ltype = type_visitor_.get_record_ltype(record_type);
         return builder_.CreateStructGEP(record_ltype, var_val, index,
                                         "fieldptr_"s + field_name.get());
       }
@@ -636,7 +640,12 @@ namespace llvmtranslate
     auto ltype = e.type_get() == &type::Void::instance()
       ? i64_t(ctx_)
       : llvm_type(*e.type_get());
-    value_ = builder_.CreateAlloca(ltype, 1, nullptr, e.name_get().get());
+
+    auto alloca = create_alloca(current_function_, ltype, e.name_get().get());
+    locals_[current_function_][&e] = alloca;
+
+    value_ = builder_.CreateStore(translate(*e.init_get()), alloca);
+    // value_ = builder_.CreateAlloca(ltype, 1, nullptr, e.name_get().get());
   }
 
 } // namespace llvmtranslate
