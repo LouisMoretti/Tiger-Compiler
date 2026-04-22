@@ -396,6 +396,55 @@ namespace llvmtranslate
   void Translator::operator()(const ast::IfExp& e)
   {
     // FIXME: Some code was deleted here (IfExps are handled in a similar way to Kaleidoscope (see LangImpl5.html)).
+    auto then_bb = llvm::BasicBlock::Create(ctx_, "then", current_function_);
+    // Add some instructions to the `then` basic block.
+
+
+    auto else_bb = llvm::BasicBlock::Create(ctx_, "else",current_function_);
+
+    auto MergeBB = llvm::BasicBlock::Create(ctx_, "ifcont", current_function_);
+
+    // Add some instructions to the `else` basic block.
+
+    auto CondV = builder_.CreateICmpNE(translate(e.test_get()), llvm::ConstantInt::getSigned(i64_t(ctx_), 0), "condition");
+
+
+    builder_.CreateCondBr(CondV, then_bb, else_bb);
+
+    /// THEN
+
+    builder_.SetInsertPoint(then_bb);
+
+    auto return_value_of_then = translate(e.thenclause_get());// some llvm::Value
+
+    builder_.CreateBr(MergeBB);
+
+    then_bb = builder_.GetInsertBlock();
+
+    /// ELSE
+
+    builder_.SetInsertPoint(else_bb);
+
+    auto return_value_of_else = translate(e.elseclause_get());// some llvm::Value
+
+    builder_.CreateBr(MergeBB);
+
+    else_bb = builder_.GetInsertBlock();
+
+    /// MERGE
+    builder_.SetInsertPoint(MergeBB);
+
+   /// TYPE & PHI CREATION
+
+    auto value_type = llvm_type(*e.type_get());// some llvm::Type
+
+    if ( *e.type_get() != type::Void::instance())
+      {
+        auto phi = builder_.CreatePHI(value_type, 2, "iftmp");
+        phi->addIncoming(return_value_of_then, then_bb);
+        phi->addIncoming(return_value_of_else, else_bb);
+        value_ = phi;
+      }
   }
 
   void Translator::operator()(const ast::WhileExp& e)
