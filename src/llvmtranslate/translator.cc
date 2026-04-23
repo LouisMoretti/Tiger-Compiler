@@ -399,15 +399,15 @@ namespace llvmtranslate
     auto then_bb = llvm::BasicBlock::Create(ctx_, "then", current_function_);
     // Add some instructions to the `then` basic block.
 
-
-    auto else_bb = llvm::BasicBlock::Create(ctx_, "else",current_function_);
+    auto else_bb = llvm::BasicBlock::Create(ctx_, "else", current_function_);
 
     auto MergeBB = llvm::BasicBlock::Create(ctx_, "ifcont", current_function_);
 
     // Add some instructions to the `else` basic block.
 
-    auto CondV = builder_.CreateICmpNE(translate(e.test_get()), llvm::ConstantInt::getSigned(i64_t(ctx_), 0), "condition");
-
+    auto CondV = builder_.CreateICmpNE(
+      translate(e.test_get()), llvm::ConstantInt::getSigned(i64_t(ctx_), 0),
+      "condition");
 
     builder_.CreateCondBr(CondV, then_bb, else_bb);
 
@@ -415,7 +415,8 @@ namespace llvmtranslate
 
     builder_.SetInsertPoint(then_bb);
 
-    auto return_value_of_then = translate(e.thenclause_get());// some llvm::Value
+    auto return_value_of_then =
+      translate(e.thenclause_get()); // some llvm::Value
 
     builder_.CreateBr(MergeBB);
 
@@ -425,7 +426,8 @@ namespace llvmtranslate
 
     builder_.SetInsertPoint(else_bb);
 
-    auto return_value_of_else = translate(e.elseclause_get());// some llvm::Value
+    auto return_value_of_else =
+      translate(e.elseclause_get()); // some llvm::Value
 
     builder_.CreateBr(MergeBB);
 
@@ -434,11 +436,11 @@ namespace llvmtranslate
     /// MERGE
     builder_.SetInsertPoint(MergeBB);
 
-   /// TYPE & PHI CREATION
+    /// TYPE & PHI CREATION
 
-    auto value_type = llvm_type(*e.type_get());// some llvm::Type
+    auto value_type = llvm_type(*e.type_get()); // some llvm::Type
 
-    if ( *e.type_get() != type::Void::instance())
+    if (*e.type_get() != type::Void::instance())
       {
         auto phi = builder_.CreatePHI(value_type, 2, "iftmp");
         phi->addIncoming(return_value_of_then, then_bb);
