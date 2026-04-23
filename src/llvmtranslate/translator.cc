@@ -395,7 +395,7 @@ namespace llvmtranslate
 
   void Translator::operator()(const ast::IfExp& e)
   {
-    // FIXME: Some code was deleted here (IfExps are handled in a similar way to Kaleidoscope (see LangImpl5.html)).
+    // FIXED: Some code was deleted here (IfExps are handled in a similar way to Kaleidoscope (see LangImpl5.html)).
     auto then_bb = llvm::BasicBlock::Create(ctx_, "then", current_function_);
     // Add some instructions to the `then` basic block.
 
