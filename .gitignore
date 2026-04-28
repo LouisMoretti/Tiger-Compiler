@@ -1,3 +1,13 @@
+src/llvmgc/runtime-gc-debug.cc
+src/llvmgc/runtime-gc.cc
+src/llvmgc/runtime/gc-alloc.dbg.ll
+src/llvmgc/runtime/gc-alloc.ll
+src/llvmgc/runtime/runtime-gc-debug.ll
+src/llvmgc/runtime/runtime-gc.ll
+src/llvmgc/runtime/tiger-gc.dbg.ll
+src/llvmgc/runtime/tiger-gc.ll
+src/llvmtranslate/runtime.cc
+
 # **/*.swp
 *.swp
 # **/.*~
