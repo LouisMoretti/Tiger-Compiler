@@ -74,7 +74,14 @@ namespace llvmgc
     std::vector<llvm::Type*> struct_types;
 
     // FIXME: Some code was deleted here (Create the fields of the struct and their types).
-
+    // Start Fix
+    for (auto elm : init_string)
+    {
+      struct_fields.push_back(elm);
+      struct_types.push_back(elm->getType());
+    }
+    // End Fix
+    
     // Create the fat pointer struct { struct metadata, char array } following the gc's expected metadata format
     llvm::StructType* str_ty_(llvm::StructType::create(ctx_));
 
