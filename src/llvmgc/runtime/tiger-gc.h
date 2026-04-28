@@ -7,19 +7,21 @@
 #define TIGER_GC_H
 
 #include <stdbool.h>
+#include <stdio.h>
 #include "fwd.h"
 
 /// The global state of the garbage collector
 struct gc_ctx
 {
   // FIXED: Some code was deleted here (Any global context that should be available to the allocator and collector).
-
-  struct gc_heap
+  // Start Fix
+  struct list_obj
   {
-    void* data;
-    struct gc_heap* next;
-    bool marked;
+    struct gc_object* actual;
+    struct list_obj* next;
   } heap;
+
+  // End Fix
 
   /// The frame address of main: the top of the stack
   void* tos;
@@ -32,8 +34,11 @@ struct gc_object
   struct gc_md
   {
     // FIXED: Some code was deleted here (Define the format of the metadata carried by heap allocated objects).
+    // Start Fix
     size_t size;
     void* data;
+    bool marked;
+    // End Fix
   } md;
   // The fields of the object
   tc_word_t f[0]; // The user pointer points here
