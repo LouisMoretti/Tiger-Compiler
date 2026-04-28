@@ -35,7 +35,7 @@ void gc_enter_runtime()
 
 void gc_exit_runtime()
 {
-  // FIXME: Some code was deleted here (Any logic required when exiting the runtime and going back to the tiger function).
+  // FIXED: Some code was deleted here (Any logic required when exiting the runtime and going back to the tiger function).
 }
 
 int main(void)

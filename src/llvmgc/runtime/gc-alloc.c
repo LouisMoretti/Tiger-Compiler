@@ -9,22 +9,48 @@
  */
 
 #include "gc-alloc.h"
+#include <stdlib.h>
 #include "fwd.h"
 #include "tiger-gc.h"
 
 char* tc_init_string(size_t size)
 {
-  // FIXME: Some code was deleted here.
+  // FIXED: Some code was deleted here.
+  char* res = tc_malloc(size);
+  if (!res)
+    return NULL;
+
+  return res;
 }
 
 size_t* tc_init_array(size_t size, size_t elt)
 {
-  // FIXME: Some code was deleted here.
+  // FIXED: Some code was deleted here.
+  size_t* res = tc_malloc(size);
+  if (!res)
+    return NULL;
+
+  for (size_t i = 0; i < size; i++)
+    {
+      res[i] = elt;
+    }
+
+  return res;
 }
 
 size_t* tc_init_ptr_array(size_t size, struct gc_object* elt)
 {
-  // FIXME: Some code was deleted here.
+  // FIXED: Some code was deleted here.
+  size_t* res = tc_malloc(size * sizeof(size_t));
+  if (!res)
+    return NULL;
+
+  for (size_t i = 0; i < size; i++)
+    {
+      res[i] = (size_t)elt;
+    }
+
+  return res;
 }
 
 void* tc_init_record(
@@ -43,5 +69,7 @@ void* tc_init_record(
 
 void* tc_malloc(size_t size)
 {
-  // FIXME: Some code was deleted here.
+  // FIXED: Some code was deleted here.
+  void* res = malloc(size);
+  return res;
 }
