@@ -28,7 +28,42 @@ void gc_collect()
   if (!gc_ctx_.gc_enabled)
     return;
 
-  // FIXME: Some code was deleted here (Run the collector).
+  // FIXED: Some code was deleted here (Run the collector).
+  struct list_obj* h = gc_ctx_.heap;
+  struct list_obj* prev = NULL;
+
+  // For each element of the linked list, checks if the element is marked
+  // if it is, reset the marked at false, if it's not marked, free the element
+  // and continue until the end of the list
+  while (h != NULL)
+    {
+      struct gc_object* actual_obj = h->actual;
+
+      if (actual_obj->md->marked)
+        {
+          actual_obj->md->marked = 0;
+          prev = h;
+          h = h->next;
+        }
+      else
+        {
+          free(actual_obj->md);
+          free(actual_obj);
+          if (prev == NULL)
+            {
+              gc_ctx_.heap = h->next;
+            }
+          else
+            {
+              prev->next = h->next;
+            }
+
+          struct list_obj* tmp = h->next;
+          free(h);
+
+          h = tmp;
+        }
+    }
 }
 
 void gc_enter_runtime()
