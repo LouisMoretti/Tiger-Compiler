@@ -32,6 +32,8 @@ char* tc_init_string(size_t size)
 
       gc_ctx_.heap->actual = malloc(sizeof(struct gc_object));
       gc_ctx_.heap->actual->md = res;
+      gc_ctx_.heap->actual->f[0]
+      
       gc_ctx_.heap->actual->f = (tc_word_t)string;
       gc_ctx_.heap->next = NULL;
     }
