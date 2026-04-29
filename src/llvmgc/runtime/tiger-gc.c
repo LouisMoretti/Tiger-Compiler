@@ -25,6 +25,7 @@ struct gc_ctx gc_ctx_ = {
 
 void gc_collect()
 {
+  // TODO add DFS to mark from all elements on the stack z
   if (!gc_ctx_.gc_enabled)
     return;
 

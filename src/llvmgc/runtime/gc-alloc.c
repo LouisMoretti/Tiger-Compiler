@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fwd.h"
 #include "tiger-gc.h"
 
 char* tc_init_string(size_t size)
@@ -46,7 +45,7 @@ char* tc_init_string(size_t size)
         }
 
       struct list_obj* new_last = malloc(sizeof(struct list_obj));
-      if (!gc_ctx_.heap)
+      if (!new_last)
         return NULL;
 
       last_elt->next = new_last;
@@ -91,7 +90,7 @@ size_t* tc_init_array(size_t size, size_t elt)
         }
 
       struct list_obj* new_last = malloc(sizeof(struct list_obj));
-      if (!gc_ctx_.heap)
+      if (!new_last)
         return NULL;
 
       last_elt->next = new_last;
@@ -130,6 +129,9 @@ void* tc_malloc(size_t size)
 {
   // FIXED: Some code was deleted here.
   struct gc_md* res = malloc(sizeof(struct gc_md));
+
+  // TODO add to linked_list the element
+
   res->marked = 0;
   res->size = size;
   return res;
