@@ -10,6 +10,8 @@
 
 #include "gc-alloc.h"
 #include <stdlib.h>
+#include <string.h>
+
 #include "fwd.h"
 #include "tiger-gc.h"
 
@@ -32,7 +34,7 @@ char* tc_init_string(size_t size)
 
       gc_ctx_.heap->actual = malloc(sizeof(struct gc_object));
       gc_ctx_.heap->actual->md = res;
-      gc_ctx_.heap->actual->f = (tc_word_t)string;
+      memcpy(gc_ctx_.heap->actual->f, string, size);
       gc_ctx_.heap->next = NULL;
     }
   else
@@ -51,7 +53,7 @@ char* tc_init_string(size_t size)
 
       new_last->actual = malloc(sizeof(struct gc_object));
       new_last->actual->md = res;
-      new_last->actual->f = (tc_word_t)string;
+      memcpy(new_last->actual->f,string, size);
       new_last->next = NULL;
     }
 
@@ -77,7 +79,7 @@ size_t* tc_init_array(size_t size, size_t elt)
 
       gc_ctx_.heap->actual = malloc(sizeof(struct gc_object));
       gc_ctx_.heap->actual->md = res;
-      gc_ctx_.heap->actual->f = (tc_word_t)array;
+      memcpy(gc_ctx_.heap->actual->f, array,8*size);
       gc_ctx_.heap->next = NULL;
     }
   else
@@ -96,7 +98,7 @@ size_t* tc_init_array(size_t size, size_t elt)
 
       new_last->actual = malloc(sizeof(struct gc_object));
       new_last->actual->md = res;
-      new_last->actual->f = (tc_word_t)array;
+      memcpy(new_last->actual->f,array, 8*size);
       new_last->next = NULL;
     }
 
