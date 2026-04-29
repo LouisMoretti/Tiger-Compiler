@@ -17,8 +17,7 @@ extern void init_consts(void);
 struct gc_ctx gc_ctx_ = {
   // FIXED: Some code was deleted here.
   // Start Fix
-  .heap =
-    NULL, // NULL at the begining because malloc is needed, real init in main
+  .heap = NULL,
   // End Fix
   .gc_enabled = true,
   .tos = NULL,
@@ -29,7 +28,42 @@ void gc_collect()
   if (!gc_ctx_.gc_enabled)
     return;
 
-  // FIXME: Some code was deleted here (Run the collector).
+  // FIXED: Some code was deleted here (Run the collector).
+  struct list_obj* h = gc_ctx_.heap;
+  struct list_obj* prev = NULL;
+
+  // For each element of the linked list, checks if the element is marked
+  // if it is, reset the marked at false, if it's not marked, free the element
+  // and continue until the end of the list
+  while (h != NULL)
+    {
+      struct gc_object* actual_obj = h->actual;
+
+      if (actual_obj->md->marked)
+        {
+          actual_obj->md->marked = 0;
+          prev = h;
+          h = h->next;
+        }
+      else
+        {
+          free(actual_obj->md);
+          free(actual_obj);
+          if (prev == NULL)
+            {
+              gc_ctx_.heap = h->next;
+            }
+          else
+            {
+              prev->next = h->next;
+            }
+
+          struct list_obj* tmp = h->next;
+          free(h);
+
+          h = tmp;
+        }
+    }
 }
 
 void gc_enter_runtime()
@@ -40,14 +74,6 @@ void gc_enter_runtime()
 void gc_exit_runtime()
 {
   // FIXME: Some code was deleted here (Any logic required when exiting the runtime and going back to the tiger function).
-}
-
-// ADDED by clement : function to initialize gc_ctx.heap
-static int init_ctx_list_obj()
-{
-  // TODO : initialise all the necessary fields for GC with malloc (which is struct list_obj with all the gc_object inside depending on what is allocated on the heap)
-  // returns -1 on malloc error
-  return 0;
 }
 
 int main(void)
@@ -61,13 +87,7 @@ int main(void)
   /// Initialize the top of the stack with main's frame address.
   gc_ctx_.tos = __builtin_frame_address(0);
 
-  // FIXED: Some code was deleted here (Initialize any additional context required by the allocator and garbage collctor).
-  // Start Fix
-  if (init_ctx_list_obj() == -1)
-    return -1; // TODO : need to handle the memory error
-
-  // FIXME maybe more things to add ?
-  // End Fix
+  // FIXME: Some code was deleted here (Initialize any additional context required by the allocator and garbage collctor).
 
   tc_main(0);
 

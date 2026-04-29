@@ -19,7 +19,7 @@ struct gc_ctx
   {
     struct gc_object* actual;
     struct list_obj* next;
-  } heap;
+  }* heap;
 
   // End Fix
 
@@ -35,11 +35,10 @@ struct gc_object
   {
     // FIXED: Some code was deleted here (Define the format of the metadata carried by heap allocated objects).
     // Start Fix
-    size_t size;
-    void* data;
     bool marked;
+    size_t size;
     // End Fix
-  } md;
+  }* md;
   // The fields of the object
   tc_word_t f[0]; // The user pointer points here
 };
