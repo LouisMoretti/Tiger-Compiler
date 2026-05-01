@@ -16,92 +16,92 @@
 
 char* tc_init_string(size_t size)
 {
-  // FIXED: Some code was deleted here.
-  void* res = tc_malloc(size);
-  if (!res)
-    return NULL;
+  // // FIXED: Some code was deleted here.
+  // void* res = tc_malloc(size);
+  // if (!res)
+  //   return NULL;
 
-  char* string = malloc(size);
+  // char* string = malloc(size);
 
-  // add the new last element at the end of the heap (maybe need optimisation later)
-  if (gc_ctx_.heap == NULL)
-    {
-      gc_ctx_.heap = malloc(sizeof(struct list_obj));
+  // // add the new last element at the end of the heap (maybe need optimisation later)
+  // if (gc_ctx_.heap == NULL)
+  //   {
+  //     gc_ctx_.heap = malloc(sizeof(struct list_obj));
 
-      if (!gc_ctx_.heap)
-        return NULL;
+  //     if (!gc_ctx_.heap)
+  //       return NULL;
 
-      gc_ctx_.heap->actual = malloc(sizeof(struct gc_object));
-      gc_ctx_.heap->actual->md = res;
-      memcpy(gc_ctx_.heap->actual->f, string, size);
-      gc_ctx_.heap->next = NULL;
-    }
-  else
-    {
-      struct list_obj* last_elt = gc_ctx_.heap;
-      while (last_elt->next != NULL)
-        {
-          last_elt = last_elt->next;
-        }
+  //     gc_ctx_.heap->actual = malloc(sizeof(struct gc_object));
+  //     gc_ctx_.heap->actual->md = res;
+  //     memcpy(gc_ctx_.heap->actual->f, string, size);
+  //     gc_ctx_.heap->next = NULL;
+  //   }
+  // else
+  //   {
+  //     struct list_obj* last_elt = gc_ctx_.heap;
+  //     while (last_elt->next != NULL)
+  //       {
+  //         last_elt = last_elt->next;
+  //       }
 
-      struct list_obj* new_last = malloc(sizeof(struct list_obj));
-      if (!new_last)
-        return NULL;
+  //     struct list_obj* new_last = malloc(sizeof(struct list_obj));
+  //     if (!new_last)
+  //       return NULL;
 
-      last_elt->next = new_last;
+  //     last_elt->next = new_last;
 
-      new_last->actual = malloc(sizeof(struct gc_object));
-      new_last->actual->md = res;
-      memcpy(new_last->actual->f,string, size);
-      new_last->next = NULL;
-    }
+  //     new_last->actual = malloc(sizeof(struct gc_object));
+  //     new_last->actual->md = res;
+  //     memcpy(new_last->actual->f, string, size);
+  //     new_last->next = NULL;
+  //   }
 
-  return string;
+  // return string;
 }
 
 size_t* tc_init_array(size_t size, size_t elt)
 {
-  // FIXED: Some code was deleted here.
-  void* res = tc_malloc(size * elt);
-  if (!res)
-    return NULL;
+  // // FIXED: Some code was deleted here.
+  // void* res = tc_malloc(size * elt);
+  // if (!res)
+  //   return NULL;
 
-  size_t* array = malloc(size * elt);
+  // size_t* array = malloc(size * elt);
 
-  // add the new last element at the end of the heap (maybe need optimisation later)
-  if (gc_ctx_.heap == NULL)
-    {
-      gc_ctx_.heap = malloc(sizeof(struct list_obj));
+  // // add the new last element at the end of the heap (maybe need optimisation later)
+  // if (gc_ctx_.heap == NULL)
+  //   {
+  //     gc_ctx_.heap = malloc(sizeof(struct list_obj));
 
-      if (!gc_ctx_.heap)
-        return NULL;
+  //     if (!gc_ctx_.heap)
+  //       return NULL;
 
-      gc_ctx_.heap->actual = malloc(sizeof(struct gc_object));
-      gc_ctx_.heap->actual->md = res;
-      memcpy(gc_ctx_.heap->actual->f, array,8*size);
-      gc_ctx_.heap->next = NULL;
-    }
-  else
-    {
-      struct list_obj* last_elt = gc_ctx_.heap;
-      while (last_elt->next != NULL)
-        {
-          last_elt = last_elt->next;
-        }
+  //     gc_ctx_.heap->actual = malloc(sizeof(struct gc_object));
+  //     gc_ctx_.heap->actual->md = res;
+  //     memcpy(gc_ctx_.heap->actual->f, array,8*size);
+  //     gc_ctx_.heap->next = NULL;
+  //   }
+  // else
+  //   {
+  //     struct list_obj* last_elt = gc_ctx_.heap;
+  //     while (last_elt->next != NULL)
+  //       {
+  //         last_elt = last_elt->next;
+  //       }
 
-      struct list_obj* new_last = malloc(sizeof(struct list_obj));
-      if (!new_last)
-        return NULL;
+  //     struct list_obj* new_last = malloc(sizeof(struct list_obj));
+  //     if (!new_last)
+  //       return NULL;
 
-      last_elt->next = new_last;
+  //     last_elt->next = new_last;
 
-      new_last->actual = malloc(sizeof(struct gc_object));
-      new_last->actual->md = res;
-      memcpy(new_last->actual->f,array, 8*size);
-      new_last->next = NULL;
-    }
+  //     new_last->actual = malloc(sizeof(struct gc_object));
+  //     new_last->actual->md = res;
+  //     memcpy(new_last->actual->f,array, 8*size);
+  //     new_last->next = NULL;
+  //   }
 
-  return array;
+  // return array;
 }
 
 size_t* tc_init_ptr_array(size_t size, struct gc_object* elt)

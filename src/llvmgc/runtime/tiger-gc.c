@@ -23,32 +23,59 @@ struct gc_ctx gc_ctx_ = {
   .tos = NULL,
 };
 
+static struct gc_object* find_in_heap(void* node)
+{
+  struct list_obj* objs = gc_ctx_.heap;
+  while (objs && objs->actual->f != node)
+    objs = objs->next;
+  if (!objs)
+    return NULL;
+  return objs->actual;
+}
+
+static void DFS(void* node)
+{
+  struct gc_object* obj = find_in_heap(node);
+  if (obj)
+    {
+      if (obj->md.marked == 0)
+        {
+          obj->md.marked = 1;
+          for (int i = 0; i < obj->md.size / 8; i++)
+            DFS(&obj->f[i]);
+        }
+    }
+}
+
 void gc_collect()
 {
-  // TODO add DFS to mark from all elements on the stack z
   if (!gc_ctx_.gc_enabled)
     return;
 
   // FIXED: Some code was deleted here (Run the collector).
-  struct list_obj* h = gc_ctx_.heap;
-  struct list_obj* prev = NULL;
+  for (void* ptr = __builtin_frame_address(0); ptr < gc_ctx_.tos; ptr++)
+    DFS(ptr);
 
   // For each element of the linked list, checks if the element is marked
   // if it is, reset the marked at false, if it's not marked, free the element
   // and continue until the end of the list
+
+  struct list_obj* h = gc_ctx_.heap;
+  struct list_obj* prev = NULL;
+
   while (h != NULL)
     {
       struct gc_object* actual_obj = h->actual;
 
-      if (actual_obj->md->marked)
+      if (actual_obj->md.marked)
         {
-          actual_obj->md->marked = 0;
+          actual_obj->md.marked = 0;
           prev = h;
           h = h->next;
         }
       else
         {
-          free(actual_obj->md);
+          // free(actual_obj->md);
           free(actual_obj);
           if (prev == NULL)
             {

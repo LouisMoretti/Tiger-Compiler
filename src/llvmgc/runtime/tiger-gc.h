@@ -38,7 +38,7 @@ struct gc_object
     bool marked;
     size_t size;
     // End Fix
-  }* md;
+  } md;
   // The fields of the object
   tc_word_t f[0]; // The user pointer points here
 };
