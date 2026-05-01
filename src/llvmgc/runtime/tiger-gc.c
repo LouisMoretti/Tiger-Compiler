@@ -36,14 +36,11 @@ static struct gc_object* find_in_heap(void* node)
 static void DFS(void* node)
 {
   struct gc_object* obj = find_in_heap(node);
-  if (obj)
+  if (obj && obj->md.marked == 0)
     {
-      if (obj->md.marked == 0)
-        {
-          obj->md.marked = 1;
-          for (int i = 0; i < obj->md.size / 8; i++)
-            DFS(&obj->f[i]);
-        }
+      obj->md.marked = 1;
+      for (size_t i = 0; i < obj->md.size / sizeof(size_t); i++)
+        DFS(&obj->f[i]);
     }
 }
 
@@ -75,20 +72,14 @@ void gc_collect()
         }
       else
         {
-          // free(actual_obj->md);
           free(actual_obj);
           if (prev == NULL)
-            {
-              gc_ctx_.heap = h->next;
-            }
+            gc_ctx_.heap = h->next;
           else
-            {
-              prev->next = h->next;
-            }
+            prev->next = h->next;
 
           struct list_obj* tmp = h->next;
           free(h);
-
           h = tmp;
         }
     }
