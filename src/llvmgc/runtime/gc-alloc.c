@@ -9,6 +9,7 @@
  */
 
 #include "gc-alloc.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -57,6 +58,7 @@ char* tc_init_string(size_t size)
   //   }
 
   // return string;
+  return tc_malloc(size);
 }
 
 size_t* tc_init_array(size_t size, size_t elt)
@@ -102,37 +104,56 @@ size_t* tc_init_array(size_t size, size_t elt)
   //   }
 
   // return array;
+  size_t* tmp = tc_malloc(size * sizeof(size_t));
+  for (size_t i = 0; i < size; i++)
+    tmp[i] = elt;
+  return tmp;
 }
 
 size_t* tc_init_ptr_array(size_t size, struct gc_object* elt)
 {
   // FIXME: Some code was deleted here.
-  size_t* res = NULL;
+  size_t* res = tc_malloc(size * sizeof(size_t));
+  for (size_t i = 0; i < size; i++)
+    res[i] = (size_t)elt;
   return res;
 }
 
-void* tc_init_record(
-  // FIXME: Some code was deleted here.
-)
+void* tc_init_record(size_t size)
 {
-  struct gc_object* res = NULL;
+  // struct gc_object* res = NULL;
   // FIXME: Some code was deleted here.
 
   // Return a pointer to the first field
   // struct gc_md, f0, f1, f2 ...
   //                ^
   //                |
-  return res->f;
+  // return res->f;
+  return tc_malloc(size);
 }
 
 void* tc_malloc(size_t size)
 {
   // FIXED: Some code was deleted here.
-  struct gc_md* res = malloc(sizeof(struct gc_md));
+  struct gc_object* res = calloc(1, sizeof(struct gc_md) + size);
 
-  // TODO add to linked_list the element
+  if (!res)
+    {
+      gc_collect();
+      res = calloc(1, sizeof(struct gc_md) + size);
+      if (!res)
+        exit(EXIT_FAILURE);
+    }
 
-  res->marked = 0;
-  res->size = size;
-  return res;
+  struct list_obj* node = malloc(sizeof(struct list_obj));
+  if (!node)
+    exit(EXIT_FAILURE);
+
+  node->actual = res;
+  node->next = gc_ctx_.heap;
+  gc_ctx_.heap = node;
+
+  res->md.marked = 0;
+  res->md.size = size;
+  return res->f;
 }

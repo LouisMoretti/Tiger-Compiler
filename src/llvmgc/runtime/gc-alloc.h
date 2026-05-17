@@ -10,9 +10,7 @@
 #include "fwd.h"
 
 /// Specialized allocator for records, called by llvmgc::GCTranslator
-void* tc_init_record(
-  // FIXME: Some code was deleted here (Choose the arguments used by tc_init_record).
-);
+void* tc_init_record(size_t size);
 
 /// Initialize a string with size characters. `size` must include the NULL terminator.
 char* tc_init_string(size_t size);
