@@ -40,7 +40,7 @@ static void DFS(void* node)
     {
       obj->md.marked = 1;
       for (size_t i = 0; i < obj->md.size / sizeof(size_t); i++)
-        DFS(&obj->f[i]);
+        DFS((void*)obj->f[i]);
     }
 }
 
@@ -50,8 +50,9 @@ void gc_collect()
     return;
 
   // FIXED: Some code was deleted here (Run the collector).
-  for (void* ptr = __builtin_frame_address(0); ptr < gc_ctx_.tos; ptr++)
-    DFS(ptr);
+  for (tc_word_t* ptr = __builtin_frame_address(0); (void*)ptr < gc_ctx_.tos;
+       ptr++)
+    DFS((void*)*ptr);
 
   // For each element of the linked list, checks if the element is marked
   // if it is, reset the marked at false, if it's not marked, free the element
