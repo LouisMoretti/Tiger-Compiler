@@ -46,10 +46,10 @@ struct gc_object
 // The global state of the garbage collector.
 extern struct gc_ctx gc_ctx_;
 
-void gc_collect();
+void gc_collect(void);
 
-void gc_enter_runtime();
+void gc_enter_runtime(void);
 
-void gc_exit_runtime();
+void gc_exit_runtime(void);
 
-#endif /* ! TIGER_GC_H */
+#endif // ! TIGER_GC_H

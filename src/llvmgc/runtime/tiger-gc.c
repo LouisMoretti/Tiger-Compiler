@@ -5,6 +5,8 @@
  ** This is a suggestion of skeleton for an implementation of a garbage collector.
  */
 
+#define _POSIX_C_SOURCE 200809L
+
 #include "tiger-gc.h"
 #include <stdlib.h>
 #include "fwd.h"
@@ -44,7 +46,7 @@ static void DFS(void* node)
     }
 }
 
-void gc_collect()
+void gc_collect(void)
 {
   if (!gc_ctx_.gc_enabled)
     return;
@@ -73,6 +75,7 @@ void gc_collect()
         }
       else
         {
+          dprintf(3, "Freed object at address: %p\n", (void*)&actual_obj);
           free(actual_obj);
           if (prev == NULL)
             gc_ctx_.heap = h->next;
@@ -86,12 +89,12 @@ void gc_collect()
     }
 }
 
-void gc_enter_runtime()
+void gc_enter_runtime(void)
 {
   // FIXME: Some code was deleted here (Initialize any context required by the runtime).
 }
 
-void gc_exit_runtime()
+void gc_exit_runtime(void)
 {
   // FIXME: Some code was deleted here (Any logic required when exiting the runtime and going back to the tiger function).
 }
