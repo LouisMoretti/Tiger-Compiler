@@ -1,7 +1,8 @@
 # Compile the LLVM Tiger garbage collector runtime
 SRC= %D%/tiger-gc.c %D%/tiger-gc.h \
 %D%/gc-alloc.c %D%/gc-alloc.h \
-%D%/fwd.h
+%D%/fwd.h \
+%D%/gc-ctrl.c %D%/gc-ctrl.h 
 
 IR=$(filter %.ll,$(SRC:.c=.ll))
 DEBUG_IR=$(IR:.ll=.dbg.ll)
