@@ -43,7 +43,7 @@ struct gc_object
   tc_word_t f[0]; // The user pointer points here
 };
 
-/// The global state of the garbage collector.
+// The global state of the garbage collector.
 extern struct gc_ctx gc_ctx_;
 
 void gc_collect();
