@@ -1,0 +1,10 @@
+let
+  type  thirdtype = {number : int}
+  type  rectype = {age : int}
+  
+  var rec2 : thirdtype := thirdtype {number=42}
+  var rec1 : rectype := rectype {age=1000}
+in
+  rec1;
+  gc_run();
+end
