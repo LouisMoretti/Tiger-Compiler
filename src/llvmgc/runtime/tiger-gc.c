@@ -75,7 +75,7 @@ void gc_collect(void)
         }
       else
         {
-          dprintf(3, "Freed object at address: %p\n", (void*)&actual_obj);
+          // dprintf(3, "Freed object at address: %p\n", (void*)&actual_obj);
           free(actual_obj);
           if (prev == NULL)
             gc_ctx_.heap = h->next;
