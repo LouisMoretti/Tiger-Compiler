@@ -33,10 +33,12 @@ int main(void)
   assert(linked_list_length() == 1);
   tc_malloc(67);
   assert(linked_list_length() == 2);
+  printf("'Basic' succeed!\n");
 
   // Collect and none should be left (no ref).
   gc_collect();
   assert(linked_list_length() == 0);
+  printf("'Nothing collected' succeed!\n");
 
   // Alloc with ref
   size_t* tmp = tc_malloc(42);
@@ -44,11 +46,13 @@ int main(void)
   assert(linked_list_length() == 1);
   gc_collect();
   assert(linked_list_length() == 1);
+  printf("'Alloc with ref' succeed!\n");
 
   // Collect with ref removed.
   tmp = NULL;
   gc_collect();
   assert(linked_list_length() == 0);
+  printf("'Collect with ref' succeed!\n");
 
   // Pointer of pointer ref.
   tmp = tc_malloc(sizeof(void*));
@@ -64,6 +68,7 @@ int main(void)
   tmp = NULL;
   gc_collect();
   assert(linked_list_length() == 0);
+  printf("'Pointer of pointer' succeed!\n");
 
   // Scope ref (Not working well)
   {
@@ -77,6 +82,7 @@ int main(void)
 
   gc_collect();
   assert(linked_list_length() == 0);
+  printf("'Scope ref' succeed!\n");
 
   // Many alloc no ref.
 #define SixSeven 67
@@ -86,6 +92,7 @@ int main(void)
   assert(linked_list_length() == SixSeven + 42);
   gc_collect();
   assert(linked_list_length() == 0);
+  printf("'Many alloc no ref' succeed!\n");
 
   // Many alloc ref linked list with no value.
   size_t* base = tc_malloc(sizeof(void*));
@@ -104,6 +111,7 @@ int main(void)
   base = NULL;
   gc_collect();
   assert(linked_list_length() == 0);
+  printf("'Many alloc - ref linked list no value' succeed!\n");
 
   return 0;
 }

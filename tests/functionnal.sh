@@ -5,7 +5,7 @@ GRN="\e[0;32m"
 YEL="\e[0;33m"
 WHI="\e[0;37m"
 
-filename=$1
+filename="$1"
 # ! WARNING: The following code must not be modified.
 # It prevents the user to delete by accident the script file.
 current_filename="$(echo ${0##*/})"
@@ -40,9 +40,9 @@ if [ ! -f "$filename" ]; then
     exit 1
 fi
 
-command3="valgrind --leak-check=full ./$filename"
+command3="TC_DEBUG=1 valgrind --leak-check=full ./$filename"
 echo "$command3"
-object_freed="$(eval $command3 3> /tmp/tc-debug-objects.txt 2> /tmp/tc-debug-result.txt; cat /tmp/tc-debug-objects.txt; rm /tmp/tc-debug-objects.txt)"
+object_freed="$(eval $command3 > /tmp/tc-debug-objects.txt 2> /tmp/tc-debug-result.txt; cat /tmp/tc-debug-objects.txt; rm /tmp/tc-debug-objects.txt)"
 valgrind_result="$(cat /tmp/tc-debug-result.txt; rm /tmp/tc-debug-result.txt)"
 leak_result="$(echo $valgrind_result | grep 'All heap blocks were freed -- no leaks are possible')"
 
@@ -57,7 +57,7 @@ fi
 
 # No freed object
 if [ "$object_freed" = "" ]; then
-    echo "No freed object or debug line in comment in tiger_gc runtime function"
+    echo "No freed object"
 # Print freed objects
 else
     echo
