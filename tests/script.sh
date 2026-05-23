@@ -57,7 +57,7 @@ fi
 
 # No freed object
 if [ "$object_freed" = "" ]; then
-    echo "No freed object"
+    echo "No freed object or debug line in comment in tiger_gc runtime function"
 # Print freed objects
 else
     echo
